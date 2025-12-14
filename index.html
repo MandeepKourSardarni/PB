@@ -31,6 +31,24 @@
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
 
+    /* LIGHT THEME OVERRIDES */
+    html[data-theme="light"]{
+      --bg1:#eef4ff;
+      --bg2:#f6fbff;
+      --text:#0f1526;
+      --muted:rgba(15,21,38,.62);
+      --muted2:rgba(15,21,38,.46);
+    }
+
+    /* DARK THEME OVERRIDES (keeps your current look) */
+    html[data-theme="dark"]{
+      --bg1:#07162f;
+      --bg2:#041022;
+      --text:#0f1526;
+      --muted:rgba(15,21,38,.62);
+      --muted2:rgba(15,21,38,.46);
+    }
+
     *{ box-sizing:border-box; }
     html, body{ height:100%; }
     body{
@@ -62,6 +80,14 @@
       background: rgba(255,255,255,.80);
       border-bottom:1px solid rgba(15,21,38,.10);
     }
+
+    html[data-theme="dark"] .appbar{
+      background: rgba(255,255,255,.78);
+    }
+    html[data-theme="light"] .appbar{
+      background: rgba(255,255,255,.86);
+    }
+
     .appbarInner{
       max-width: var(--w);
       margin:0 auto;
@@ -72,6 +98,7 @@
       padding: 12px 18px;
       flex-wrap: wrap;
     }
+
     .brand{
       display:flex;
       align-items:center;
@@ -79,23 +106,52 @@
       min-width: 220px;
       flex: 1 1 auto;
     }
-    .logo{
-      width: 38px; height: 38px;
-      border-radius: 14px;
+
+    /* avatar replaces old blue square */
+    .avatar{
+      width: 42px; height: 42px;
+      border-radius: 16px;
       background:
         radial-gradient(circle at 30% 30%, rgba(255,255,255,.40), transparent 55%),
-        linear-gradient(135deg, var(--accent), var(--accent2));
-      box-shadow: 0 14px 30px rgba(47,107,255,.20);
+        linear-gradient(135deg, rgba(47,107,255,.20), rgba(43,183,255,.20));
+      border: 1px solid rgba(15,21,38,.10);
+      box-shadow: 0 14px 30px rgba(47,107,255,.14);
       flex: 0 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      cursor:pointer;
+      user-select:none;
     }
+    .avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .avatar .emoji{
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
     .brandText{
       display:flex;
       flex-direction:column;
       line-height:1.12;
       min-width: 160px;
     }
-    .brandText strong{ font-size: 15.5px; letter-spacing:.2px; }
-    .brandText span{ font-size: 12px; color: var(--muted); }
+    .brandText strong{
+      font-size: 18px;  /* increased */
+      letter-spacing:.2px;
+      font-weight: 950;
+    }
+    .brandText span{
+      font-size: 13px;  /* increased */
+      color: var(--muted);
+      font-weight: 800;
+    }
 
     .tabs{
       display:flex;
@@ -108,8 +164,10 @@
       overflow-x:auto;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
+      align-items:center;
     }
     .tabs::-webkit-scrollbar{ display:none; }
+
     .tabBtn{
       border:0;
       padding: 9px 14px;
@@ -129,6 +187,23 @@
       background: rgba(47,107,255,.10);
       border: 1px solid rgba(47,107,255,.18);
     }
+
+    /* 🎁 donate button beside Settings tab */
+    .giftBtn{
+      border:1px solid rgba(15,21,38,.12);
+      background: rgba(255,255,255,.82);
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      cursor:pointer;
+      font-size: 18px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      transition: .18s ease;
+      flex: 0 0 auto;
+    }
+    .giftBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.96); }
 
     .rightTools{
       display:flex;
@@ -230,25 +305,6 @@
       white-space:nowrap;
     }
 
-    .kpis{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 12px;
-    }
-    @media (max-width: 980px){
-      .kpis{ grid-template-columns: 1fr; }
-    }
-    .kpi{
-      border:1px solid rgba(15,21,38,.10);
-      background: rgba(255,255,255,.86);
-      border-radius: 16px;
-      padding: 12px;
-    }
-    .kpi .label{ color: var(--muted); font-size: 12px; font-weight:900; }
-    .kpi .value{ margin-top: 6px; font-size: 18px; font-weight: 900; letter-spacing:.3px; }
-    .kpi .mini{ margin-top: 4px; color: var(--muted2); font-size: 12px; }
-
     .field{ display:flex; flex-direction:column; gap: 6px; }
     .field label{ font-size: 12px; font-weight: 900; color: var(--muted); letter-spacing:.2px; }
     .input, .select2{
@@ -265,7 +321,6 @@
       border-color: rgba(47,107,255,.35);
       box-shadow: 0 0 0 4px rgba(47,107,255,.12);
     }
-    .help{ font-size: 12px; color: var(--muted2); line-height:1.35; }
 
     .table{
       width:100%;
@@ -375,6 +430,7 @@
     .banner strong{ font-weight: 900; }
     .banner .small{ color: var(--muted); font-size: 12px; margin-top: 3px; }
 
+    /* ✅ FIX: horizontal UNO hand scrolling */
     .handWrap{
       margin-top: 12px;
       padding: 6px 2px 12px;
@@ -386,11 +442,13 @@
       display:flex;
       gap: 12px;
       align-items: stretch;
+      flex-wrap: nowrap;     /* important */
+      width: 100%;
     }
     .handWrap::-webkit-scrollbar{ display:none; }
 
     .distCard{
-      flex: 0 0 min(360px, 86vw);
+      flex: 0 0 clamp(300px, 86vw, 380px);  /* better across devices */
       scroll-snap-align: start;
       border-radius: 20px;
       border: 1px solid rgba(255,255,255,.18);
@@ -404,7 +462,9 @@
       -webkit-backdrop-filter: blur(10px);
       position:relative;
       overflow:hidden;
+      min-width: 300px; /* fallback */
     }
+
     .distTop{ display:flex; align-items:flex-start; justify-content:space-between; gap: 10px; }
     .distTitle{ display:flex; flex-direction:column; gap: 4px; min-width: 0; }
     .distTitle .big{
@@ -596,8 +656,17 @@
     @media (max-width: 560px){
       .brandText span{ display:none; }
       .rightTools{ justify-content:flex-start; }
-      .selectWrap{ flex: 1 1 100%; min-width: 100%; }
-      .btn{ flex: 1 1 auto; justify-content:center; }
+
+      /* ✅ better mobile layout for top controls */
+      .rightTools{
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        width: 100%;
+      }
+      .selectWrap{ grid-column: 1 / -1; min-width: 100%; }
+      .btn{ width: 100%; justify-content:center; }
+
       .entryRow{ grid-template-columns: 1fr; }
       .modal{ max-height: calc(100vh - 40px); }
       .chartHint{ white-space:normal; width: 90%; text-align:center; }
@@ -619,7 +688,9 @@
   <div class="appbar">
     <div class="appbarInner">
       <div class="brand">
-        <div class="logo"></div>
+        <!-- avatar (click to change for selected athlete) -->
+        <div class="avatar" id="avatarBtn" title="Click to set athlete avatar"></div>
+
         <div class="brandText">
           <strong>PB VelocityBoard</strong>
           <span>Track • Improve • Celebrate</span>
@@ -630,7 +701,10 @@
         <button class="tabBtn active" data-tab="home">Home</button>
         <button class="tabBtn" data-tab="analytics">Analytics</button>
         <button class="tabBtn" data-tab="export">Export</button>
-        <button class="tabBtn" data-tab="settings">Settings</button>
+        <button class="tabBtn" data-tab="settings" id="settingsTabBtn">Settings</button>
+
+        <!-- ✅ 🎁 donate button beside Settings -->
+        <button class="giftBtn" id="btnDonate" title="Donate / Support">🎁</button>
       </div>
 
       <div class="rightTools">
@@ -653,37 +727,25 @@
 
     <section id="screenHome" class="screen active">
       <div class="card">
-        <div class="cardHeader">
+        <!-- ✅ Quick View section removed. Home now starts with PB Summary + Cards -->
+        <div class="cardHeader" style="margin-bottom:6px;">
           <div>
-            <div class="title">Quick View</div>
-            <div class="sub">PB + distance view, and your “UNO-hand” race cards.</div>
+            <div class="title">PB Summary</div>
+            <div class="sub">Best time for each distance.</div>
           </div>
           <div class="pill" id="pillAthlete">No athlete selected</div>
         </div>
 
-        <div class="kpis">
-          <div class="kpi">
-            <div class="label">PB (Selected Distance)</div>
-            <div class="value" id="kpiPB">—</div>
-            <div class="mini" id="kpiPBDistance">Select a distance to display PB</div>
-          </div>
-
-          <div class="kpi">
-            <div class="label">Distance Focus</div>
-            <select id="distanceFilter" class="select2"></select>
-            <div class="mini" id="pillCount" style="margin-top:6px; color:var(--muted); font-weight:900;">0 races</div>
-          </div>
-        </div>
-
-        <div style="height:10px;"></div>
-
-        <div class="cardHeader" style="margin-top:6px;">
-          <div>
-            <div class="title" style="font-size:16px;">PB Summary</div>
-            <div class="sub">Best time for each distance.</div>
-          </div>
+        <div class="cardHeader" style="margin-top:10px;">
           <div class="pill" id="pillPBCount">0 PBs</div>
+          <div style="min-width: 210px;">
+            <div class="field">
+              <label style="margin:0;">Distance Focus (for cards)</label>
+              <select id="distanceFilter" class="select2"></select>
+            </div>
+          </div>
         </div>
+
         <div id="pbSummaryWrap"></div>
 
         <div style="height:12px;"></div>
@@ -691,8 +753,9 @@
         <div class="cardHeader">
           <div>
             <div class="title" style="font-size:16px;">Race Cards (by distance)</div>
-            <div class="sub">Scroll left/right like UNO cards. Each card scrolls up/down for entries (latest on top).</div>
+            <div class="sub">Swipe/scroll left/right like UNO cards. Each card scrolls up/down for entries.</div>
           </div>
+          <div class="pill" id="pillCount">0 races</div>
         </div>
 
         <div id="cardsWrap" class="handWrap"></div>
@@ -711,17 +774,19 @@
           <div class="pill" id="pillAnalytics">—</div>
         </div>
 
-        <div class="kpis">
-          <div class="kpi">
-            <div class="label">PB (Selected Distance)</div>
-            <div class="value" id="anPB">—</div>
-            <div class="mini" id="anPBMeta">Select a distance to display PB</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="formGrid">
+          <div class="field">
+            <label>Distance Focus (for chart)</label>
+            <select id="analyticsDistance" class="select2"></select>
+            <div class="help" id="anCount" style="margin-top:6px; color:var(--muted); font-weight:900;">—</div>
           </div>
 
-          <div class="kpi">
-            <div class="label">Distance Focus</div>
-            <select id="analyticsDistance" class="select2"></select>
-            <div class="mini" id="anCount" style="margin-top:6px; color:var(--muted); font-weight:900;">—</div>
+          <div class="field">
+            <label>PB (Selected Distance)</label>
+            <div class="input" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+              <div style="font-weight:950;" id="anPB">—</div>
+              <div style="font-size:12px; color:var(--muted); font-weight:900;" id="anPBMeta">Select a distance to display PB</div>
+            </div>
           </div>
         </div>
 
@@ -753,7 +818,7 @@
           <strong>Upload CSV</strong>
           <p>Data from this file will be added to the currently selected athlete.</p>
           <div class="field" style="margin-top:10px;">
-            <label>Choose Excel file</label>
+            <label>Choose CSV file</label>
             <input class="input" id="csvFile" type="file" accept=".csv" />
           </div>
           <div style="margin-top:10px;">
@@ -774,15 +839,25 @@
           <div class="pill">Local Storage</div>
         </div>
 
+        <!-- ✅ theme toggle added -->
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="formGrid">
           <div class="field">
-            <label>Default Distance Focus</label>
-            <select id="defaultDistance" class="select2"></select>
+            <label>Theme</label>
+            <select id="themeSelect" class="select2">
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+            </select>
           </div>
 
           <div class="field">
             <label>Time placeholder</label>
             <input id="timeHint" class="input" value="00:52.300" />
+          </div>
+
+          <div class="field" style="grid-column: 1 / -1;">
+            <label>PayPal.me Link (for 🎁 donations)</label>
+            <input id="paypalLink" class="input" placeholder="e.g., https://paypal.me/YourName" />
+            <div class="help">This is used by the 🎁 button. You can paste your PayPal.me link once, and it will be saved on this device.</div>
           </div>
         </div>
 
@@ -800,7 +875,7 @@
       <div class="modalTop">
         <div>
           <h3>Add Athlete</h3>
-          <p>Create an athlete profile.</p>
+          <p>Create an athlete profile (with an avatar).</p>
         </div>
         <button class="xbtn" data-close="modalAthlete">✕</button>
       </div>
@@ -812,7 +887,13 @@
         </div>
         <div class="field">
           <label>Birth Year (optional)</label>
-          <input id="athYear" class="input" inputmode="numeric" placeholder="e.g., 2020" />
+          <input id="athYear" class="input" inputmode="numeric" placeholder="e.g., 2014" />
+        </div>
+
+        <div class="field" style="grid-column:1 / -1;">
+          <label>Avatar Emoji (optional)</label>
+          <input id="athEmoji" class="input" placeholder="Default ❄️ (you can type: 🏁 ⛸️ ⭐ etc.)" />
+          <div class="help">Tip: You can also upload a photo later by clicking the avatar at the top.</div>
         </div>
       </div>
 
@@ -851,6 +932,44 @@
       <div class="modalActions">
         <button class="btn" data-close="modalEditAthlete">Cancel</button>
         <button class="btn btnPrimary" id="saveAthleteEdits">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Avatar Modal -->
+  <div class="modalOverlay" id="modalAvatar">
+    <div class="modal">
+      <div class="modalTop">
+        <div>
+          <h3>Set Athlete Avatar</h3>
+          <p>Choose an emoji or upload an image (saved for this athlete on this device).</p>
+        </div>
+        <button class="xbtn" data-close="modalAvatar">✕</button>
+      </div>
+
+      <div class="empty" style="margin-top:0;">
+        <strong>Emoji</strong>
+        <p>Type an emoji (example: ⛸️ 🏁 ⭐) then save.</p>
+        <div class="field" style="margin-top:10px;">
+          <label>Emoji</label>
+          <input id="avatarEmoji" class="input" placeholder="❄️" />
+        </div>
+      </div>
+
+      <div class="empty">
+        <strong>Upload Image</strong>
+        <p>Choose a photo. It will be stored on this device (as a small data file).</p>
+        <div class="field" style="margin-top:10px;">
+          <label>Choose image</label>
+          <input id="avatarFile" class="input" type="file" accept="image/*" />
+        </div>
+      </div>
+
+      <div id="avatarErr" class="error"></div>
+
+      <div class="modalActions">
+        <button class="btn" data-close="modalAvatar">Cancel</button>
+        <button class="btn btnPrimary" id="saveAvatar">Save Avatar</button>
       </div>
     </div>
   </div>
@@ -923,14 +1042,51 @@
     </div>
   </div>
 
+  <!-- ✅ Donate Modal -->
+  <div class="modalOverlay" id="modalDonate">
+    <div class="modal">
+      <div class="modalTop">
+        <div>
+          <h3>🎁 Support / Donate</h3>
+          <p>If this tracker helped you, you can support it with a small donation (PayPal).</p>
+        </div>
+        <button class="xbtn" data-close="modalDonate">✕</button>
+      </div>
+
+      <div class="empty" style="margin-top:0;">
+        <strong>Choose an amount</strong>
+        <p>Pick a quick amount or enter a custom value.</p>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+          <button class="btn" data-donate="2">$2</button>
+          <button class="btn" data-donate="5">$5</button>
+          <button class="btn" data-donate="10">$10</button>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr auto; gap:10px; margin-top:12px;">
+          <input id="donateCustom" class="input" placeholder="Custom amount (e.g., 3.50)" inputmode="decimal" />
+          <button class="btn btnPrimary" id="btnDonateCustom">Donate</button>
+        </div>
+
+        <div id="donateErr" class="error"></div>
+      </div>
+
+      <div class="foot">Thank you for your kindness 💙</div>
+    </div>
+  </div>
+
   <script>
-    const LS_KEY = "pb_velocityboard_v9_singlefile_cards";
-    const LS_PREF = "pb_velocityboard_prefs_v9";
+    const LS_KEY  = "pb_velocityboard_v10_singlefile_cards";
+    const LS_PREF = "pb_velocityboard_prefs_v10";
 
     const defaultState = { athletes: [], activeAthleteId: null };
-    const defaultPrefs = { defaultDistance: "ALL", timeHint: "00:52.300" };
+    const defaultPrefs = {
+      defaultDistance: "ALL",
+      timeHint: "00:52.300",
+      theme: "dark",
+      paypalLink: ""
+    };
 
-    // If user keeps ALL, we will auto-pick a “best available” distance for PB + chart:
     const PREFERRED_DISTANCES = ["400m","500m","800m","1000m","1500m","333m","222m","111m"];
 
     let state = loadState();
@@ -946,15 +1102,12 @@
 
     const athleteSelect = document.getElementById("athleteSelect");
 
-    const distanceFilter = document.getElementById("distanceFilter");
+    const distanceFilter    = document.getElementById("distanceFilter");
     const analyticsDistance = document.getElementById("analyticsDistance");
-    const defaultDistance = document.getElementById("defaultDistance");
 
     const pbBanner = document.getElementById("pbBanner");
     const pbBannerText = document.getElementById("pbBannerText");
 
-    const kpiPB = document.getElementById("kpiPB");
-    const kpiPBDistance = document.getElementById("kpiPBDistance");
     const pillAthlete = document.getElementById("pillAthlete");
     const pillCount = document.getElementById("pillCount");
     const pillPBCount = document.getElementById("pillPBCount");
@@ -971,6 +1124,10 @@
     const importMsg = document.getElementById("importMsg");
 
     const timeHint = document.getElementById("timeHint");
+    const themeSelect = document.getElementById("themeSelect");
+    const paypalLinkEl = document.getElementById("paypalLink");
+
+    const avatarBtn = document.getElementById("avatarBtn");
 
     const canvas = document.getElementById("trendCanvas");
     const ctx = canvas.getContext("2d");
@@ -987,6 +1144,30 @@
       openEntryModal();
     });
     document.getElementById("btnReset").addEventListener("click", () => openModal("modalReset"));
+
+    // Donate
+    document.getElementById("btnDonate").addEventListener("click", () => openModal("modalDonate"));
+    document.querySelectorAll("[data-donate]").forEach(b=>{
+      b.addEventListener("click", ()=> donateAmount(b.getAttribute("data-donate")));
+    });
+    document.getElementById("btnDonateCustom").addEventListener("click", ()=>{
+      const v = document.getElementById("donateCustom").value.trim();
+      donateAmount(v);
+    });
+
+    // Avatar
+    avatarBtn.addEventListener("click", ()=>{
+      if(!getActiveAthlete()){
+        flashBanner("Please add/select an athlete first.", false);
+        openModal("modalAthlete");
+        return;
+      }
+      const ath = getActiveAthlete();
+      document.getElementById("avatarEmoji").value = (ath.avatarType === "emoji" ? (ath.avatarValue || "❄️") : "❄️");
+      document.getElementById("avatarFile").value = "";
+      openModal("modalAvatar");
+    });
+    document.getElementById("saveAvatar").addEventListener("click", saveAvatar);
 
     // Modal close
     document.querySelectorAll("[data-close]").forEach(btn => {
@@ -1016,29 +1197,29 @@
     athleteSelect.addEventListener("change", () => {
       state.activeAthleteId = athleteSelect.value || null;
       saveState();
-      // If ALL is selected, we might need to pick available distance for chart/PB
-      ensureDistanceDefaults();
-      renderAll(true); // true = allow chart redraw
+      renderAll(false);
     });
 
     // Distance Focus:
-    // IMPORTANT: chart should change ONLY when they change distance value.
     distanceFilter.addEventListener("change", () => {
       analyticsDistance.value = distanceFilter.value;
-      renderAll(true); // chart redraw allowed only on distance change
+      renderAll(true);
     });
-
     analyticsDistance.addEventListener("change", () => {
       distanceFilter.value = analyticsDistance.value;
       renderAll(true);
     });
 
-    defaultDistance.addEventListener("change", () => {
-      prefs.defaultDistance = defaultDistance.value;
+    // Settings
+    themeSelect.addEventListener("change", ()=>{
+      prefs.theme = themeSelect.value;
       savePrefs();
-      distanceFilter.value = prefs.defaultDistance;
-      analyticsDistance.value = prefs.defaultDistance;
-      renderAll(true);
+      applyTheme();
+    });
+
+    paypalLinkEl.addEventListener("input", ()=>{
+      prefs.paypalLink = paypalLinkEl.value.trim();
+      savePrefs();
     });
 
     timeHint.addEventListener("input", () => {
@@ -1072,7 +1253,8 @@
       if(!state.athletes) state = structuredClone(defaultState);
       if(!prefs) prefs = structuredClone(defaultPrefs);
 
-      // Build distance options (includes ALL)
+      applyTheme();
+
       const distOptionsHtml = `
         <option value="ALL">All distances</option>
         <option value="111m">111m</option>
@@ -1084,38 +1266,29 @@
         <option value="1000m">1000m</option>
         <option value="1500m">1500m</option>
       `;
-
       distanceFilter.innerHTML = distOptionsHtml;
       analyticsDistance.innerHTML = distOptionsHtml;
-      defaultDistance.innerHTML = distOptionsHtml;
 
-      defaultDistance.value = prefs.defaultDistance;
-      timeHint.value = prefs.timeHint;
+      distanceFilter.value = prefs.defaultDistance || "ALL";
+      analyticsDistance.value = prefs.defaultDistance || "ALL";
 
-      // If pref is ALL, still keep it. We'll auto-pick for PB/chart only.
-      distanceFilter.value = prefs.defaultDistance;
-      analyticsDistance.value = prefs.defaultDistance;
+      timeHint.value = prefs.timeHint || "00:52.300";
+      themeSelect.value = prefs.theme || "dark";
+      paypalLinkEl.value = prefs.paypalLink || "";
 
-      ensureDistanceDefaults();
       renderAll(true);
       syncAppbarHeight();
     }
 
-    // If default focus is ALL, we keep dropdown on ALL,
-    // but for PB + chart we choose a best available distance if possible.
-    function ensureDistanceDefaults(){
-      const ath = getActiveAthlete();
-      if(!ath) return;
-
-      // If the current selected focus is not ALL and not present in data, keep it (user intent),
-      // but we will show "No entries for X" gracefully.
-      // If focus is ALL, we pick a best available distance for PB/chart only.
+    function applyTheme(){
+      const t = prefs.theme || "dark";
+      document.documentElement.setAttribute("data-theme", t);
+      syncAppbarHeight();
     }
 
     function switchTab(tab){
       tabBtns.forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
       Object.keys(screens).forEach(k => screens[k].classList.toggle("active", k === tab));
-      // tab switch should NOT force chart change unless a distance change happened.
       renderAll(false);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -1134,7 +1307,7 @@
     }
 
     function clearErrors(){
-      ["athleteErr","entryErr","resetErr","importMsg","editAthErr"].forEach(id=>{
+      ["athleteErr","entryErr","resetErr","importMsg","editAthErr","donateErr","avatarErr"].forEach(id=>{
         const el = document.getElementById(id);
         if(el){ el.classList.remove("show"); el.textContent=""; }
       });
@@ -1229,24 +1402,59 @@
       flashBanner._t = setTimeout(()=> pbBanner.classList.remove("show"), 4200);
     }
 
+    function renderAvatar(){
+      const ath = getActiveAthlete();
+      avatarBtn.innerHTML = "";
+      if(!ath){
+        avatarBtn.innerHTML = `<div class="emoji">❄️</div>`;
+        avatarBtn.title = "Click to set athlete avatar";
+        return;
+      }
+      const type = ath.avatarType || "emoji";
+      const val  = ath.avatarValue || "❄️";
+
+      if(type === "image" && val){
+        const img = document.createElement("img");
+        img.src = val;
+        img.alt = "Avatar";
+        avatarBtn.appendChild(img);
+      }else{
+        const div = document.createElement("div");
+        div.className = "emoji";
+        div.textContent = val || "❄️";
+        avatarBtn.appendChild(div);
+      }
+      avatarBtn.title = `Avatar for ${ath.name} (click to change)`;
+    }
+
     function saveAthlete(){
       clearErrors();
       const name = document.getElementById("athName").value.trim();
       const year = document.getElementById("athYear").value.trim();
+      const emoji = document.getElementById("athEmoji").value.trim();
 
       if(!name){ showError("athleteErr","Please enter a name."); return; }
       if(year && !/^\d{4}$/.test(year)){ showError("athleteErr","Birth year should be 4 digits (e.g., 2014)."); return; }
 
-      const newAth = { id: uid(), name, birthYear: year || "", createdAt: new Date().toISOString(), entries: [] };
+      const newAth = {
+        id: uid(),
+        name,
+        birthYear: year || "",
+        createdAt: new Date().toISOString(),
+        entries: [],
+        avatarType: "emoji",
+        avatarValue: emoji || "❄️"
+      };
+
       state.athletes.push(newAth);
       state.activeAthleteId = newAth.id;
       saveState();
 
       document.getElementById("athName").value = "";
       document.getElementById("athYear").value = "";
+      document.getElementById("athEmoji").value = "";
       closeModal("modalAthlete");
 
-      // On first athlete, if user left ALL, keep it. We will pick best available for PB/chart later.
       flashBanner(`Athlete added: ${name}`, false);
       renderAll(true);
     }
@@ -1276,7 +1484,42 @@
       closeModal("modalEditAthlete");
 
       flashBanner("Athlete updated.", false);
-      renderAll(false); // no chart redraw needed
+      renderAll(false);
+    }
+
+    function saveAvatar(){
+      clearErrors();
+      const ath = getActiveAthlete();
+      if(!ath){ showError("avatarErr","No athlete selected."); return; }
+
+      const emoji = document.getElementById("avatarEmoji").value.trim();
+      const file = document.getElementById("avatarFile").files?.[0];
+
+      if(file){
+        if(!file.type.startsWith("image/")){
+          showError("avatarErr","Please choose a valid image file.");
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = ()=>{
+          ath.avatarType = "image";
+          ath.avatarValue = String(reader.result || "");
+          saveState();
+          closeModal("modalAvatar");
+          flashBanner("Avatar updated.", false);
+          renderAll(false);
+        };
+        reader.readAsDataURL(file);
+        return;
+      }
+
+      // Emoji mode
+      ath.avatarType = "emoji";
+      ath.avatarValue = emoji || "❄️";
+      saveState();
+      closeModal("modalAvatar");
+      flashBanner("Avatar updated.", false);
+      renderAll(false);
     }
 
     function openEntryModal(){
@@ -1381,34 +1624,13 @@
       saveState();
       closeModal("modalEntry");
 
-      // If user is on ALL and we now have entries, prefer to auto-select 400/500 if available
-      autoPickFocusIfAll();
-
       if(pbMessages.length){
         flashBanner(`🎉 ${ath.name}: ${pbMessages[0]}${pbMessages.length>1 ? ` (+${pbMessages.length-1} more)` : ""}`, true);
       }else{
         flashBanner(`${savedCount} race entr${savedCount===1?"y":"ies"} saved for ${ath.name}.`, false);
       }
 
-      renderAll(false); // do NOT redraw chart unless distance changed by user; we keep chart stable
-    }
-
-    function autoPickFocusIfAll(){
-      const ath = getActiveAthlete();
-      if(!ath) return;
-
-      // Only if dropdown is ALL (both home + analytics) - we set to best available
-      if(distanceFilter.value !== "ALL" || analyticsDistance.value !== "ALL") return;
-
-      const avail = getAvailableDistances(ath.entries || []);
-      const pick = pickPreferredDistance(avail);
-
-      if(pick){
-        distanceFilter.value = pick;
-        analyticsDistance.value = pick;
-        // This is a distance change programmatically -> allow chart redraw
-        renderAll(true);
-      }
+      renderAll(false);
     }
 
     function deleteEntry(entryId){
@@ -1432,17 +1654,18 @@
       const txt = document.getElementById("resetConfirm").value.trim();
       if(txt !== "RESET"){ showError("resetErr","Please type RESET exactly to confirm."); return; }
       localStorage.removeItem(LS_KEY);
+      localStorage.removeItem(LS_PREF);
       state = structuredClone(defaultState);
+      prefs = structuredClone(defaultPrefs);
       closeModal("modalReset");
       flashBanner("All data cleared on this device.", false);
+      applyTheme();
       renderAll(true);
     }
 
-    // allowChartRedraw:
-    // - TRUE when user changes distance (or we programmatically set distance)
-    // - FALSE when just rerendering due to tab switch / edits / add entry etc.
     function renderAll(allowChartRedraw){
       renderAthleteSelect();
+      renderAvatar();
       renderHome();
       renderAnalytics(allowChartRedraw);
       renderExport();
@@ -1478,34 +1701,6 @@
       athleteSelect.value = state.activeAthleteId;
     }
 
-    function getAvailableDistances(entries){
-      const set = new Set();
-      for(const e of entries){
-        if(e && e.distance) set.add(e.distance);
-      }
-      return set;
-    }
-
-    function pickPreferredDistance(availSet){
-      for(const d of PREFERRED_DISTANCES){
-        if(availSet.has(d)) return d;
-      }
-      return null;
-    }
-
-    // Decide what “effective distance” to use for PB/chart:
-    // - If user selected a specific distance => use it
-    // - If user selected ALL => we DO NOT show “Fastest PB (any distance)”
-    //   Instead show message until we can auto-pick a preferred distance.
-    function effectiveDistanceOrNull(ath){
-      const sel = distanceFilter.value;
-      if(sel !== "ALL") return sel;
-
-      const avail = getAvailableDistances(ath.entries || []);
-      const pick = pickPreferredDistance(avail);
-      return pick; // may be null
-    }
-
     function renderHome(){
       const ath = getActiveAthlete();
 
@@ -1513,8 +1708,6 @@
         pillAthlete.textContent = "No athlete selected";
         pillCount.textContent = "0 races";
         pillPBCount.textContent = "0 PBs";
-        kpiPB.textContent = "—";
-        kpiPBDistance.textContent = "Select a distance to display PB";
         pbSummaryWrap.innerHTML = `
           <div class="empty">
             <strong>No athlete selected</strong>
@@ -1537,26 +1730,6 @@
       const pbMap = computePBMap(entriesAll);
       const pbCount = Object.keys(pbMap).length;
       pillPBCount.textContent = `${pbCount} PBs`;
-
-      const eff = effectiveDistanceOrNull(ath);
-
-      // PB KPI rules you asked:
-      // - If ALL and no 400/500/etc available => show message, not “Fastest PB”
-      // - If ALL but we can auto-pick => show PB for that picked distance (still keep dropdown on ALL, until you change it)
-      if(distanceFilter.value === "ALL"){
-        if(!eff){
-          kpiPB.textContent = "—";
-          kpiPBDistance.textContent = "Select a distance to display PB";
-        }else{
-          const pb = pbMap[eff]?.ms ?? null;
-          kpiPB.textContent = pb != null ? msToTime(pb) : "—";
-          kpiPBDistance.textContent = pb != null ? `${eff} best` : `No PB for ${eff}`;
-        }
-      }else{
-        const pb = pbMap[distanceFilter.value]?.ms ?? null;
-        kpiPB.textContent = pb != null ? msToTime(pb) : "—";
-        kpiPBDistance.textContent = pb != null ? `${distanceFilter.value} best` : `No PB for ${distanceFilter.value}`;
-      }
 
       // PB Summary
       if(pbCount === 0){
@@ -1595,9 +1768,7 @@
         `;
       }
 
-      // UNO Cards grouping:
-      // If ALL => show all distances (as before)
-      // If specific => show only that distance
+      // Cards
       const scopedEntries = (distanceFilter.value === "ALL")
         ? entriesAll
         : entriesAll.filter(e => e.distance === distanceFilter.value);
@@ -1682,30 +1853,20 @@
       const entriesAll = ath.entries || [];
       const pbMap = computePBMap(entriesAll);
 
-      // For Analytics, use analyticsDistance selection:
-      // If ALL => same rule: do not show fastest any distance. Show message unless we can pick 400/500 etc.
       let effDist = analyticsDistance.value;
       if(effDist === "ALL"){
-        const avail = getAvailableDistances(entriesAll);
-        const pick = pickPreferredDistance(avail);
-        if(!pick){
-          anPB.textContent = "—";
-          anPBMeta.textContent = "Select a distance to display PB";
-          anCount.textContent = `${entriesAll.length} total races`;
-          if(allowChartRedraw) drawChart([], "ALL");
-          return;
-        }
-        effDist = pick;
+        // pick best available for chart clarity
+        const avail = new Set(entriesAll.map(e=>e.distance).filter(Boolean));
+        effDist = PREFERRED_DISTANCES.find(d=>avail.has(d)) || "ALL";
       }
 
-      const scoped = entriesAll.filter(e => e.distance === effDist);
-      anCount.textContent = `${scoped.length} races for ${effDist}`;
+      const scoped = (effDist === "ALL") ? [] : entriesAll.filter(e => e.distance === effDist);
+      anCount.textContent = effDist === "ALL" ? `${entriesAll.length} total races` : `${scoped.length} races for ${effDist}`;
 
-      const pb = pbMap[effDist]?.ms ?? null;
+      const pb = effDist !== "ALL" ? (pbMap[effDist]?.ms ?? null) : null;
       anPB.textContent = pb != null ? msToTime(pb) : "—";
-      anPBMeta.textContent = pb != null ? `${effDist} best` : `No PB for ${effDist}`;
+      anPBMeta.textContent = pb != null ? `${effDist} best` : (effDist === "ALL" ? "Pick a distance for PB + chart" : `No PB for ${effDist}`);
 
-      // CHART RULE: only redraw when allowChartRedraw is true
       if(allowChartRedraw){
         drawChart(sortByDateDesc(scoped), effDist);
       }
@@ -1884,10 +2045,6 @@
 
           saveState();
           flashBanner(`CSV import complete: ${added} row(s) added to ${ath.name}.`, false);
-
-          // If distance is ALL, we can auto-pick for a better default focus (400/500)
-          autoPickFocusIfAll();
-
           renderAll(false);
 
         }catch(e){
@@ -1933,20 +2090,27 @@
       return rows;
     }
 
-    function deleteEntry(entryId){
-      const ath = getActiveAthlete();
-      if(!ath) return;
+    function donateAmount(amountStr){
+      clearErrors();
+      const link = (prefs.paypalLink || "").trim();
+      if(!link){
+        showError("donateErr","Please add your PayPal.me link in Settings first.");
+        return;
+      }
 
-      const entry = (ath.entries || []).find(e => e.id === entryId);
-      if(!entry) return;
+      const amt = String(amountStr || "").trim();
+      const n = Number(amt);
+      if(!amt || !isFinite(n) || n <= 0){
+        showError("donateErr","Please enter a valid amount (example: 2, 5, 10, 3.50).");
+        return;
+      }
 
-      const msg = `Delete this entry?\n\n${fmtDate(entry.date)} • ${entry.location || "—"} • ${entry.distance} • ${entry.time}`;
-      if(!confirm(msg)) return;
-
-      ath.entries = (ath.entries || []).filter(e => e.id !== entryId);
-      saveState();
-      flashBanner("Entry deleted.", false);
-      renderAll(false);
+      const base = link.replace(/\/+$/,"");
+      // PayPal.me commonly supports /<amount>
+      const url = `${base}/${n}`;
+      window.open(url, "_blank", "noopener,noreferrer");
+      closeModal("modalDonate");
+      flashBanner("Opening PayPal donation page… 💙", false);
     }
 
     function downloadBlob(blob, filename){
