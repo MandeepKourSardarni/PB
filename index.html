@@ -8,8 +8,6 @@
   <style>
     :root{
       --bg: #0b1020;
-      --card: rgba(255,255,255,.06);
-      --stroke: rgba(255,255,255,.12);
       --text: rgba(255,255,255,.92);
       --muted: rgba(255,255,255,.68);
       --muted2: rgba(255,255,255,.50);
@@ -124,7 +122,6 @@
       box-shadow: 0 10px 26px rgba(124,92,255,.18);
     }
 
-    /* RIGHT TOOLBAR - keep one row on desktop */
     .rightTools{
       display:flex;
       align-items:center;
@@ -158,7 +155,6 @@
       font-size: 12px;
     }
 
-    /* dropdown visibility fix */
     select, option {
       color: var(--text);
       background-color: #0a1020;
@@ -168,7 +164,6 @@
       background-color: #0a1020;
     }
 
-    /* Buttons fit to text */
     .btn{
       border:1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.06);
@@ -198,7 +193,6 @@
       box-shadow: 0 14px 34px rgba(255,77,109,.12);
     }
 
-    /* ---------- LAYOUT ---------- */
     .grid{
       display:grid;
       grid-template-columns: 1.15fr .85fr;
@@ -317,7 +311,27 @@
     .badgeOK{ border-color: rgba(62,224,143,.35); background: rgba(62,224,143,.10); }
     .badgePB{ border-color: rgba(255,204,102,.35); background: rgba(255,204,102,.10); }
 
-    /* ---------- CHART ---------- */
+    /* Delete icon button inside table */
+    .iconBtn{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      transition:.18s ease;
+      box-shadow: var(--shadow2);
+    }
+    .iconBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); }
+    .iconBtnDanger{
+      border-color: rgba(255,77,109,.35);
+      background: rgba(255,77,109,.12);
+    }
+
     .chart{
       width:100%;
       height: 240px;
@@ -333,17 +347,21 @@
       height:100%;
       display:block;
     }
+    /* Center aligned chart title */
     .chartHint{
       position:absolute;
-      left: 12px;
+      left: 50%;
+      transform: translateX(-50%);
       top: 10px;
       font-size: 12px;
       color: var(--muted);
       font-weight: 900;
       letter-spacing:.2px;
+      text-align:center;
+      white-space:nowrap;
+      pointer-events:none;
     }
 
-    /* ---------- EMPTY STATE ---------- */
     .empty{
       border:1px dashed rgba(255,255,255,.20);
       border-radius: 18px;
@@ -355,7 +373,6 @@
     .empty strong{ color: var(--text); }
     .empty p{ margin: 8px 0 0; font-size: 13px; line-height:1.45; }
 
-    /* ---------- TOAST / BANNER ---------- */
     .banner{
       display:none;
       margin: 0 0 14px;
@@ -369,7 +386,6 @@
     .banner strong{ font-weight: 900; }
     .banner .small{ color: var(--muted); font-size: 12px; margin-top: 3px; }
 
-    /* ---------- MODAL ---------- */
     .modalOverlay{
       position:fixed;
       inset:0;
@@ -382,7 +398,6 @@
     }
     .modalOverlay.show{ display:flex; }
 
-    /* KEY FIX: MODAL SCROLL */
     .modal{
       width: min(700px, 100%);
       max-height: calc(100vh - 70px);
@@ -453,6 +468,7 @@
       outline:none;
       font-weight: 900;
     }
+
     .help{
       font-size: 12px;
       color: var(--muted2);
@@ -484,7 +500,6 @@
       z-index: 2;
     }
 
-    /* Multi-entry rows */
     .entryRows{
       display:flex;
       flex-direction:column;
@@ -528,7 +543,6 @@
     .screen{ display:none; }
     .screen.active{ display:block; }
 
-    /* Mobile behavior: allow wrap, but keep Reset next to Add Race if possible */
     @media (max-width: 560px){
       .tabs{ display:none; }
       .brandText span{ display:none; }
@@ -538,6 +552,7 @@
       .form{ grid-template-columns: 1fr; }
       .entryRow{ grid-template-columns: 1fr; }
       .modal{ max-height: calc(100vh - 40px); }
+      .chartHint{ white-space:normal; width: 90%; }
     }
   </style>
 </head>
@@ -582,11 +597,9 @@
       <div class="small" id="pbBannerText">Saved.</div>
     </div>
 
-    <!-- HOME -->
     <section id="screenHome" class="screen active">
       <div class="grid">
 
-        <!-- LEFT CARD -->
         <div class="card">
           <div class="cardHeader">
             <div>
@@ -652,7 +665,6 @@
           </div>
         </div>
 
-        <!-- RIGHT CARD -->
         <div class="card">
           <div class="cardHeader">
             <div>
@@ -662,7 +674,6 @@
             <div class="pill" id="pillPBCount">0 PBs</div>
           </div>
 
-          <!-- NEW: PB SUMMARY ON HOME -->
           <div id="pbSummaryWrap"></div>
 
           <div style="height:10px;"></div>
@@ -807,7 +818,7 @@
           <div class="field">
             <label>Time Format Reminder</label>
             <input id="timeHint" class="input" value="00:52.300" />
-            <div class="help">Shown as example in the Add Race form.</div>
+            <div class="help">Shown as placeholder in Add Race.</div>
           </div>
         </div>
 
@@ -901,9 +912,7 @@
 
         <div class="field">
           <label>Location</label>
-          <!-- UPDATED: plain text, no dropdown -->
           <input id="enLocation" class="input" placeholder="e.g., Scarborough" />
-          <div class="help">Type any location (city or rink).</div>
         </div>
 
         <div class="field" style="grid-column:1 / -1;">
@@ -914,7 +923,6 @@
 
       <div class="field" style="margin-top:10px;">
         <label>Distances & Times</label>
-        <div class="help">Add one or more distances for this same date/location.</div>
 
         <div class="entryRows" id="entryRows"></div>
 
@@ -946,7 +954,6 @@
       <div class="field">
         <label>Type RESET</label>
         <input id="resetConfirm" class="input" placeholder="RESET" />
-        <div class="help">Tip: Export JSON first if you want a backup.</div>
       </div>
 
       <div id="resetErr" class="error"></div>
@@ -1068,6 +1075,14 @@
 
     const entryRowsEl = document.getElementById("entryRows");
     document.getElementById("btnAddRow").addEventListener("click", () => addEntryRow());
+
+    // Table delete delegation (works after rerender)
+    recentWrap.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-del-entry-id]");
+      if(!btn) return;
+      const entryId = btn.getAttribute("data-del-entry-id");
+      deleteEntry(entryId);
+    });
 
     init();
 
@@ -1316,6 +1331,7 @@
 
         <div class="field">
           <label>Time (mm:ss.mmm)</label>
+          <!-- CHANGE #1: removed the Example text below; placeholder only -->
           <input class="input jsTime" placeholder="${escapeHtml(prefs.timeHint || "00:52.300")}" value="${escapeHtml(time || "")}" />
         </div>
 
@@ -1412,6 +1428,22 @@
       renderAll();
     }
 
+    function deleteEntry(entryId){
+      const ath = getActiveAthlete();
+      if(!ath) return;
+
+      const entry = (ath.entries || []).find(e => e.id === entryId);
+      if(!entry) return;
+
+      const msg = `Delete this entry?\n\n${fmtDate(entry.date)} • ${entry.location || "—"} • ${entry.distance} • ${entry.time}`;
+      if(!confirm(msg)) return;
+
+      ath.entries = (ath.entries || []).filter(e => e.id !== entryId);
+      saveState();
+      flashBanner("Entry deleted.", false);
+      renderAll();
+    }
+
     function doResetAll(){
       clearErrors();
       const txt = document.getElementById("resetConfirm").value.trim();
@@ -1502,7 +1534,6 @@
       const pbCount = Object.keys(pbMap).length;
       pillPBCount.textContent = `${pbCount} PBs`;
 
-      // PB Summary (NEW on home)
       if(pbCount === 0){
         pbSummaryWrap.innerHTML = `
           <div class="empty">
@@ -1581,6 +1612,7 @@
           const badge = isPB
             ? `<span class="badge badgePB">🏅 PB</span>`
             : `<span class="badge badgeOK">Saved</span>`;
+
           return `
             <tr>
               <td>${fmtDate(e.date)}</td>
@@ -1589,6 +1621,10 @@
               <td><b>${e.time}</b></td>
               <td>${badge}</td>
               <td style="color:rgba(255,255,255,.70)">${e.notes ? escapeHtml(e.notes) : "—"}</td>
+              <!-- CHANGE #3: Delete column -->
+              <td style="width:60px;">
+                <button class="iconBtn iconBtnDanger" title="Delete entry" data-del-entry-id="${e.id}">🗑️</button>
+              </td>
             </tr>
           `;
         }).join("");
@@ -1603,6 +1639,7 @@
                 <th>Time</th>
                 <th>Status</th>
                 <th>Notes</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>${rows}</tbody>
@@ -1779,8 +1816,6 @@
         ctx.arc(x,y,5,0,Math.PI*2);
         ctx.fill();
       });
-
-      /* UPDATED: removed "Trend Line" title drawn on canvas */
     }
 
     function exportJSON(){
