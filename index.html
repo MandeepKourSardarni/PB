@@ -745,19 +745,19 @@
         </div>
 
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn" id="btnExportCSV">Download CSV (selected athlete)</button>
-          <button class="btn" id="btnDownloadTemplate">⬇️ Download CSV Template</button>
+          <button class="btn" id="btnExportCSV">Download Excel (selected athlete)</button>
+          <button class="btn" id="btnDownloadTemplate">⬇️ Download Excel Template, just fill & upload</button>
         </div>
 
         <div class="empty" style="margin-top:12px;">
           <strong>Upload CSV</strong>
-          <p>CSV rows will be added to the currently selected athlete.</p>
+          <p>Data from this file will be added to the currently selected athlete.</p>
           <div class="field" style="margin-top:10px;">
-            <label>Choose CSV</label>
+            <label>Choose Excel file</label>
             <input class="input" id="csvFile" type="file" accept=".csv" />
           </div>
           <div style="margin-top:10px;">
-            <button class="btn btnPrimary" id="btnImportCSV">Import CSV into selected athlete</button>
+            <button class="btn btnPrimary" id="btnImportCSV">Import the Data into selected athlete</button>
           </div>
           <div id="importMsg" class="error"></div>
         </div>
