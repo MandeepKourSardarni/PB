@@ -8,9 +8,7 @@
   <style>
     :root{
       --bg: #0b1020;
-      --bg2:#0b1633;
       --card: rgba(255,255,255,.06);
-      --card2: rgba(255,255,255,.08);
       --stroke: rgba(255,255,255,.12);
       --text: rgba(255,255,255,.92);
       --muted: rgba(255,255,255,.68);
@@ -45,7 +43,6 @@
       overflow-x:hidden;
     }
 
-    a { color:inherit; text-decoration:none; }
     button, input, select { font-family:inherit; }
 
     .wrap{
@@ -132,7 +129,8 @@
       align-items:center;
       gap: 10px;
       justify-content:flex-end;
-      min-width: 260px;
+      min-width: 320px;
+      flex-wrap:wrap;
     }
 
     .select{
@@ -143,10 +141,10 @@
       color: var(--text);
       padding: 10px 38px 10px 12px;
       border-radius: 14px;
-      font-weight:600;
+      font-weight:700;
       outline:none;
       cursor:pointer;
-      position:relative;
+      min-width: 210px;
     }
     .selectWrap{ position:relative; }
     .selectWrap:after{
@@ -160,13 +158,23 @@
       font-size: 12px;
     }
 
+    /* Dropdown visibility fix (best effort across browsers) */
+    select, option {
+      color: var(--text);
+      background-color: #0a1020;
+    }
+    .select2, .select2 option{
+      color: var(--text);
+      background-color: #0a1020;
+    }
+
     .btn{
       border:1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.06);
       color: var(--text);
       padding: 10px 14px;
       border-radius: 14px;
-      font-weight:700;
+      font-weight:800;
       cursor:pointer;
       transition: .18s ease;
       box-shadow: var(--shadow2);
@@ -200,6 +208,7 @@
       .grid{ grid-template-columns: 1fr; }
       .brand{ min-width: 160px; }
       .rightTools{ min-width: unset; }
+      .select{ min-width: 190px; }
     }
 
     .card{
@@ -218,7 +227,7 @@
     }
     .title{
       font-size: 18px;
-      font-weight: 800;
+      font-weight: 900;
       letter-spacing:.2px;
     }
     .sub{
@@ -237,7 +246,7 @@
       background: rgba(255,255,255,.05);
       color: var(--muted);
       font-size: 12px;
-      font-weight:700;
+      font-weight:800;
     }
 
     .kpis{
@@ -255,7 +264,7 @@
       border-radius: 16px;
       padding: 12px;
     }
-    .kpi .label{ color: var(--muted); font-size: 12px; font-weight:800; }
+    .kpi .label{ color: var(--muted); font-size: 12px; font-weight:900; }
     .kpi .value{ margin-top: 6px; font-size: 18px; font-weight: 900; letter-spacing:.3px; }
     .kpi .mini{ margin-top: 4px; color: var(--muted2); font-size: 12px; }
 
@@ -291,6 +300,7 @@
       background: rgba(255,255,255,.04);
     }
     .table tr:hover td{ background: rgba(255,255,255,.03); }
+
     .badge{
       display:inline-flex;
       align-items:center;
@@ -328,7 +338,7 @@
       top: 10px;
       font-size: 12px;
       color: var(--muted);
-      font-weight: 800;
+      font-weight: 900;
       letter-spacing:.2px;
     }
 
@@ -371,7 +381,7 @@
     }
     .modalOverlay.show{ display:flex; }
     .modal{
-      width: min(560px, 100%);
+      width: min(620px, 100%);
       border-radius: 20px;
       border: 1px solid rgba(255,255,255,.12);
       background: linear-gradient(180deg, rgba(18,26,48,.95), rgba(10,14,26,.95));
@@ -430,7 +440,7 @@
       border-radius: 14px;
       padding: 10px 12px;
       outline:none;
-      font-weight: 700;
+      font-weight: 800;
     }
     .help{
       font-size: 12px;
@@ -445,7 +455,7 @@
       border-radius: 14px;
       padding: 10px 12px;
       font-size: 12px;
-      font-weight: 800;
+      font-weight: 900;
       margin-top: 10px;
     }
     .error.show{ display:block; }
@@ -458,7 +468,42 @@
       flex-wrap:wrap;
     }
 
-    /* ---------- FOOTER NOTE ---------- */
+    /* Multi-entry rows */
+    .entryRows{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .entryRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+      align-items:end;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      border-radius: 16px;
+      padding: 10px;
+    }
+    @media (max-width: 560px){
+      .entryRow{ grid-template-columns: 1fr; }
+    }
+    .miniBtn{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-weight: 900;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+    .miniBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); }
+    .miniBtnDanger{
+      border:1px solid rgba(255,77,109,.30);
+      background: rgba(255,77,109,.12);
+    }
+
     .foot{
       margin-top: 14px;
       color: var(--muted2);
@@ -466,19 +511,18 @@
       line-height:1.45;
     }
 
-    /* ---------- HIDE/SHOW SCREENS ---------- */
     .screen{ display:none; }
     .screen.active{ display:block; }
 
-    /* small mobile tweaks */
     @media (max-width: 560px){
-      .tabs{ display:none; } /* keep appbar clean */
+      .tabs{ display:none; }
       .brandText span{ display:none; }
       .form{ grid-template-columns: 1fr; }
       .btn{ padding: 10px 12px; }
       .wrap{ padding-top: 84px; }
+      .rightTools{ justify-content:flex-start; }
+      .select{ min-width: 100%; }
     }
-
   </style>
 </head>
 
@@ -507,6 +551,7 @@
         <div class="selectWrap">
           <select id="athleteSelect" class="select" title="Select Athlete"></select>
         </div>
+        <button class="btn" id="btnEditAthlete">Edit</button>
         <button class="btn btnPrimary" id="btnAddAthlete">+ Add Athlete</button>
         <button class="btn" id="btnAddEntry">+ Add Race</button>
         <button class="btn btnDanger" id="btnReset">Reset</button>
@@ -653,6 +698,7 @@
               <th>Distance</th>
               <th>PB Time</th>
               <th>Date</th>
+              <th>Location</th>
               <th>Notes</th>
             </tr>
           </thead>
@@ -660,7 +706,7 @@
         </table>
 
         <div class="foot">
-          Professional note: PBs are computed per athlete per distance. For best results, keep times consistent (mm:ss.mmm).
+          PBs are computed per athlete per distance.
         </div>
       </div>
     </section>
@@ -699,7 +745,7 @@
           <div class="field">
             <label>Upload JSON backup</label>
             <input class="input" id="importFile" type="file" accept=".json" />
-            <div class="help">This will merge athletes. Existing athlete IDs are preserved if they match.</div>
+            <div class="help">This will merge athletes.</div>
           </div>
 
           <div class="modalActions" style="justify-content:flex-start;">
@@ -752,6 +798,24 @@
 
   </div>
 
+  <!-- LOCATION SUGGESTIONS -->
+  <datalist id="locationList">
+    <option value="Milton"></option>
+    <option value="Hamilton"></option>
+    <option value="Oakville"></option>
+    <option value="Burlington"></option>
+    <option value="Mississauga"></option>
+    <option value="Toronto"></option>
+    <option value="Markham"></option>
+    <option value="Etobicoke"></option>
+    <option value="Kitchener"></option>
+    <option value="Waterloo"></option>
+    <option value="Cambridge"></option>
+    <option value="Guelph"></option>
+    <option value="Niagara"></option>
+    <option value="London"></option>
+  </datalist>
+
   <!-- MODAL: ADD ATHLETE -->
   <div class="modalOverlay" id="modalAthlete">
     <div class="modal">
@@ -783,13 +847,44 @@
     </div>
   </div>
 
+  <!-- MODAL: EDIT ATHLETE -->
+  <div class="modalOverlay" id="modalEditAthlete">
+    <div class="modal">
+      <div class="modalTop">
+        <div>
+          <h3>Edit Athlete</h3>
+          <p>Update the athlete name (and birth year). PBs and entries remain unchanged.</p>
+        </div>
+        <button class="xbtn" data-close="modalEditAthlete">✕</button>
+      </div>
+
+      <div class="form">
+        <div class="field">
+          <label>Name</label>
+          <input id="editAthName" class="input" />
+        </div>
+        <div class="field">
+          <label>Birth Year (optional)</label>
+          <input id="editAthYear" class="input" inputmode="numeric" />
+        </div>
+      </div>
+
+      <div id="editAthErr" class="error"></div>
+
+      <div class="modalActions">
+        <button class="btn" data-close="modalEditAthlete">Cancel</button>
+        <button class="btn btnPrimary" id="saveAthleteEdits">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: ADD ENTRY -->
   <div class="modalOverlay" id="modalEntry">
     <div class="modal">
       <div class="modalTop">
         <div>
           <h3>Add Race Entry</h3>
-          <p>Enter a race result for the selected athlete.</p>
+          <p>Same date + location can include multiple distances (400/500/800/1000 etc.).</p>
         </div>
         <button class="xbtn" data-close="modalEntry">✕</button>
       </div>
@@ -801,28 +896,25 @@
         </div>
 
         <div class="field">
-          <label>Distance</label>
-          <select id="enDist" class="select2">
-            <option value="111m">111m</option>
-            <option value="222m">222m</option>
-            <option value="333m">333m</option>
-            <option value="400m" selected>400m</option>
-            <option value="500m">500m</option>
-            <option value="800m">800m</option>
-            <option value="1000m">1000m</option>
-            <option value="1500m">1500m</option>
-          </select>
+          <label>Location</label>
+          <input id="enLocation" class="input" list="locationList" placeholder="e.g., Milton" />
+          <div class="help">Type a city or rink name (suggestions available).</div>
         </div>
 
-        <div class="field">
-          <label>Time (mm:ss.mmm)</label>
-          <input id="enTime" class="input" placeholder="00:52.300" />
-          <div class="help" id="timeHintSmall">Example: 00:52.300</div>
-        </div>
-
-        <div class="field">
+        <div class="field" style="grid-column:1 / -1;">
           <label>Notes (optional)</label>
           <input id="enNotes" class="input" placeholder="e.g., Meet name, lane, fall, etc." />
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:10px;">
+        <label>Distances & Times</label>
+        <div class="help">Add one or more distances for this same date/location.</div>
+
+        <div class="entryRows" id="entryRows"></div>
+
+        <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="miniBtn" id="btnAddRow">+ Add another distance</button>
         </div>
       </div>
 
@@ -864,30 +956,21 @@
 
   <script>
     /* ==========================================================
-      PB VELOCITYBOARD — SINGLE FILE EDITION
-      Professional UI + localStorage data model
+      PB VELOCITYBOARD — SINGLE FILE EDITION (UPDATED)
+      - Edit athlete
+      - Dropdown visibility fix
+      - Location + multi-distance entries per event
     ========================================================== */
 
-    // ---------- STORAGE KEYS ----------
     const LS_KEY = "pb_velocityboard_v7_singlefile";
     const LS_PREF = "pb_velocityboard_prefs_v7";
 
-    // ---------- DEFAULT STATE ----------
-    const defaultState = {
-      athletes: [],
-      activeAthleteId: null
-    };
+    const defaultState = { athletes: [], activeAthleteId: null };
+    const defaultPrefs = { defaultDistance: "ALL", timeHint: "00:52.300" };
 
-    const defaultPrefs = {
-      defaultDistance: "ALL",
-      timeHint: "00:52.300"
-    };
-
-    // ---------- STATE ----------
     let state = loadState();
     let prefs = loadPrefs();
 
-    // ---------- ELEMENTS ----------
     const tabBtns = [...document.querySelectorAll(".tabBtn")];
     const screens = {
       home: document.getElementById("screenHome"),
@@ -902,7 +985,6 @@
     const pbBanner = document.getElementById("pbBanner");
     const pbBannerText = document.getElementById("pbBannerText");
 
-    // KPIs
     const kpiPB = document.getElementById("kpiPB");
     const kpiPBDistance = document.getElementById("kpiPBDistance");
     const kpiLatest = document.getElementById("kpiLatest");
@@ -915,7 +997,6 @@
     const pillPBCount = document.getElementById("pillPBCount");
     const recentWrap = document.getElementById("recentWrap");
 
-    // Analytics
     const pillAnalytics = document.getElementById("pillAnalytics");
     const anBest90 = document.getElementById("anBest90");
     const anBest90Meta = document.getElementById("anBest90Meta");
@@ -924,25 +1005,27 @@
     const anTotal = document.getElementById("anTotal");
     const pbTableBody = document.querySelector("#pbTable tbody");
 
-    // Export
     const pillExport = document.getElementById("pillExport");
     const importFile = document.getElementById("importFile");
     const importMsg = document.getElementById("importMsg");
 
-    // Settings
     const defaultDistance = document.getElementById("defaultDistance");
     const timeHint = document.getElementById("timeHint");
-    const timeHintSmall = document.getElementById("timeHintSmall");
+
+    // Trend chart
+    const canvas = document.getElementById("trendCanvas");
+    const ctx = canvas.getContext("2d");
 
     // Buttons
     document.getElementById("btnAddAthlete").addEventListener("click", () => openModal("modalAthlete"));
+    document.getElementById("btnEditAthlete").addEventListener("click", openEditAthlete);
     document.getElementById("btnAddEntry").addEventListener("click", () => {
       if(!getActiveAthlete()){
         flashBanner("Please add/select an athlete first.", false);
         openModal("modalAthlete");
         return;
       }
-      openModal("modalEntry");
+      openEntryModal();
     });
     document.getElementById("btnReset").addEventListener("click", () => openModal("modalReset"));
 
@@ -959,8 +1042,11 @@
     // Save athlete
     document.getElementById("saveAthlete").addEventListener("click", saveAthlete);
 
-    // Save entry
-    document.getElementById("saveEntry").addEventListener("click", saveEntry);
+    // Save athlete edits
+    document.getElementById("saveAthleteEdits").addEventListener("click", saveAthleteEdits);
+
+    // Save entry (multi)
+    document.getElementById("saveEntry").addEventListener("click", saveEntryMulti);
 
     // Reset
     document.getElementById("doReset").addEventListener("click", doResetAll);
@@ -992,30 +1078,23 @@
     });
     timeHint.addEventListener("input", () => {
       prefs.timeHint = timeHint.value.trim() || "00:52.300";
-      timeHintSmall.textContent = "Example: " + prefs.timeHint;
       savePrefs();
     });
 
-    // Trend chart
-    const canvas = document.getElementById("trendCanvas");
-    const ctx = canvas.getContext("2d");
+    // Multi rows
+    const entryRowsEl = document.getElementById("entryRows");
+    document.getElementById("btnAddRow").addEventListener("click", () => addEntryRow());
 
-    // Init defaults
+    // Init
     init();
 
     function init(){
-      // Default date in entry modal
-      document.getElementById("enDate").valueAsDate = new Date();
-
-      // Apply settings to UI
-      defaultDistance.value = prefs.defaultDistance;
-      timeHint.value = prefs.timeHint;
-      timeHintSmall.textContent = "Example: " + prefs.timeHint;
-
-      distanceFilter.value = prefs.defaultDistance;
-
       if(!state.athletes) state = structuredClone(defaultState);
       if(!prefs) prefs = structuredClone(defaultPrefs);
+
+      defaultDistance.value = prefs.defaultDistance;
+      timeHint.value = prefs.timeHint;
+      distanceFilter.value = prefs.defaultDistance;
 
       renderAll();
     }
@@ -1024,20 +1103,11 @@
       tabBtns.forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
       Object.keys(screens).forEach(k => screens[k].classList.toggle("active", k === tab));
       renderAll();
-      // scroll to top of content area slightly
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function openModal(id){
       clearErrors();
-      if(id === "modalEntry"){
-        // refresh athlete + time hint
-        const active = getActiveAthlete();
-        if(active){
-          document.getElementById("enTime").placeholder = prefs.timeHint;
-          timeHintSmall.textContent = "Example: " + prefs.timeHint;
-        }
-      }
       document.getElementById(id).classList.add("show");
     }
     function closeModal(id){
@@ -1045,13 +1115,13 @@
     }
 
     function clearErrors(){
-      ["athleteErr","entryErr","resetErr","importMsg"].forEach(id=>{
+      ["athleteErr","entryErr","resetErr","importMsg","editAthErr"].forEach(id=>{
         const el = document.getElementById(id);
         if(el){ el.classList.remove("show"); el.textContent=""; }
       });
     }
 
-    // ---------- DATA HELPERS ----------
+    // ---------- STORAGE ----------
     function loadState(){
       try{
         const raw = localStorage.getItem(LS_KEY);
@@ -1078,21 +1148,18 @@
     function getActiveAthlete(){
       return state.athletes.find(a => a.id === state.activeAthleteId) || null;
     }
-
     function uid(){
       return "a_" + Math.random().toString(16).slice(2) + Date.now().toString(16);
     }
 
-    // Parse time mm:ss.mmm OR ss.mmm
+    // ---------- TIME HELPERS ----------
     function parseTimeToMs(t){
       if(!t) return null;
       t = (""+t).trim();
-      // allow "52.300" as seconds
       if(/^\d+(\.\d{1,3})?$/.test(t)){
         const sec = Number(t);
         return Math.round(sec * 1000);
       }
-      // mm:ss.mmm
       const m = t.match(/^(\d{1,2}):([0-5]\d)(?:\.(\d{1,3}))?$/);
       if(!m) return null;
       const mm = Number(m[1]);
@@ -1134,7 +1201,6 @@
     }
 
     function computePBMap(entries){
-      // return map distance -> best entry
       const pb = {};
       for(const e of entries){
         const ms = parseTimeToMs(e.time);
@@ -1147,6 +1213,21 @@
     }
 
     // ---------- ACTIONS ----------
+    function showError(id, msg){
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.classList.add("show");
+    }
+
+    function flashBanner(msg, isPB){
+      pbBannerText.textContent = msg;
+      pbBanner.style.borderColor = isPB ? "rgba(255,204,102,.35)" : "rgba(255,255,255,.12)";
+      pbBanner.style.background = isPB ? "rgba(255,204,102,.11)" : "rgba(255,255,255,.06)";
+      pbBanner.classList.add("show");
+      clearTimeout(flashBanner._t);
+      flashBanner._t = setTimeout(()=> pbBanner.classList.remove("show"), 4200);
+    }
+
     function saveAthlete(){
       clearErrors();
       const name = document.getElementById("athName").value.trim();
@@ -1168,6 +1249,7 @@
         createdAt: new Date().toISOString(),
         entries: []
       };
+
       state.athletes.push(newAth);
       state.activeAthleteId = newAth.id;
       saveState();
@@ -1180,7 +1262,111 @@
       renderAll();
     }
 
-    function saveEntry(){
+    // Edit athlete name
+    function openEditAthlete(){
+      const ath = getActiveAthlete();
+      if(!ath){
+        flashBanner("No athlete selected.", false);
+        return;
+      }
+      document.getElementById("editAthName").value = ath.name || "";
+      document.getElementById("editAthYear").value = ath.birthYear || "";
+      openModal("modalEditAthlete");
+    }
+
+    function saveAthleteEdits(){
+      clearErrors();
+      const ath = getActiveAthlete();
+      if(!ath){
+        showError("editAthErr","No athlete selected.");
+        return;
+      }
+
+      const name = document.getElementById("editAthName").value.trim();
+      const year = document.getElementById("editAthYear").value.trim();
+
+      if(!name){
+        showError("editAthErr","Please enter a name.");
+        return;
+      }
+      if(year && !/^\d{4}$/.test(year)){
+        showError("editAthErr","Birth year should be 4 digits (e.g., 2014).");
+        return;
+      }
+
+      ath.name = name;
+      ath.birthYear = year || "";
+      saveState();
+      closeModal("modalEditAthlete");
+
+      flashBanner("Athlete updated.", false);
+      renderAll();
+    }
+
+    // Multi-entry race modal open/reset
+    function openEntryModal(){
+      clearErrors();
+
+      // date default
+      const dateEl = document.getElementById("enDate");
+      dateEl.valueAsDate = new Date();
+
+      // location + notes
+      document.getElementById("enLocation").value = "";
+      document.getElementById("enNotes").value = "";
+
+      // reset rows
+      entryRowsEl.innerHTML = "";
+      addEntryRow("400m", "", true); // first row default
+      openModal("modalEntry");
+    }
+
+    function addEntryRow(distance="500m", time="", isFirst=false){
+      const rowId = "r_" + Math.random().toString(16).slice(2);
+
+      const row = document.createElement("div");
+      row.className = "entryRow";
+      row.dataset.rowId = rowId;
+
+      row.innerHTML = `
+        <div class="field">
+          <label>Distance</label>
+          <select class="select2 jsDist">
+            <option value="111m">111m</option>
+            <option value="222m">222m</option>
+            <option value="333m">333m</option>
+            <option value="400m">400m</option>
+            <option value="500m">500m</option>
+            <option value="800m">800m</option>
+            <option value="1000m">1000m</option>
+            <option value="1500m">1500m</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Time (mm:ss.mmm)</label>
+          <input class="input jsTime" placeholder="${escapeHtml(prefs.timeHint || "00:52.300")}" value="${escapeHtml(time || "")}" />
+          <div class="help">Example: ${escapeHtml(prefs.timeHint || "00:52.300")}</div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end;">
+          <button class="miniBtn miniBtnDanger jsRemove" ${isFirst ? "disabled style='opacity:.45; cursor:not-allowed;'" : ""}>Remove</button>
+        </div>
+      `;
+
+      entryRowsEl.appendChild(row);
+
+      const distSel = row.querySelector(".jsDist");
+      distSel.value = distance;
+
+      const removeBtn = row.querySelector(".jsRemove");
+      removeBtn.addEventListener("click", () => {
+        if(removeBtn.disabled) return;
+        row.remove();
+      });
+    }
+
+    function saveEntryMulti(){
       clearErrors();
       const ath = getActiveAthlete();
       if(!ath){
@@ -1189,51 +1375,70 @@
       }
 
       const date = document.getElementById("enDate").value;
-      const distance = document.getElementById("enDist").value;
-      const timeStr = document.getElementById("enTime").value.trim();
+      const location = document.getElementById("enLocation").value.trim();
       const notes = document.getElementById("enNotes").value.trim();
 
       if(!date){
         showError("entryErr","Please select a date.");
         return;
       }
-      const ms = parseTimeToMs(timeStr);
-      if(ms == null){
-        showError("entryErr",`Invalid time format. Use mm:ss.mmm (example: ${prefs.timeHint}).`);
+      if(!location){
+        showError("entryErr","Please enter a location (e.g., Milton).");
         return;
       }
 
-      // Determine if PB for this distance
-      const beforePB = computePBMap(ath.entries)[distance]?.ms ?? null;
+      const rows = [...entryRowsEl.querySelectorAll(".entryRow")];
+      if(rows.length === 0){
+        showError("entryErr","Please add at least one distance/time.");
+        return;
+      }
 
-      const entry = {
-        id: "e_" + Math.random().toString(16).slice(2),
-        date,
-        distance,
-        time: timeStr,
-        notes
-      };
-      ath.entries.push(entry);
+      // compute PB map before
+      const beforePBMap = computePBMap(ath.entries || {});
+      let savedCount = 0;
+      let pbMessages = [];
+
+      for(const r of rows){
+        const dist = r.querySelector(".jsDist").value;
+        const timeStr = r.querySelector(".jsTime").value.trim();
+        const ms = parseTimeToMs(timeStr);
+
+        if(ms == null){
+          showError("entryErr",`One or more times are invalid. Use mm:ss.mmm (example: ${prefs.timeHint}).`);
+          return;
+        }
+
+        const beforePB = beforePBMap[dist]?.ms ?? null;
+
+        const entry = {
+          id: "e_" + Math.random().toString(16).slice(2),
+          date,
+          distance: dist,
+          time: timeStr,
+          location,
+          notes
+        };
+
+        ath.entries.push(entry);
+        savedCount++;
+
+        // check PB after for that distance (compute fast by comparing with beforePB)
+        if(beforePB == null || ms < beforePB){
+          const diff = beforePB == null ? null : (beforePB - ms);
+          const msg = diff == null
+            ? `First PB for ${dist}: ${msToTime(ms)}`
+            : `${dist} improved by ${(diff/1000).toFixed(3)}s → ${msToTime(ms)}`;
+          pbMessages.push(msg);
+        }
+      }
+
       saveState();
-
-      // After add
-      const afterPB = computePBMap(ath.entries)[distance]?.ms ?? null;
       closeModal("modalEntry");
 
-      // Reset entry form
-      document.getElementById("enTime").value = "";
-      document.getElementById("enNotes").value = "";
-      document.getElementById("enDate").valueAsDate = new Date();
-
-      // Banner
-      if(afterPB != null && (beforePB == null || afterPB < beforePB)){
-        const diff = beforePB == null ? null : (beforePB - afterPB);
-        const msg = diff == null
-          ? `${ath.name} set a first PB for ${distance}: ${msToTime(afterPB)}`
-          : `${ath.name} improved ${distance} by ${(diff/1000).toFixed(3)}s → ${msToTime(afterPB)}`;
-        flashBanner(msg, true);
+      if(pbMessages.length){
+        flashBanner(`🎉 ${ath.name}: ${pbMessages[0]}${pbMessages.length>1 ? ` (+${pbMessages.length-1} more)` : ""}`, true);
       }else{
-        flashBanner(`Race saved for ${ath.name}.`, false);
+        flashBanner(`${savedCount} race entr${savedCount===1?"y":"ies"} saved for ${ath.name}.`, false);
       }
 
       renderAll();
@@ -1253,28 +1458,12 @@
       renderAll();
     }
 
-    function showError(id, msg){
-      const el = document.getElementById(id);
-      el.textContent = msg;
-      el.classList.add("show");
-    }
-
-    function flashBanner(msg, isPB){
-      pbBannerText.textContent = msg;
-      pbBanner.style.borderColor = isPB ? "rgba(255,204,102,.35)" : "rgba(255,255,255,.12)";
-      pbBanner.style.background = isPB ? "rgba(255,204,102,.11)" : "rgba(255,255,255,.06)";
-      pbBanner.classList.add("show");
-      clearTimeout(flashBanner._t);
-      flashBanner._t = setTimeout(()=> pbBanner.classList.remove("show"), 4200);
-    }
-
     // ---------- RENDER ----------
     function renderAll(){
       renderAthleteSelect();
       renderHome();
       renderAnalytics();
       renderExport();
-      renderSettingsUI();
     }
 
     function renderAthleteSelect(){
@@ -1290,7 +1479,6 @@
         return;
       }
 
-      // keep active id valid
       if(!state.activeAthleteId || !state.athletes.some(a => a.id === state.activeAthleteId)){
         state.activeAthleteId = state.athletes[0].id;
         saveState();
@@ -1333,45 +1521,38 @@
       const entriesAll = sortByDateDesc(ath.entries || []);
       pillCount.textContent = `${entriesAll.length} races`;
 
-      // PB map
       const pbMap = computePBMap(entriesAll);
       const pbCount = Object.keys(pbMap).length;
       pillPBCount.textContent = `${pbCount} PBs`;
 
-      // Filter entries by distance
       const entries = dist === "ALL" ? entriesAll : entriesAll.filter(e => e.distance === dist);
 
-      // Latest
       const latest = entries[0] || null;
       if(latest){
         kpiLatest.textContent = latest.time;
-        kpiLatestMeta.textContent = `${latest.distance} • ${fmtDate(latest.date)}`;
+        kpiLatestMeta.textContent = `${latest.distance} • ${latest.location || "—"} • ${fmtDate(latest.date)}`;
       }else{
         kpiLatest.textContent = "—";
         kpiLatestMeta.textContent = dist === "ALL" ? "No entries yet" : `No entries for ${dist}`;
       }
 
-      // PB (selected distance)
       if(dist !== "ALL"){
         const pb = pbMap[dist] ? pbMap[dist].ms : null;
         kpiPB.textContent = pb != null ? msToTime(pb) : "—";
         kpiPBDistance.textContent = pb != null ? `${dist} best` : `No PB for ${dist}`;
       }else{
-        // show fastest PB across all distances for a headline
         const allPBs = Object.values(pbMap).map(x => x.ms);
         const best = allPBs.length ? Math.min(...allPBs) : null;
         kpiPB.textContent = best != null ? msToTime(best) : "—";
         kpiPBDistance.textContent = best != null ? "Fastest PB (any distance)" : "No PBs yet";
       }
 
-      // Avg + consistency last 10 (filtered)
       const last10 = entries.slice(0,10).map(e => parseTimeToMs(e.time)).filter(x => x!=null);
       const avg10 = last10.length ? mean(last10) : null;
       const sd10 = last10.length ? stddev(last10) : null;
       kpiAvg10.textContent = avg10 != null ? msToTime(Math.round(avg10)) : "—";
       kpiCons.textContent = sd10 != null ? (sd10/1000).toFixed(3) + "s" : "—";
 
-      // Recent list
       if(entriesAll.length === 0){
         recentWrap.innerHTML = `
           <div class="empty">
@@ -1380,7 +1561,6 @@
           </div>
         `;
       }else{
-        // build table
         const pbByDist = pbMap;
         const rows = entriesAll.slice(0,12).map(e => {
           const ms = parseTimeToMs(e.time);
@@ -1388,14 +1568,14 @@
           const badge = isPB
             ? `<span class="badge badgePB">🏅 PB</span>`
             : `<span class="badge badgeOK">Saved</span>`;
-          const notes = e.notes ? e.notes : "—";
           return `
             <tr>
               <td>${fmtDate(e.date)}</td>
+              <td>${escapeHtml(e.location || "—")}</td>
               <td>${e.distance}</td>
               <td><b>${e.time}</b></td>
               <td>${badge}</td>
-              <td style="color:rgba(255,255,255,.70)">${escapeHtml(notes)}</td>
+              <td style="color:rgba(255,255,255,.70)">${e.notes ? escapeHtml(e.notes) : "—"}</td>
             </tr>
           `;
         }).join("");
@@ -1405,6 +1585,7 @@
             <thead>
               <tr>
                 <th>Date</th>
+                <th>Location</th>
                 <th>Distance</th>
                 <th>Time</th>
                 <th>Status</th>
@@ -1416,7 +1597,6 @@
         `;
       }
 
-      // Chart
       drawChart(entries, dist);
     }
 
@@ -1431,21 +1611,18 @@
         anImp5.textContent = "—";
         anPBCount.textContent = "—";
         anTotal.textContent = "—";
-        pbTableBody.innerHTML = `<tr><td colspan="4">No athlete selected.</td></tr>`;
+        pbTableBody.innerHTML = `<tr><td colspan="5">No athlete selected.</td></tr>`;
         return;
       }
 
       const entriesAll = ath.entries || [];
       pillAnalytics.textContent = ath.name + (dist !== "ALL" ? ` • Focus: ${dist}` : "");
 
-      // total
       anTotal.textContent = String(entriesAll.length);
 
-      // pb count
       const pbMap = computePBMap(entriesAll);
       anPBCount.textContent = String(Object.keys(pbMap).length);
 
-      // season best 90 days (based on focus distance if not ALL)
       const now = new Date();
       const cutoff = new Date(now.getTime() - 90*24*3600*1000);
       const scoped = entriesAll
@@ -1462,22 +1639,20 @@
         anBest90Meta.textContent = "No entries in last 90 days";
       }
 
-      // improvement last 5 (focus)
       const focusEntries = sortByDateDesc(entriesAll).filter(e => dist==="ALL" ? true : e.distance===dist);
       const last5 = focusEntries.slice(0,5).map(e=>parseTimeToMs(e.time)).filter(x=>x!=null);
       if(last5.length >= 2){
-        const imp = last5[last5.length-1] - last5[0]; // older - latest (negative means improved)
-        const improved = imp > 0; // if older is slower than latest -> positive = improved
+        const imp = last5[last5.length-1] - last5[0];
+        const improved = imp > 0;
         const val = (Math.abs(imp)/1000).toFixed(3) + "s";
         anImp5.textContent = improved ? ("↓ " + val) : ("↑ " + val);
       }else{
         anImp5.textContent = "—";
       }
 
-      // PB table
       const distances = Object.keys(pbMap).sort((a,b)=> a.localeCompare(b, undefined, {numeric:true}));
       if(!distances.length){
-        pbTableBody.innerHTML = `<tr><td colspan="4">No PBs yet. Add race entries.</td></tr>`;
+        pbTableBody.innerHTML = `<tr><td colspan="5">No PBs yet. Add race entries.</td></tr>`;
       }else{
         pbTableBody.innerHTML = distances.map(d=>{
           const pb = pbMap[d];
@@ -1486,6 +1661,7 @@
               <td><span class="badge">${d}</span></td>
               <td><b>${msToTime(pb.ms)}</b></td>
               <td>${fmtDate(pb.date)}</td>
+              <td>${escapeHtml(pb.location || "—")}</td>
               <td style="color:rgba(255,255,255,.72)">${pb.notes ? escapeHtml(pb.notes) : "—"}</td>
             </tr>
           `;
@@ -1498,14 +1674,8 @@
       pillExport.textContent = ath ? `Selected: ${ath.name}` : "No athlete";
     }
 
-    function renderSettingsUI(){
-      // keep distance filter synced with default if first load
-      timeHintSmall.textContent = "Example: " + (prefs.timeHint || "00:52.300");
-    }
-
     // ---------- CHART DRAW ----------
     function drawChart(entries, dist){
-      // entries should be sorted newest first or any; we will sort oldest->newest
       const data = [...entries]
         .filter(e => parseTimeToMs(e.time)!=null)
         .sort((a,b)=> new Date(a.date)-new Date(b.date));
@@ -1516,23 +1686,14 @@
         label: `${fmtDate(e.date)} • ${e.distance} • ${e.time}`
       }));
 
-      // canvas sizing
-      // (we draw in the internal resolution already set; CSS stretches)
       ctx.clearRect(0,0,canvas.width,canvas.height);
 
-      // background grid
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = "rgba(255,255,255,0.00)";
-      ctx.fillRect(0,0,canvas.width,canvas.height);
-
-      // if no points
       if(points.length < 2){
-        // message
         ctx.fillStyle = "rgba(255,255,255,.65)";
-        ctx.font = "700 26px " + getCanvasFont();
+        ctx.font = "700 26px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
         ctx.fillText("Add race entries to see trend", 50, 210);
         ctx.fillStyle = "rgba(255,255,255,.45)";
-        ctx.font = "600 18px " + getCanvasFont();
+        ctx.font = "600 18px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
         ctx.fillText(dist === "ALL" ? "Tip: choose a distance for a cleaner line." : `Distance: ${dist}`, 50, 245);
         return;
       }
@@ -1547,16 +1708,13 @@
       const minX = Math.min(...xs);
       const maxX = Math.max(...xs);
 
-      // For time (ms), lower is better; we want lower near TOP
       let minY = Math.min(...ys);
       let maxY = Math.max(...ys);
 
-      // Add some padding range
       const padY = Math.max(120, (maxY-minY)*0.12);
       minY = minY - padY;
       maxY = maxY + padY;
 
-      // Grid lines
       ctx.strokeStyle = "rgba(255,255,255,.08)";
       ctx.lineWidth = 1;
 
@@ -1569,28 +1727,24 @@
         ctx.stroke();
       }
 
-      // Y labels
       ctx.fillStyle = "rgba(255,255,255,.55)";
-      ctx.font = "800 15px " + getCanvasFont();
+      ctx.font = "800 15px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
       for(let i=0;i<=gridCount;i++){
         const y = padT + (H/gridCount)*i;
         const val = maxY - ( (maxY-minY)/gridCount )*i;
         ctx.fillText(msToTime(Math.round(val)), 14, y+5);
       }
 
-      // X labels (start/end)
       ctx.fillStyle = "rgba(255,255,255,.55)";
-      ctx.font = "800 15px " + getCanvasFont();
+      ctx.font = "800 15px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
       ctx.fillText(fmtDate(new Date(minX).toISOString().slice(0,10)), padL, canvas.height-18);
       const endLabel = fmtDate(new Date(maxX).toISOString().slice(0,10));
       const endWidth = ctx.measureText(endLabel).width;
       ctx.fillText(endLabel, padL+W-endWidth, canvas.height-18);
 
-      // Line
       const toX = (x)=> padL + ((x-minX)/(maxX-minX))*W;
       const toY = (y)=> padT + ((maxY-y)/(maxY-minY))*H;
 
-      // gradient line
       const grad = ctx.createLinearGradient(padL,0,padL+W,0);
       grad.addColorStop(0, "rgba(124,92,255,.92)");
       grad.addColorStop(1, "rgba(74,217,255,.92)");
@@ -1606,7 +1760,6 @@
       });
       ctx.stroke();
 
-      // points
       points.forEach((p)=>{
         const x = toX(p.x);
         const y = toY(p.y);
@@ -1616,15 +1769,9 @@
         ctx.fill();
       });
 
-      // Title inside chart
       ctx.fillStyle = "rgba(255,255,255,.78)";
-      ctx.font = "900 20px " + getCanvasFont();
+      ctx.font = "900 20px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
       ctx.fillText("Trend Line", padL, 26);
-    }
-
-    function getCanvasFont(){
-      // best effort match UI font stack
-      return "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
     }
 
     // ---------- EXPORT / IMPORT ----------
@@ -1640,9 +1787,9 @@
         flashBanner("No athlete selected.", false);
         return;
       }
-      const rows = [["Athlete","BirthYear","Date","Distance","Time","Notes"]];
+      const rows = [["Athlete","BirthYear","Date","Location","Distance","Time","Notes"]];
       for(const e of sortByDateDesc(ath.entries || [])){
-        rows.push([ath.name, ath.birthYear || "", e.date, e.distance, e.time, (e.notes||"")]);
+        rows.push([ath.name, ath.birthYear || "", e.date, e.location || "", e.distance, e.time, (e.notes||"")]);
       }
       const csv = rows.map(r => r.map(cell => `"${String(cell).replaceAll('"','""')}"`).join(",")).join("\n");
       const blob = new Blob([csv], { type:"text/csv" });
@@ -1677,35 +1824,30 @@
             return;
           }
 
-          // Merge strategy: if athlete id exists, merge entries; else add athlete
           const incoming = parsed.state.athletes;
           for(const inc of incoming){
             if(!inc.id || !inc.name) continue;
             const existing = state.athletes.find(a => a.id === inc.id);
             if(existing){
-              // merge entries by id
               const existingIds = new Set((existing.entries||[]).map(e=>e.id));
               (inc.entries||[]).forEach(e=>{
                 if(e && e.id && !existingIds.has(e.id)) existing.entries.push(e);
               });
-              // update name/year if blank
               if(!existing.birthYear && inc.birthYear) existing.birthYear = inc.birthYear;
-              if(existing.name !== inc.name) existing.name = inc.name; // keep imported name
+              if(existing.name !== inc.name) existing.name = inc.name;
             }else{
               state.athletes.push(inc);
             }
           }
 
-          // bring prefs (optional)
           if(parsed.prefs){
             prefs = { ...prefs, ...parsed.prefs };
             savePrefs();
             defaultDistance.value = prefs.defaultDistance;
             timeHint.value = prefs.timeHint;
-            timeHintSmall.textContent = "Example: " + prefs.timeHint;
+            distanceFilter.value = prefs.defaultDistance;
           }
 
-          // ensure active athlete
           if(!state.activeAthleteId && state.athletes.length){
             state.activeAthleteId = state.athletes[0].id;
           }
@@ -1731,7 +1873,6 @@
         .replaceAll('"',"&quot;")
         .replaceAll("'","&#039;");
     }
-
   </script>
 
 </body>
