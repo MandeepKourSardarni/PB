@@ -554,6 +554,189 @@
       .modal{ max-height: calc(100vh - 40px); }
       .chartHint{ white-space:normal; width: 90%; }
     }
+
+
+
+/* ============================================================
+   TRENARA-FEEL THEME OVERRIDES (paste at END of <style>)
+   Goal: clean, bright, minimal, spacious, professional
+============================================================ */
+
+/* 1) Light, calm base */
+:root{
+  --bg: #f6f7fb;
+  --text: rgba(20, 24, 38, .92);
+  --muted: rgba(20, 24, 38, .62);
+  --muted2: rgba(20, 24, 38, .46);
+
+  /* keep your accents but make them calmer */
+  --primary: #2f6bff;
+  --primary2:#2bb7ff;
+  --danger:#e23b57;
+  --ok:#18a965;
+  --warn:#c88b00;
+
+  --shadow: 0 18px 60px rgba(15, 18, 28, .08);
+  --shadow2: 0 10px 26px rgba(15, 18, 28, .10);
+  --radius: 22px;
+}
+
+/* 2) Remove “neon/night” background & switch to bright */
+body{
+  background: linear-gradient(180deg, #f7f8fc, #f3f5fb 60%, #eef2fb);
+  color: var(--text);
+}
+
+/* 3) Appbar becomes clean + white */
+.appbar{
+  background: rgba(255,255,255,.78);
+  border-bottom: 1px solid rgba(20,24,38,.10);
+  backdrop-filter: blur(14px);
+}
+.brandText span{ color: var(--muted); }
+.logo{
+  box-shadow: 0 14px 30px rgba(47,107,255,.18);
+}
+
+/* 4) Tabs: underline/clean pill look */
+.tabs{
+  background: rgba(255,255,255,.70);
+  border: 1px solid rgba(20,24,38,.10);
+}
+.tabBtn{
+  color: rgba(20,24,38,.62);
+  font-weight: 800;
+}
+.tabBtn.active{
+  background: rgba(47,107,255,.10);
+  border: 1px solid rgba(47,107,255,.18);
+  box-shadow: none;
+  color: rgba(20,24,38,.92);
+}
+
+/* 5) Cards become “Trenara clean blocks” */
+.card{
+  background: rgba(255,255,255,.78);
+  border: 1px solid rgba(20,24,38,.10);
+  box-shadow: var(--shadow);
+}
+.title{ letter-spacing: .1px; }
+.sub{ color: var(--muted); }
+
+/* 6) Inputs/selects: large, crisp, soft focus ring */
+.input, .select, .select2{
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(20,24,38,.12);
+  color: var(--text);
+  box-shadow: none;
+}
+.input:focus, .select:focus, .select2:focus{
+  outline: none;
+  border-color: rgba(47,107,255,.35);
+  box-shadow: 0 0 0 4px rgba(47,107,255,.12);
+}
+
+/* dropdown options readable */
+select, option{
+  background-color: #ffffff;
+  color: rgba(20,24,38,.92);
+}
+
+/* 7) Buttons: flatter, modern */
+.btn{
+  background: rgba(255,255,255,.86);
+  border: 1px solid rgba(20,24,38,.12);
+  color: rgba(20,24,38,.92);
+  box-shadow: none;
+}
+.btn:hover{ background: rgba(255,255,255,.96); transform: translateY(-1px); }
+.btnPrimary{
+  background: linear-gradient(135deg, rgba(47,107,255,.98), rgba(43,183,255,.92));
+  border: none;
+  color: white;
+}
+.btnPrimary:hover{ filter: brightness(1.02); }
+.btnDanger{
+  background: rgba(226,59,87,.10);
+  border: 1px solid rgba(226,59,87,.22);
+  color: rgba(20,24,38,.92);
+}
+
+/* 8) KPIs: calmer */
+.kpi{
+  background: rgba(255,255,255,.86);
+  border: 1px solid rgba(20,24,38,.10);
+}
+.kpi .label{ color: var(--muted); }
+.kpi .mini{ color: var(--muted2); }
+
+/* 9) Table: clean lines, no dark bands */
+.table{
+  border: 1px solid rgba(20,24,38,.10);
+}
+.table th{
+  background: rgba(20,24,38,.03);
+  color: rgba(20,24,38,.65);
+}
+.table td{
+  border-bottom: 1px solid rgba(20,24,38,.06);
+}
+.table tr:hover td{ background: rgba(47,107,255,.04); }
+
+/* 10) Chart: light panel */
+.chart{
+  background: rgba(255,255,255,.86);
+  border: 1px solid rgba(20,24,38,.10);
+}
+.chartHint{
+  color: rgba(20,24,38,.55);
+}
+
+/* 11) Pills/badges */
+.pill, .badge{
+  background: rgba(20,24,38,.04);
+  border: 1px solid rgba(20,24,38,.10);
+  color: rgba(20,24,38,.70);
+}
+.badgePB{ background: rgba(200,139,0,.10); border-color: rgba(200,139,0,.22); }
+.badgeOK{ background: rgba(24,169,101,.10); border-color: rgba(24,169,101,.22); }
+
+/* 12) Banner becomes subtle */
+.banner{
+  background: rgba(47,107,255,.08);
+  border-color: rgba(47,107,255,.18);
+  color: rgba(20,24,38,.92);
+}
+
+/* 13) Modals become clean */
+.modalOverlay{ background: rgba(10,12,18,.40); }
+.modal{
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(20,24,38,.12);
+}
+.modalTop{
+  background: rgba(255,255,255,.92);
+}
+.xbtn{
+  background: rgba(20,24,38,.04);
+  border: 1px solid rgba(20,24,38,.10);
+  color: rgba(20,24,38,.92);
+}
+
+/* 14) Reduce extra heavy shadows on icon buttons */
+.iconBtn{
+  background: rgba(20,24,38,.04);
+  border: 1px solid rgba(20,24,38,.10);
+  box-shadow: none;
+}
+.iconBtnDanger{
+  background: rgba(226,59,87,.10);
+  border: 1px solid rgba(226,59,87,.22);
+}
+
+
+
+    
   </style>
 </head>
 
