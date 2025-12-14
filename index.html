@@ -31,7 +31,6 @@
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
 
-    /* LIGHT THEME OVERRIDES */
     html[data-theme="light"]{
       --bg1:#eef4ff;
       --bg2:#f6fbff;
@@ -39,8 +38,6 @@
       --muted:rgba(15,21,38,.62);
       --muted2:rgba(15,21,38,.46);
     }
-
-    /* DARK THEME OVERRIDES (keeps your current look) */
     html[data-theme="dark"]{
       --bg1:#07162f;
       --bg2:#041022;
@@ -62,7 +59,6 @@
         linear-gradient(180deg, var(--bg1), var(--bg2));
       overflow-x:hidden;
     }
-
     button, input, select{ font-family:inherit; }
 
     .wrap{
@@ -80,13 +76,7 @@
       background: rgba(255,255,255,.80);
       border-bottom:1px solid rgba(15,21,38,.10);
     }
-
-    html[data-theme="dark"] .appbar{
-      background: rgba(255,255,255,.78);
-    }
-    html[data-theme="light"] .appbar{
-      background: rgba(255,255,255,.86);
-    }
+    html[data-theme="light"] .appbar{ background: rgba(255,255,255,.88); }
 
     .appbarInner{
       max-width: var(--w);
@@ -96,26 +86,25 @@
       justify-content:space-between;
       gap: 12px;
       padding: 12px 18px;
-      flex-wrap: wrap;
+      flex-wrap: wrap; /* ✅ allow wrap by default */
     }
 
     .brand{
       display:flex;
       align-items:center;
       gap: 10px;
-      min-width: 220px;
+      min-width: 210px;
       flex: 1 1 auto;
     }
 
-    /* avatar replaces old blue square */
     .avatar{
       width: 42px; height: 42px;
       border-radius: 16px;
       background:
-        radial-gradient(circle at 30% 30%, rgba(255,255,255,.40), transparent 55%),
-        linear-gradient(135deg, rgba(47,107,255,.20), rgba(43,183,255,.20));
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 55%),
+        linear-gradient(135deg, rgba(47,107,255,.18), rgba(43,183,255,.18));
       border: 1px solid rgba(15,21,38,.10);
-      box-shadow: 0 14px 30px rgba(47,107,255,.14);
+      box-shadow: 0 14px 30px rgba(47,107,255,.12);
       flex: 0 0 auto;
       display:flex;
       align-items:center;
@@ -143,12 +132,12 @@
       min-width: 160px;
     }
     .brandText strong{
-      font-size: 18px;  /* increased */
+      font-size: 18px;
       letter-spacing:.2px;
       font-weight: 950;
     }
     .brandText span{
-      font-size: 13px;  /* increased */
+      font-size: 13px;
       color: var(--muted);
       font-weight: 800;
     }
@@ -188,7 +177,6 @@
       border: 1px solid rgba(47,107,255,.18);
     }
 
-    /* 🎁 donate button beside Settings tab */
     .giftBtn{
       border:1px solid rgba(15,21,38,.12);
       background: rgba(255,255,255,.82);
@@ -210,7 +198,7 @@
       align-items:center;
       gap: 8px;
       justify-content:flex-end;
-      flex-wrap: wrap;
+      flex-wrap: wrap; /* ✅ allow wrap so buttons don't disappear on tablets */
       flex: 1 1 520px;
     }
 
@@ -239,10 +227,7 @@
       outline:none;
       cursor:pointer;
     }
-    select, option{
-      color: var(--text);
-      background-color: #ffffff;
-    }
+    select, option{ color: var(--text); background-color: #ffffff; }
 
     .btn{
       border:1px solid rgba(15,21,38,.12);
@@ -271,14 +256,15 @@
       background: rgba(226,59,87,.10);
     }
 
+    /* ✅ more transparent glass panels (3D feel) */
     .card{
-      border: 1px solid rgba(255,255,255,.16);
-      background: linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.68));
+      border: 1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.68), rgba(255,255,255,.52));
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding: 16px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
 
     .cardHeader{
@@ -329,7 +315,7 @@
       overflow:hidden;
       border-radius: 16px;
       border:1px solid rgba(15,21,38,.10);
-      background: rgba(255,255,255,.88);
+      background: rgba(255,255,255,.80);
     }
     .table th, .table td{
       padding: 10px 10px;
@@ -346,7 +332,7 @@
       letter-spacing:.3px;
       background: rgba(15,21,38,.03);
     }
-    .table tr:hover td{ background: rgba(47,107,255,.04); }
+    .table tr:hover td{ background: rgba(47,107,255,.04); cursor:pointer; }
 
     .badge{
       display:inline-flex;
@@ -385,7 +371,7 @@
       height: 260px;
       border-radius: 16px;
       border:1px solid rgba(15,21,38,.10);
-      background: rgba(255,255,255,.86);
+      background: rgba(255,255,255,.78);
       overflow:hidden;
       margin-top: 12px;
       position:relative;
@@ -410,7 +396,7 @@
       border-radius: 18px;
       padding: 18px;
       color: var(--muted);
-      background: rgba(255,255,255,.72);
+      background: rgba(255,255,255,.60);
       margin-top: 10px;
     }
     .empty strong{ color: var(--text); }
@@ -422,7 +408,7 @@
       border-radius: 18px;
       padding: 12px 14px;
       border: 1px solid rgba(47,107,255,.18);
-      background: rgba(255,255,255,.80);
+      background: rgba(255,255,255,.72);
       box-shadow: 0 18px 50px rgba(0,0,0,.10);
       color: var(--text);
     }
@@ -430,7 +416,6 @@
     .banner strong{ font-weight: 900; }
     .banner .small{ color: var(--muted); font-size: 12px; margin-top: 3px; }
 
-    /* ✅ FIX: horizontal UNO hand scrolling */
     .handWrap{
       margin-top: 12px;
       padding: 6px 2px 12px;
@@ -442,27 +427,27 @@
       display:flex;
       gap: 12px;
       align-items: stretch;
-      flex-wrap: nowrap;     /* important */
+      flex-wrap: nowrap;
       width: 100%;
     }
     .handWrap::-webkit-scrollbar{ display:none; }
 
     .distCard{
-      flex: 0 0 clamp(300px, 86vw, 380px);  /* better across devices */
+      flex: 0 0 clamp(300px, 86vw, 380px);
       scroll-snap-align: start;
       border-radius: 20px;
-      border: 1px solid rgba(255,255,255,.18);
-      background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.70));
+      border: 1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.70), rgba(255,255,255,.54));
       box-shadow: var(--shadow2);
       padding: 12px;
       display:flex;
       flex-direction:column;
       gap: 10px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       position:relative;
       overflow:hidden;
-      min-width: 300px; /* fallback */
+      min-width: 300px;
     }
 
     .distTop{ display:flex; align-items:flex-start; justify-content:space-between; gap: 10px; }
@@ -499,7 +484,7 @@
     .distList{
       border-radius: 14px;
       border: 1px solid rgba(15,21,38,.10);
-      background: rgba(255,255,255,.88);
+      background: rgba(255,255,255,.78);
       padding: 8px;
       overflow-y: auto;
       max-height: 320px;
@@ -513,7 +498,7 @@
       padding: 10px;
       border-radius: 14px;
       border: 1px solid rgba(15,21,38,.08);
-      background: rgba(255,255,255,.92);
+      background: rgba(255,255,255,.86);
       margin-bottom: 8px;
     }
     .entryItem:last-child{ margin-bottom: 0; }
@@ -546,7 +531,13 @@
       max-width: 280px;
     }
 
-    .entryActions{ display:flex; flex-direction:column; gap: 8px; align-items:flex-end; justify-content:flex-start; }
+    .entryActions{
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+      align-items:flex-end;
+      justify-content:flex-start;
+    }
 
     .screen{ display:none; }
     .screen.active{ display:block; }
@@ -574,6 +565,8 @@
       background: rgba(255,255,255,.92);
       box-shadow: var(--shadow);
       padding: 16px;
+      position: relative;
+      z-index: 2;
     }
     .modalTop{
       display:flex;
@@ -585,7 +578,7 @@
       top: 0;
       background: rgba(255,255,255,.92);
       padding-bottom: 10px;
-      z-index: 2;
+      z-index: 3;
     }
     .modalTop h3{ margin:0; font-size: 16px; font-weight: 900; color: var(--text); }
     .modalTop p{ margin:4px 0 0; color: var(--muted); font-size: 13px; line-height:1.4; }
@@ -623,7 +616,7 @@
       bottom: 0;
       background: rgba(255,255,255,.92);
       padding-top: 10px;
-      z-index: 2;
+      z-index: 3;
     }
 
     .entryRows{ display:flex; flex-direction:column; gap: 10px; margin-top: 8px; }
@@ -653,33 +646,31 @@
 
     .foot{ margin-top: 14px; color: var(--muted2); font-size: 12px; line-height:1.45; }
 
+    /* ✅ large screens can still be neat */
+    @media (min-width: 980px){
+      .appbarInner{ flex-wrap: nowrap; padding: 10px 18px; }
+      .rightTools{ flex-wrap: nowrap; }
+      .tabs{ padding: 4px; gap: 6px; }
+      .tabBtn{ padding: 8px 12px; font-size: 13px; }
+      .btn{ padding: 9px 11px; border-radius: 13px; }
+      .select{ padding: 9px 34px 9px 12px; border-radius: 13px; }
+    }
+
     @media (max-width: 560px){
       .brandText span{ display:none; }
-      .rightTools{ justify-content:flex-start; }
-
-      /* ✅ better mobile layout for top controls */
       .rightTools{
         display:grid;
         grid-template-columns: 1fr 1fr;
         gap: 8px;
         width: 100%;
+        justify-content:flex-start;
       }
       .selectWrap{ grid-column: 1 / -1; min-width: 100%; }
       .btn{ width: 100%; justify-content:center; }
-
       .entryRow{ grid-template-columns: 1fr; }
       .modal{ max-height: calc(100vh - 40px); }
       .chartHint{ white-space:normal; width: 90%; text-align:center; }
       .distList{ max-height: 52vh; }
-    }
-
-    @media (min-width: 561px){
-      .appbarInner{ flex-wrap: nowrap; padding: 10px 18px; }
-      .tabs{ padding: 4px; gap: 6px; }
-      .tabBtn{ padding: 8px 12px; font-size: 13px; }
-      .rightTools{ flex-wrap: nowrap; gap: 8px; }
-      .btn{ padding: 9px 11px; border-radius: 13px; }
-      .select{ padding: 9px 34px 9px 12px; border-radius: 13px; }
     }
   </style>
 </head>
@@ -688,9 +679,7 @@
   <div class="appbar">
     <div class="appbarInner">
       <div class="brand">
-        <!-- avatar (click to change for selected athlete) -->
         <div class="avatar" id="avatarBtn" title="Click to set athlete avatar"></div>
-
         <div class="brandText">
           <strong>PB VelocityBoard</strong>
           <span>Track • Improve • Celebrate</span>
@@ -701,9 +690,7 @@
         <button class="tabBtn active" data-tab="home">Home</button>
         <button class="tabBtn" data-tab="analytics">Analytics</button>
         <button class="tabBtn" data-tab="export">Export</button>
-        <button class="tabBtn" data-tab="settings" id="settingsTabBtn">Settings</button>
-
-        <!-- ✅ 🎁 donate button beside Settings -->
+        <button class="tabBtn" data-tab="settings">Settings</button>
         <button class="giftBtn" id="btnDonate" title="Donate / Support">🎁</button>
       </div>
 
@@ -727,7 +714,6 @@
 
     <section id="screenHome" class="screen active">
       <div class="card">
-        <!-- ✅ Quick View section removed. Home now starts with PB Summary + Cards -->
         <div class="cardHeader" style="margin-bottom:6px;">
           <div>
             <div class="title">PB Summary</div>
@@ -794,8 +780,6 @@
           <div class="chartHint">Trend (Time vs Race Date)</div>
           <canvas id="trendCanvas" width="1200" height="420"></canvas>
         </div>
-
-        <div class="foot">Chart updates only when you change Distance Focus.</div>
       </div>
     </section>
 
@@ -810,8 +794,8 @@
         </div>
 
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn" id="btnExportCSV">Download Excel (selected athlete)</button>
-          <button class="btn" id="btnDownloadTemplate">⬇️ Download Excel Template, just fill & upload</button>
+          <button class="btn" id="btnExportCSV">Download CSV (selected athlete)</button>
+          <button class="btn" id="btnDownloadTemplate">⬇️ Download CSV Template</button>
         </div>
 
         <div class="empty" style="margin-top:12px;">
@@ -822,7 +806,7 @@
             <input class="input" id="csvFile" type="file" accept=".csv" />
           </div>
           <div style="margin-top:10px;">
-            <button class="btn btnPrimary" id="btnImportCSV">Import the Data into selected athlete</button>
+            <button class="btn btnPrimary" id="btnImportCSV">Import into selected athlete</button>
           </div>
           <div id="importMsg" class="error"></div>
         </div>
@@ -839,7 +823,6 @@
           <div class="pill">Local Storage</div>
         </div>
 
-        <!-- ✅ theme toggle added -->
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="formGrid">
           <div class="field">
             <label>Theme</label>
@@ -852,12 +835,6 @@
           <div class="field">
             <label>Time placeholder</label>
             <input id="timeHint" class="input" value="00:52.300" />
-          </div>
-
-          <div class="field" style="grid-column: 1 / -1;">
-            <label>PayPal.me Link (for 🎁 donations)</label>
-            <input id="paypalLink" class="input" placeholder="e.g., https://paypal.me/YourName" />
-            <div class="help">This is used by the 🎁 button. You can paste your PayPal.me link once, and it will be saved on this device.</div>
           </div>
         </div>
 
@@ -892,8 +869,10 @@
 
         <div class="field" style="grid-column:1 / -1;">
           <label>Avatar Emoji (optional)</label>
-          <input id="athEmoji" class="input" placeholder="Default ❄️ (you can type: 🏁 ⛸️ ⭐ etc.)" />
-          <div class="help">Tip: You can also upload a photo later by clicking the avatar at the top.</div>
+          <input id="athEmoji" class="input" placeholder="Default ❄️ (example: ⛸️ 🏁 ⭐)" />
+          <div class="help" style="font-size:12px; color:rgba(15,21,38,.55); font-weight:800;">
+            Tip: you can also upload a photo later by clicking the avatar at the top.
+          </div>
         </div>
       </div>
 
@@ -936,7 +915,7 @@
     </div>
   </div>
 
-  <!-- ✅ Avatar Modal -->
+  <!-- Avatar Modal -->
   <div class="modalOverlay" id="modalAvatar">
     <div class="modal">
       <div class="modalTop">
@@ -961,7 +940,8 @@
         <p>Choose a photo. It will be stored on this device (as a small data file).</p>
         <div class="field" style="margin-top:10px;">
           <label>Choose image</label>
-          <input id="avatarFile" class="input" type="file" accept="image/*" />
+          <!-- ✅ phone-friendly capture + accept -->
+          <input id="avatarFile" class="input" type="file" accept="image/*" capture="environment" />
         </div>
       </div>
 
@@ -974,6 +954,7 @@
     </div>
   </div>
 
+  <!-- Add Entry Modal -->
   <div class="modalOverlay" id="modalEntry">
     <div class="modal">
       <div class="modalTop">
@@ -1018,6 +999,66 @@
     </div>
   </div>
 
+  <!-- ✅ Edit Entry Modal -->
+  <div class="modalOverlay" id="modalEditEntry">
+    <div class="modal">
+      <div class="modalTop">
+        <div>
+          <h3>Edit Entry</h3>
+          <p>Fix time, distance, date, location, notes.</p>
+        </div>
+        <button class="xbtn" data-close="modalEditEntry">✕</button>
+      </div>
+
+      <input type="hidden" id="editEntryId" />
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;" class="modalGrid">
+        <div class="field">
+          <label>Date</label>
+          <input id="editEnDate" class="input" type="date" />
+        </div>
+
+        <div class="field">
+          <label>Location</label>
+          <input id="editEnLocation" class="input" placeholder="e.g., Scarborough" />
+        </div>
+
+        <div class="field" style="grid-column:1 / -1;">
+          <label>Notes (optional)</label>
+          <input id="editEnNotes" class="input" placeholder="e.g., Meet name, lane, fall, etc." />
+        </div>
+
+        <div class="field">
+          <label>Distance</label>
+          <select id="editEnDistance" class="select2">
+            <option value="111m">111m</option>
+            <option value="222m">222m</option>
+            <option value="333m">333m</option>
+            <option value="400m">400m</option>
+            <option value="500m">500m</option>
+            <option value="800m">800m</option>
+            <option value="1000m">1000m</option>
+            <option value="1500m">1500m</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Time (mm:ss.mmm)</label>
+          <input id="editEnTime" class="input" placeholder="00:52.300" />
+        </div>
+      </div>
+
+      <div id="editEntryErr" class="error"></div>
+
+      <div class="modalActions">
+        <button class="btn btnDanger" id="btnDeleteEntry">Delete</button>
+        <button class="btn" data-close="modalEditEntry">Cancel</button>
+        <button class="btn btnPrimary" id="btnSaveEntryEdits">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Modal -->
   <div class="modalOverlay" id="modalReset">
     <div class="modal">
       <div class="modalTop">
@@ -1042,7 +1083,7 @@
     </div>
   </div>
 
-  <!-- ✅ Donate Modal -->
+  <!-- Donate Modal -->
   <div class="modalOverlay" id="modalDonate">
     <div class="modal">
       <div class="modalTop">
@@ -1076,18 +1117,13 @@
   </div>
 
   <script>
-    const LS_KEY  = "pb_velocityboard_v10_singlefile_cards";
-    const LS_PREF = "pb_velocityboard_prefs_v10";
+    const PAYPAL_ME = "https://paypal.me/MandeepSardarni"; // ✅ hardcoded as requested
+
+    const LS_KEY  = "pb_velocityboard_v11";
+    const LS_PREF = "pb_velocityboard_prefs_v11";
 
     const defaultState = { athletes: [], activeAthleteId: null };
-    const defaultPrefs = {
-      defaultDistance: "ALL",
-      timeHint: "00:52.300",
-      theme: "dark",
-      paypalLink: ""
-    };
-
-    const PREFERRED_DISTANCES = ["400m","500m","800m","1000m","1500m","333m","222m","111m"];
+    const defaultPrefs = { defaultDistance: "ALL", timeHint: "00:52.300", theme: "dark" };
 
     let state = loadState();
     let prefs = loadPrefs();
@@ -1101,7 +1137,6 @@
     };
 
     const athleteSelect = document.getElementById("athleteSelect");
-
     const distanceFilter    = document.getElementById("distanceFilter");
     const analyticsDistance = document.getElementById("analyticsDistance");
 
@@ -1125,7 +1160,6 @@
 
     const timeHint = document.getElementById("timeHint");
     const themeSelect = document.getElementById("themeSelect");
-    const paypalLinkEl = document.getElementById("paypalLink");
 
     const avatarBtn = document.getElementById("avatarBtn");
 
@@ -1169,6 +1203,10 @@
     });
     document.getElementById("saveAvatar").addEventListener("click", saveAvatar);
 
+    // Edit entry modal buttons
+    document.getElementById("btnSaveEntryEdits").addEventListener("click", saveEntryEdits);
+    document.getElementById("btnDeleteEntry").addEventListener("click", deleteEntryFromEditModal);
+
     // Modal close
     document.querySelectorAll("[data-close]").forEach(btn => {
       btn.addEventListener("click", () => closeModal(btn.getAttribute("data-close")));
@@ -1200,7 +1238,7 @@
       renderAll(false);
     });
 
-    // Distance Focus:
+    // Distance Focus
     distanceFilter.addEventListener("change", () => {
       analyticsDistance.value = distanceFilter.value;
       renderAll(true);
@@ -1216,12 +1254,6 @@
       savePrefs();
       applyTheme();
     });
-
-    paypalLinkEl.addEventListener("input", ()=>{
-      prefs.paypalLink = paypalLinkEl.value.trim();
-      savePrefs();
-    });
-
     timeHint.addEventListener("input", () => {
       prefs.timeHint = timeHint.value.trim() || "00:52.300";
       savePrefs();
@@ -1231,11 +1263,20 @@
     const entryRowsEl = document.getElementById("entryRows");
     document.getElementById("btnAddRow").addEventListener("click", () => addEntryRow());
 
-    // Delete entry (delegation)
+    // Cards actions (delete + edit)
     cardsWrap.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-del-entry-id]");
-      if(!btn) return;
-      deleteEntry(btn.getAttribute("data-del-entry-id"));
+      const del = e.target.closest("[data-del-entry-id]");
+      if(del) return deleteEntry(del.getAttribute("data-del-entry-id"));
+
+      const edit = e.target.closest("[data-edit-entry-id]");
+      if(edit) return openEditEntryModal(edit.getAttribute("data-edit-entry-id"));
+    });
+
+    // PB table click to edit that PB entry
+    pbSummaryWrap.addEventListener("click", (e)=>{
+      const tr = e.target.closest("tr[data-entry-id]");
+      if(!tr) return;
+      openEditEntryModal(tr.getAttribute("data-entry-id"));
     });
 
     // Appbar height sync
@@ -1274,7 +1315,6 @@
 
       timeHint.value = prefs.timeHint || "00:52.300";
       themeSelect.value = prefs.theme || "dark";
-      paypalLinkEl.value = prefs.paypalLink || "";
 
       renderAll(true);
       syncAppbarHeight();
@@ -1307,7 +1347,7 @@
     }
 
     function clearErrors(){
-      ["athleteErr","entryErr","resetErr","importMsg","editAthErr","donateErr","avatarErr"].forEach(id=>{
+      ["athleteErr","entryErr","resetErr","importMsg","editAthErr","donateErr","avatarErr","editEntryErr"].forEach(id=>{
         const el = document.getElementById(id);
         if(el){ el.classList.remove("show"); el.textContent=""; }
       });
@@ -1339,19 +1379,47 @@
       return "a_" + Math.random().toString(16).slice(2) + Date.now().toString(16);
     }
 
-    function parseTimeToMs(t){
-      if(!t) return null;
-      t = (""+t).trim();
-      if(/^\d+(\.\d{1,3})?$/.test(t)){
-        const sec = Number(t);
-        return Math.round(sec * 1000);
+    /* ✅ smart time parse + confirmation */
+    function parseTimeSmart(t){
+      if(!t) return { ms:null, normalized:null, note:null };
+
+      let raw = String(t).trim();
+      if(!raw) return { ms:null, normalized:null, note:null };
+
+      // 1) strict mm:ss(.mmm)
+      let m = raw.match(/^(\d{1,2}):([0-5]\d)(?:\.(\d{1,3}))?$/);
+      if(m){
+        const mm = Number(m[1]);
+        const ss = Number(m[2]);
+        const ms = Number((m[3]||"0").padEnd(3,"0"));
+        const total = (mm*60 + ss)*1000 + ms;
+        return { ms: total, normalized: msToTime(total), note: null };
       }
-      const m = t.match(/^(\d{1,2}):([0-5]\d)(?:\.(\d{1,3}))?$/);
-      if(!m) return null;
-      const mm = Number(m[1]);
-      const ss = Number(m[2]);
-      const ms = Number((m[3] || "0").padEnd(3,"0"));
-      return (mm*60 + ss)*1000 + ms;
+
+      // 2) m.ss shorthand like 2.1 => 02:01.000  | 1.2 => 01:02.000 | 2.15 => 02:15.000
+      //    only if left side looks like minutes and seconds is < 60
+      m = raw.match(/^(\d{1,2})\.(\d{1,2})$/);
+      if(m){
+        const mm = Number(m[1]);
+        const ss = Number(m[2]);
+        if(ss < 60){
+          const total = (mm*60 + ss)*1000;
+          return { ms: total, normalized: msToTime(total), note: `Interpreted ${raw} as ${msToTime(total)}` };
+        }
+      }
+
+      // 3) seconds or seconds.millis like 52.3 => 00:52.300
+      m = raw.match(/^(\d{1,4})(?:\.(\d{1,3}))?$/);
+      if(m){
+        const sec = Number(m[1]);
+        const ms = Number((m[2]||"0").padEnd(3,"0"));
+        if(isFinite(sec) && sec >= 0){
+          const total = sec*1000 + ms;
+          return { ms: total, normalized: msToTime(total), note: `Interpreted ${raw}s as ${msToTime(total)}` };
+        }
+      }
+
+      return { ms:null, normalized:null, note:null };
     }
 
     function msToTime(ms){
@@ -1378,10 +1446,10 @@
     function computePBMap(entries){
       const pb = {};
       for(const e of entries){
-        const ms = parseTimeToMs(e.time);
-        if(ms == null) continue;
-        if(!pb[e.distance] || ms < pb[e.distance].ms){
-          pb[e.distance] = { ...e, ms };
+        const parsed = parseTimeSmart(e.time);
+        if(parsed.ms == null) continue;
+        if(!pb[e.distance] || parsed.ms < pb[e.distance].ms){
+          pb[e.distance] = { ...e, ms: parsed.ms };
         }
       }
       return pb;
@@ -1396,7 +1464,7 @@
     function flashBanner(msg, isPB){
       pbBannerText.textContent = msg;
       pbBanner.style.borderColor = isPB ? "rgba(200,139,0,.22)" : "rgba(47,107,255,.18)";
-      pbBanner.style.background = "rgba(255,255,255,.80)";
+      pbBanner.style.background = "rgba(255,255,255,.72)";
       pbBanner.classList.add("show");
       clearTimeout(flashBanner._t);
       flashBanner._t = setTimeout(()=> pbBanner.classList.remove("show"), 4200);
@@ -1407,12 +1475,10 @@
       avatarBtn.innerHTML = "";
       if(!ath){
         avatarBtn.innerHTML = `<div class="emoji">❄️</div>`;
-        avatarBtn.title = "Click to set athlete avatar";
         return;
       }
       const type = ath.avatarType || "emoji";
       const val  = ath.avatarValue || "❄️";
-
       if(type === "image" && val){
         const img = document.createElement("img");
         img.src = val;
@@ -1424,7 +1490,6 @@
         div.textContent = val || "❄️";
         avatarBtn.appendChild(div);
       }
-      avatarBtn.title = `Avatar for ${ath.name} (click to change)`;
     }
 
     function saveAthlete(){
@@ -1482,7 +1547,6 @@
       ath.birthYear = year || "";
       saveState();
       closeModal("modalEditAthlete");
-
       flashBanner("Athlete updated.", false);
       renderAll(false);
     }
@@ -1513,7 +1577,6 @@
         return;
       }
 
-      // Emoji mode
       ath.avatarType = "emoji";
       ath.avatarValue = emoji || "❄️";
       saveState();
@@ -1524,8 +1587,7 @@
 
     function openEntryModal(){
       clearErrors();
-      const dateEl = document.getElementById("enDate");
-      dateEl.valueAsDate = new Date();
+      document.getElementById("enDate").valueAsDate = new Date();
       document.getElementById("enLocation").value = "";
       document.getElementById("enNotes").value = "";
 
@@ -1595,28 +1657,37 @@
       for(const r of rows){
         const dist = r.querySelector(".jsDist").value;
         const timeStr = r.querySelector(".jsTime").value.trim();
-        const ms = parseTimeToMs(timeStr);
 
-        if(ms == null){
-          showError("entryErr",`One or more times are invalid. Use mm:ss.mmm (example: ${prefs.timeHint}).`);
+        const parsed = parseTimeSmart(timeStr);
+        if(parsed.ms == null){
+          showError("entryErr",`Time looks invalid. Try mm:ss.mmm (example: ${prefs.timeHint}).`);
           return;
+        }
+
+        // ✅ confirm when we had to interpret (like 2.1)
+        if(parsed.note){
+          const ok = confirm(`Just checking 🙂\n\nWe interpreted "${timeStr}" as "${parsed.normalized}".\n\nSave it?`);
+          if(!ok){
+            showError("entryErr","Please correct the time and try again.");
+            return;
+          }
         }
 
         const beforePB = beforePBMap[dist]?.ms ?? null;
 
         const entry = {
           id: "e_" + Math.random().toString(16).slice(2) + Date.now().toString(16),
-          date, distance: dist, time: timeStr, location, notes
+          date, distance: dist, time: parsed.normalized, location, notes
         };
 
         ath.entries.push(entry);
         savedCount++;
 
-        if(beforePB == null || ms < beforePB){
-          const diff = beforePB == null ? null : (beforePB - ms);
+        if(beforePB == null || parsed.ms < beforePB){
+          const diff = beforePB == null ? null : (beforePB - parsed.ms);
           const msg = diff == null
-            ? `First PB for ${dist}: ${msToTime(ms)}`
-            : `${dist} improved by ${(diff/1000).toFixed(3)}s → ${msToTime(ms)}`;
+            ? `First PB for ${dist}: ${parsed.normalized}`
+            : `${dist} improved by ${(diff/1000).toFixed(3)}s → ${parsed.normalized}`;
           pbMessages.push(msg);
         }
       }
@@ -1633,20 +1704,91 @@
       renderAll(false);
     }
 
-    function deleteEntry(entryId){
+    function openEditEntryModal(entryId){
+      clearErrors();
+      const ath = getActiveAthlete();
+      if(!ath) return;
+
+      const e = (ath.entries || []).find(x=>x.id===entryId);
+      if(!e) return;
+
+      document.getElementById("editEntryId").value = e.id;
+      document.getElementById("editEnDate").value = e.date || "";
+      document.getElementById("editEnLocation").value = e.location || "";
+      document.getElementById("editEnNotes").value = e.notes || "";
+      document.getElementById("editEnDistance").value = e.distance || "400m";
+      document.getElementById("editEnTime").value = e.time || "";
+
+      openModal("modalEditEntry");
+    }
+
+    function saveEntryEdits(){
+      clearErrors();
+      const ath = getActiveAthlete();
+      if(!ath){ showError("editEntryErr","No athlete selected."); return; }
+
+      const id = document.getElementById("editEntryId").value;
+      const e = (ath.entries || []).find(x=>x.id===id);
+      if(!e){ showError("editEntryErr","Entry not found."); return; }
+
+      const date = document.getElementById("editEnDate").value;
+      const location = document.getElementById("editEnLocation").value.trim();
+      const notes = document.getElementById("editEnNotes").value.trim();
+      const distance = document.getElementById("editEnDistance").value;
+      const timeStr = document.getElementById("editEnTime").value.trim();
+
+      if(!date){ showError("editEntryErr","Please select a date."); return; }
+      if(!location){ showError("editEntryErr","Please enter a location."); return; }
+
+      const parsed = parseTimeSmart(timeStr);
+      if(parsed.ms == null){
+        showError("editEntryErr",`Time looks invalid. Try mm:ss.mmm (example: ${prefs.timeHint}).`);
+        return;
+      }
+      if(parsed.note){
+        const ok = confirm(`Just checking 🙂\n\nWe interpreted "${timeStr}" as "${parsed.normalized}".\n\nSave it?`);
+        if(!ok){
+          showError("editEntryErr","Please correct the time and try again.");
+          return;
+        }
+      }
+
+      e.date = date;
+      e.location = location;
+      e.notes = notes;
+      e.distance = distance;
+      e.time = parsed.normalized;
+
+      saveState();
+      closeModal("modalEditEntry");
+      flashBanner("Entry updated.", false);
+      renderAll(true); // safe: edit could change PB table
+    }
+
+    function deleteEntryFromEditModal(){
+      const id = document.getElementById("editEntryId").value;
+      if(!id) return;
+      if(!confirm("Delete this entry?")) return;
+      deleteEntry(id, true);
+    }
+
+    function deleteEntry(entryId, fromEditModal=false){
       const ath = getActiveAthlete();
       if(!ath) return;
 
       const entry = (ath.entries || []).find(e => e.id === entryId);
       if(!entry) return;
 
-      const msg = `Delete this entry?\n\n${fmtDate(entry.date)} • ${entry.location || "—"} • ${entry.distance} • ${entry.time}`;
-      if(!confirm(msg)) return;
+      if(!fromEditModal){
+        const msg = `Delete this entry?\n\n${fmtDate(entry.date)} • ${entry.location || "—"} • ${entry.distance} • ${entry.time}`;
+        if(!confirm(msg)) return;
+      }
 
       ath.entries = (ath.entries || []).filter(e => e.id !== entryId);
       saveState();
+      if(fromEditModal) closeModal("modalEditEntry");
       flashBanner("Entry deleted.", false);
-      renderAll(false);
+      renderAll(true);
     }
 
     function doResetAll(){
@@ -1731,7 +1873,7 @@
       const pbCount = Object.keys(pbMap).length;
       pillPBCount.textContent = `${pbCount} PBs`;
 
-      // PB Summary
+      // PB Summary (clickable rows for edit)
       if(pbCount === 0){
         pbSummaryWrap.innerHTML = `
           <div class="empty">
@@ -1755,7 +1897,7 @@
               ${distances.map(d=>{
                 const pb = pbMap[d];
                 return `
-                  <tr>
+                  <tr data-entry-id="${pb.id}" title="Click to edit this entry">
                     <td><span class="badge">${escapeHtml(d)}</span></td>
                     <td><b>${msToTime(pb.ms)}</b></td>
                     <td>${fmtDate(pb.date)}</td>
@@ -1797,7 +1939,8 @@
         const countLabel = `${list.length} entr${list.length===1?"y":"ies"}`;
 
         const itemsHtml = list.map(e=>{
-          const ms = parseTimeToMs(e.time);
+          const parsed = parseTimeSmart(e.time);
+          const ms = parsed.ms;
           const isPB = pbMap[e.distance] && ms != null && ms === pbMap[e.distance].ms;
           const badge = isPB ? `<span class="badge badgePB">🏅 PB</span>` : `<span class="badge badgeOK">Saved</span>`;
 
@@ -1812,6 +1955,7 @@
                 <div class="notes">${e.notes ? escapeHtml(e.notes) : "—"}</div>
               </div>
               <div class="entryActions">
+                <button class="iconBtn" title="Edit entry" data-edit-entry-id="${e.id}">✏️</button>
                 <button class="iconBtn iconBtnDanger" title="Delete entry" data-del-entry-id="${e.id}">🗑️</button>
               </div>
             </div>
@@ -1853,22 +1997,17 @@
       const entriesAll = ath.entries || [];
       const pbMap = computePBMap(entriesAll);
 
-      let effDist = analyticsDistance.value;
-      if(effDist === "ALL"){
-        // pick best available for chart clarity
-        const avail = new Set(entriesAll.map(e=>e.distance).filter(Boolean));
-        effDist = PREFERRED_DISTANCES.find(d=>avail.has(d)) || "ALL";
-      }
+      const dist = analyticsDistance.value;
+      const scoped = (dist === "ALL") ? [] : entriesAll.filter(e => e.distance === dist);
 
-      const scoped = (effDist === "ALL") ? [] : entriesAll.filter(e => e.distance === effDist);
-      anCount.textContent = effDist === "ALL" ? `${entriesAll.length} total races` : `${scoped.length} races for ${effDist}`;
+      anCount.textContent = dist === "ALL" ? `${entriesAll.length} total races` : `${scoped.length} races for ${dist}`;
 
-      const pb = effDist !== "ALL" ? (pbMap[effDist]?.ms ?? null) : null;
+      const pb = dist !== "ALL" ? (pbMap[dist]?.ms ?? null) : null;
       anPB.textContent = pb != null ? msToTime(pb) : "—";
-      anPBMeta.textContent = pb != null ? `${effDist} best` : (effDist === "ALL" ? "Pick a distance for PB + chart" : `No PB for ${effDist}`);
+      anPBMeta.textContent = pb != null ? `${dist} best` : (dist === "ALL" ? "Pick a distance for PB + chart" : `No PB for ${dist}`);
 
       if(allowChartRedraw){
-        drawChart(sortByDateDesc(scoped), effDist);
+        drawChart(sortByDateDesc(scoped), dist);
       }
     }
 
@@ -1879,10 +2018,10 @@
 
     function drawChart(entries, dist){
       const data = [...entries]
-        .filter(e => parseTimeToMs(e.time)!=null)
+        .filter(e => parseTimeSmart(e.time).ms!=null)
         .sort((a,b)=> new Date(a.date)-new Date(b.date));
 
-      const points = data.map(e => ({ x: new Date(e.date).getTime(), y: parseTimeToMs(e.time) }));
+      const points = data.map(e => ({ x: new Date(e.date).getTime(), y: parseTimeSmart(e.time).ms }));
 
       ctx.clearRect(0,0,canvas.width,canvas.height);
 
@@ -1893,9 +2032,6 @@
         ctx.fillStyle = labelCol;
         ctx.font = "800 26px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
         ctx.fillText("Select a distance and add entries to see trend", 50, 210);
-        ctx.fillStyle = "rgba(15,21,38,.55)";
-        ctx.font = "700 18px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
-        ctx.fillText(dist === "ALL" ? "Tip: choose 400m/500m for a clean line." : `Distance: ${dist}`, 50, 245);
         return;
       }
 
@@ -1936,13 +2072,6 @@
         ctx.fillText(msToTime(Math.round(val)), 14, y+5);
       }
 
-      ctx.fillStyle = labelCol;
-      ctx.font = "800 15px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
-      ctx.fillText(fmtDate(new Date(minX).toISOString().slice(0,10)), padL, canvas.height-18);
-      const endLabel = fmtDate(new Date(maxX).toISOString().slice(0,10));
-      const endWidth = ctx.measureText(endLabel).width;
-      ctx.fillText(endLabel, padL+W-endWidth, canvas.height-18);
-
       const toX = (x)=> padL + ((x-minX)/(maxX-minX))*W;
       const toY = (y)=> padT + ((maxY-y)/(maxY-minY))*H;
 
@@ -1960,21 +2089,6 @@
         else ctx.lineTo(x,y);
       });
       ctx.stroke();
-
-      points.forEach((p)=>{
-        const x = toX(p.x);
-        const y = toY(p.y);
-        ctx.fillStyle = "rgba(255,255,255,.98)";
-        ctx.beginPath();
-        ctx.arc(x,y,5,0,Math.PI*2);
-        ctx.fill();
-
-        ctx.strokeStyle = "rgba(47,107,255,.35)";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(x,y,5,0,Math.PI*2);
-        ctx.stroke();
-      });
     }
 
     function exportCSV(){
@@ -1993,7 +2107,7 @@
     function downloadTemplateCSV(){
       const sample = [
         ["Athlete","BirthYear","Date","Location","Distance","Time","Notes"],
-        ["Alex","2015","2025-11-29","Kingston","400m","00:52.300","Sample row - replace with your data (optional)"]
+        ["Alex","2015","2025-11-29","Kingston","400m","00:52.300","Sample row"]
       ];
       const csv = sample.map(r => r.map(cell => `"${String(cell).replaceAll('"','""')}"`).join(",")).join("\n");
       const blob = new Blob([csv], { type:"text/csv" });
@@ -2034,18 +2148,20 @@
             const notes = idx("notes") >= 0 ? (r[idx("notes")]||"").trim() : "";
 
             if(!date || !location || !distance || !time) continue;
-            if(parseTimeToMs(time) == null) continue;
+
+            const parsed = parseTimeSmart(time);
+            if(parsed.ms == null) continue;
 
             ath.entries.push({
               id: "e_" + Math.random().toString(16).slice(2) + Date.now().toString(16),
-              date, location, distance, time, notes
+              date, location, distance, time: parsed.normalized, notes
             });
             added++;
           }
 
           saveState();
           flashBanner(`CSV import complete: ${added} row(s) added to ${ath.name}.`, false);
-          renderAll(false);
+          renderAll(true);
 
         }catch(e){
           showError("importMsg","Could not import CSV. Please use the template format.");
@@ -2092,11 +2208,6 @@
 
     function donateAmount(amountStr){
       clearErrors();
-      const link = (prefs.paypalLink || "").trim();
-      if(!link){
-        showError("donateErr","Please add your PayPal.me link in Settings first.");
-        return;
-      }
 
       const amt = String(amountStr || "").trim();
       const n = Number(amt);
@@ -2105,8 +2216,7 @@
         return;
       }
 
-      const base = link.replace(/\/+$/,"");
-      // PayPal.me commonly supports /<amount>
+      const base = PAYPAL_ME.replace(/\/+$/,"");
       const url = `${base}/${n}`;
       window.open(url, "_blank", "noopener,noreferrer");
       closeModal("modalDonate");
