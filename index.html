@@ -841,9 +841,8 @@
         </div>
 
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn btnPrimary" id="btnExportJSON">Download JSON</button>
-          <button class="btn" id="btnExportCSV">Download CSV (selected athlete)</button>
-          <button class="btn" id="btnDownloadTemplate">⬇️ Download CSV Template</button>
+          <button class="btn" id="btnExportCSV">Download CSV ( of the selected athlete)</button>
+          <button class="btn" id="btnDownloadTemplate">⬇️ Download CSV Template, just fill details and upload</button>
         </div>
 
         <div class="empty" style="margin-top:12px;">
@@ -896,7 +895,7 @@
 
         <div class="empty" style="margin-top:12px;">
           <strong>Storage note</strong>
-          <p>All data is stored on this device. To start fresh: Reset. To move devices: Export JSON.</p>
+          <p>All data is stored on this device. To start fresh: Reset. To move devices download the csv template of athlete, reupload on other device on this page </p>
         </div>
       </div>
     </section>
@@ -1109,8 +1108,6 @@
     document.getElementById("saveAthleteEdits").addEventListener("click", saveAthleteEdits);
     document.getElementById("saveEntry").addEventListener("click", saveEntryMulti);
     document.getElementById("doReset").addEventListener("click", doResetAll);
-
-    document.getElementById("btnExportJSON").addEventListener("click", exportJSON);
     document.getElementById("btnExportCSV").addEventListener("click", exportCSV);
     document.getElementById("btnDownloadTemplate").addEventListener("click", downloadTemplateCSV);
     document.getElementById("btnImportCSV").addEventListener("click", importCSVIntoSelectedAthlete);
@@ -1876,12 +1873,6 @@
         ctx.arc(x,y,5,0,Math.PI*2);
         ctx.stroke();
       });
-    }
-
-    function exportJSON(){
-      const blob = new Blob([JSON.stringify({ state, prefs }, null, 2)], { type:"application/json" });
-      downloadBlob(blob, "PB-VelocityBoard-backup.json");
-      flashBanner("JSON backup downloaded.", false);
     }
 
     function exportCSV(){
