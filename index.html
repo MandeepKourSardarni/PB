@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PB VelocityBoard</title>
+
+  <style>
+    :root{
+      --bg: #0b1020;
+      --bg2:#0b1633;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.08);
+      --stroke: rgba(255,255,255,.12);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.68);
+      --muted2: rgba(255,255,255,.50);
+      --primary: #7c5cff;
+      --primary2:#4ad9ff;
+      --danger:#ff4d6d;
+      --ok:#3ee08f;
+      --warn:#ffcc66;
+
+      --radius: 18px;
+      --shadow: 0 12px 40px rgba(0,0,0,.35);
+      --shadow2: 0 10px 20px rgba(0,0,0,.22);
+
+      --w: 1180px;
+      --gap: 14px;
+
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    * { box-sizing:border-box; }
+    html, body { height:100%; }
+    body{
+      margin:0;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(1200px 800px at 15% 10%, rgba(124,92,255,.28), transparent 60%),
+        radial-gradient(900px 600px at 80% 20%, rgba(74,217,255,.20), transparent 55%),
+        radial-gradient(900px 650px at 40% 90%, rgba(62,224,143,.14), transparent 55%),
+        linear-gradient(180deg, var(--bg), #070a14 70%);
+      overflow-x:hidden;
+    }
+
+    a { color:inherit; text-decoration:none; }
+    button, input, select { font-family:inherit; }
+
+    .wrap{
+      max-width: var(--w);
+      margin: 0 auto;
+      padding: 92px 18px 26px;
+    }
+
+    /* ---------- APP BAR ---------- */
+    .appbar{
+      position:fixed;
+      top:0; left:0; right:0;
+      z-index:50;
+      backdrop-filter: blur(16px);
+      background: rgba(5,8,16,.55);
+      border-bottom:1px solid rgba(255,255,255,.10);
+    }
+    .appbarInner{
+      max-width: var(--w);
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 12px 18px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width: 220px;
+    }
+    .logo{
+      width: 36px; height: 36px;
+      border-radius: 12px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.32), transparent 55%),
+        linear-gradient(135deg, var(--primary), var(--primary2));
+      box-shadow: 0 10px 22px rgba(124,92,255,.25);
+    }
+    .brandText{
+      display:flex;
+      flex-direction:column;
+      line-height:1.12;
+    }
+    .brandText strong{
+      font-size: 15.5px;
+      letter-spacing:.2px;
+    }
+    .brandText span{
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .tabs{
+      display:flex;
+      gap: 8px;
+      padding: 6px;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius: 999px;
+      background: rgba(255,255,255,.05);
+    }
+    .tabBtn{
+      border:0;
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      font-weight:600;
+      letter-spacing:.2px;
+      cursor:pointer;
+      transition: .18s ease;
+    }
+    .tabBtn:hover{ color: var(--text); background: rgba(255,255,255,.06); }
+    .tabBtn.active{
+      color: var(--text);
+      background: rgba(124,92,255,.22);
+      border: 1px solid rgba(124,92,255,.35);
+      box-shadow: 0 10px 26px rgba(124,92,255,.18);
+    }
+
+    .rightTools{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      justify-content:flex-end;
+      min-width: 260px;
+    }
+
+    .select{
+      appearance:none;
+      -webkit-appearance:none;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding: 10px 38px 10px 12px;
+      border-radius: 14px;
+      font-weight:600;
+      outline:none;
+      cursor:pointer;
+      position:relative;
+    }
+    .selectWrap{ position:relative; }
+    .selectWrap:after{
+      content:"▾";
+      position:absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-52%);
+      color: var(--muted);
+      pointer-events:none;
+      font-size: 12px;
+    }
+
+    .btn{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-weight:700;
+      cursor:pointer;
+      transition: .18s ease;
+      box-shadow: var(--shadow2);
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      white-space:nowrap;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); }
+    .btn:active{ transform: translateY(0px); }
+
+    .btnPrimary{
+      border: 1px solid rgba(124,92,255,.35);
+      background: linear-gradient(135deg, rgba(124,92,255,.42), rgba(74,217,255,.18));
+      box-shadow: 0 14px 34px rgba(124,92,255,.20);
+    }
+    .btnDanger{
+      border: 1px solid rgba(255,77,109,.35);
+      background: rgba(255,77,109,.14);
+      box-shadow: 0 14px 34px rgba(255,77,109,.12);
+    }
+
+    /* ---------- LAYOUT ---------- */
+    .grid{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: var(--gap);
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+      .brand{ min-width: 160px; }
+      .rightTools{ min-width: unset; }
+    }
+
+    .card{
+      border: 1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.05));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .cardHeader{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .title{
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing:.2px;
+    }
+    .sub{
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 3px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight:700;
+    }
+
+    .kpis{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+    @media (max-width: 980px){
+      .kpis{ grid-template-columns: repeat(2, 1fr); }
+    }
+    .kpi{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      border-radius: 16px;
+      padding: 12px;
+    }
+    .kpi .label{ color: var(--muted); font-size: 12px; font-weight:800; }
+    .kpi .value{ margin-top: 6px; font-size: 18px; font-weight: 900; letter-spacing:.3px; }
+    .kpi .mini{ margin-top: 4px; color: var(--muted2); font-size: 12px; }
+
+    .row{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px;
+      align-items:center;
+      justify-content:space-between;
+      margin-top: 12px;
+    }
+
+    .table{
+      width:100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      overflow:hidden;
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .table th, .table td{
+      padding: 10px 10px;
+      font-size: 13px;
+      border-bottom:1px solid rgba(255,255,255,.07);
+      text-align:left;
+      vertical-align:top;
+    }
+    .table th{
+      color: var(--muted);
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing:.3px;
+      background: rgba(255,255,255,.04);
+    }
+    .table tr:hover td{ background: rgba(255,255,255,.03); }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 900;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      white-space:nowrap;
+    }
+    .badgeOK{ border-color: rgba(62,224,143,.35); background: rgba(62,224,143,.10); }
+    .badgePB{ border-color: rgba(255,204,102,.35); background: rgba(255,204,102,.10); }
+
+    /* ---------- CHART ---------- */
+    .chart{
+      width:100%;
+      height: 240px;
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      overflow:hidden;
+      margin-top: 12px;
+      position:relative;
+    }
+    .chart canvas{
+      width:100%;
+      height:100%;
+      display:block;
+    }
+    .chartHint{
+      position:absolute;
+      left: 12px;
+      top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 800;
+      letter-spacing:.2px;
+    }
+
+    /* ---------- EMPTY STATE ---------- */
+    .empty{
+      border:1px dashed rgba(255,255,255,.20);
+      border-radius: 18px;
+      padding: 18px;
+      color: var(--muted);
+      background: rgba(255,255,255,.03);
+      margin-top: 10px;
+    }
+    .empty strong{ color: var(--text); }
+    .empty p{ margin: 8px 0 0; font-size: 13px; line-height:1.45; }
+
+    /* ---------- TOAST / BANNER ---------- */
+    .banner{
+      display:none;
+      margin: 0 0 14px;
+      border-radius: 18px;
+      padding: 12px 14px;
+      border: 1px solid rgba(255,204,102,.35);
+      background: rgba(255,204,102,.11);
+      box-shadow: 0 18px 50px rgba(255,204,102,.10);
+    }
+    .banner.show{ display:block; }
+    .banner strong{ font-weight: 900; }
+    .banner .small{ color: var(--muted); font-size: 12px; margin-top: 3px; }
+
+    /* ---------- MODAL ---------- */
+    .modalOverlay{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      z-index: 100;
+      align-items:center;
+      justify-content:center;
+      padding: 20px;
+    }
+    .modalOverlay.show{ display:flex; }
+    .modal{
+      width: min(560px, 100%);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(18,26,48,.95), rgba(10,14,26,.95));
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .modalTop{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .modalTop h3{
+      margin:0;
+      font-size: 16px;
+      font-weight: 900;
+    }
+    .modalTop p{
+      margin:4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height:1.4;
+    }
+    .xbtn{
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border-radius: 12px;
+      width: 38px; height: 38px;
+      cursor:pointer;
+      font-weight: 900;
+    }
+
+    .form{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .form.one{ grid-template-columns: 1fr; }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap: 6px;
+    }
+    .field label{
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--muted);
+      letter-spacing:.2px;
+    }
+    .input, .select2{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 12px;
+      outline:none;
+      font-weight: 700;
+    }
+    .help{
+      font-size: 12px;
+      color: var(--muted2);
+      line-height:1.35;
+    }
+    .error{
+      display:none;
+      color: #ffd1d9;
+      background: rgba(255,77,109,.12);
+      border: 1px solid rgba(255,77,109,.25);
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      margin-top: 10px;
+    }
+    .error.show{ display:block; }
+
+    .modalActions{
+      display:flex;
+      gap: 10px;
+      justify-content:flex-end;
+      margin-top: 12px;
+      flex-wrap:wrap;
+    }
+
+    /* ---------- FOOTER NOTE ---------- */
+    .foot{
+      margin-top: 14px;
+      color: var(--muted2);
+      font-size: 12px;
+      line-height:1.45;
+    }
+
+    /* ---------- HIDE/SHOW SCREENS ---------- */
+    .screen{ display:none; }
+    .screen.active{ display:block; }
+
+    /* small mobile tweaks */
+    @media (max-width: 560px){
+      .tabs{ display:none; } /* keep appbar clean */
+      .brandText span{ display:none; }
+      .form{ grid-template-columns: 1fr; }
+      .btn{ padding: 10px 12px; }
+      .wrap{ padding-top: 84px; }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- APP BAR -->
+  <div class="appbar">
+    <div class="appbarInner">
+
+      <div class="brand">
+        <div class="logo"></div>
+        <div class="brandText">
+          <strong>PB VelocityBoard</strong>
+          <span>Track • Improve • Celebrate</span>
+        </div>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="PB VelocityBoard Tabs">
+        <button class="tabBtn active" data-tab="home">Home</button>
+        <button class="tabBtn" data-tab="analytics">Analytics</button>
+        <button class="tabBtn" data-tab="export">Export</button>
+        <button class="tabBtn" data-tab="settings">Settings</button>
+      </div>
+
+      <div class="rightTools">
+        <div class="selectWrap">
+          <select id="athleteSelect" class="select" title="Select Athlete"></select>
+        </div>
+        <button class="btn btnPrimary" id="btnAddAthlete">+ Add Athlete</button>
+        <button class="btn" id="btnAddEntry">+ Add Race</button>
+        <button class="btn btnDanger" id="btnReset">Reset</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <div id="pbBanner" class="banner">
+      <strong>🎉 New PB!</strong>
+      <div class="small" id="pbBannerText">Saved.</div>
+    </div>
+
+    <!-- HOME -->
+    <section id="screenHome" class="screen active">
+      <div class="grid">
+
+        <div class="card">
+          <div class="cardHeader">
+            <div>
+              <div class="title">Performance Snapshot</div>
+              <div class="sub">Latest results + PB highlights for the selected athlete.</div>
+            </div>
+            <div class="pill" id="pillAthlete">No athlete selected</div>
+          </div>
+
+          <div class="kpis">
+            <div class="kpi">
+              <div class="label">PB (Selected Distance)</div>
+              <div class="value" id="kpiPB">—</div>
+              <div class="mini" id="kpiPBDistance">Pick a distance</div>
+            </div>
+
+            <div class="kpi">
+              <div class="label">Latest Time</div>
+              <div class="value" id="kpiLatest">—</div>
+              <div class="mini" id="kpiLatestMeta">—</div>
+            </div>
+
+            <div class="kpi">
+              <div class="label">Avg (Last 10)</div>
+              <div class="value" id="kpiAvg10">—</div>
+              <div class="mini">Lower is better</div>
+            </div>
+
+            <div class="kpi">
+              <div class="label">Consistency</div>
+              <div class="value" id="kpiCons">—</div>
+              <div class="mini">Std Dev (last 10)</div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field" style="min-width:240px;">
+              <label for="distanceFilter">Distance Focus</label>
+              <select id="distanceFilter" class="select2">
+                <option value="ALL">All distances</option>
+                <option value="111m">111m</option>
+                <option value="222m">222m</option>
+                <option value="333m">333m</option>
+                <option value="400m">400m</option>
+                <option value="500m">500m</option>
+                <option value="800m">800m</option>
+                <option value="1000m">1000m</option>
+                <option value="1500m">1500m</option>
+              </select>
+              <div class="help">This filter affects KPIs and the chart.</div>
+            </div>
+
+            <div class="pill" id="pillCount">0 races</div>
+          </div>
+
+          <div class="chart">
+            <div class="chartHint">Trend (Time vs Race Date)</div>
+            <canvas id="trendCanvas" width="1200" height="420"></canvas>
+          </div>
+
+          <div class="foot">
+            Tip: Your data is saved on this device (local storage). Use Export if you want a backup.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cardHeader">
+            <div>
+              <div class="title">Recent Races</div>
+              <div class="sub">Most recent entries (sorted newest first).</div>
+            </div>
+            <div class="pill" id="pillPBCount">0 PBs</div>
+          </div>
+
+          <div id="recentWrap"></div>
+
+          <div class="foot">
+            New PBs are automatically detected for each distance.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ANALYTICS -->
+    <section id="screenAnalytics" class="screen">
+      <div class="card">
+        <div class="cardHeader">
+          <div>
+            <div class="title">Analytics</div>
+            <div class="sub">Clean, coach-friendly insight — PB progression, averages, and consistency.</div>
+          </div>
+          <div class="pill" id="pillAnalytics">—</div>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi">
+            <div class="label">Season Best (90d)</div>
+            <div class="value" id="anBest90">—</div>
+            <div class="mini" id="anBest90Meta">—</div>
+          </div>
+
+          <div class="kpi">
+            <div class="label">Improvement (Last 5)</div>
+            <div class="value" id="anImp5">—</div>
+            <div class="mini">Latest vs oldest of last 5</div>
+          </div>
+
+          <div class="kpi">
+            <div class="label">PB Count</div>
+            <div class="value" id="anPBCount">—</div>
+            <div class="mini">Across all distances</div>
+          </div>
+
+          <div class="kpi">
+            <div class="label">Total Races</div>
+            <div class="value" id="anTotal">—</div>
+            <div class="mini">Entries stored</div>
+          </div>
+        </div>
+
+        <table class="table" id="pbTable">
+          <thead>
+            <tr>
+              <th>Distance</th>
+              <th>PB Time</th>
+              <th>Date</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <div class="foot">
+          Professional note: PBs are computed per athlete per distance. For best results, keep times consistent (mm:ss.mmm).
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPORT -->
+    <section id="screenExport" class="screen">
+      <div class="grid">
+        <div class="card">
+          <div class="cardHeader">
+            <div>
+              <div class="title">Export / Backup</div>
+              <div class="sub">Download your data so you can move devices or share with a coach.</div>
+            </div>
+            <div class="pill" id="pillExport">—</div>
+          </div>
+
+          <div class="row">
+            <button class="btn btnPrimary" id="btnExportJSON">Download JSON</button>
+            <button class="btn" id="btnExportCSV">Download CSV (selected athlete)</button>
+          </div>
+
+          <div class="empty">
+            <strong>Pro tip</strong>
+            <p>Export JSON is the best backup. CSV is handy for coaches who prefer Excel.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cardHeader">
+            <div>
+              <div class="title">Import JSON</div>
+              <div class="sub">Restore your VelocityBoard backup.</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Upload JSON backup</label>
+            <input class="input" id="importFile" type="file" accept=".json" />
+            <div class="help">This will merge athletes. Existing athlete IDs are preserved if they match.</div>
+          </div>
+
+          <div class="modalActions" style="justify-content:flex-start;">
+            <button class="btn" id="btnImport">Import</button>
+          </div>
+
+          <div id="importMsg" class="error"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="screenSettings" class="screen">
+      <div class="card">
+        <div class="cardHeader">
+          <div>
+            <div class="title">Settings</div>
+            <div class="sub">Simple preferences for a clean experience.</div>
+          </div>
+          <div class="pill">Local Storage</div>
+        </div>
+
+        <div class="form">
+          <div class="field">
+            <label>Default Distance Focus</label>
+            <select id="defaultDistance" class="select2">
+              <option value="ALL">All distances</option>
+              <option value="400m">400m</option>
+              <option value="500m">500m</option>
+              <option value="800m">800m</option>
+              <option value="1000m">1000m</option>
+              <option value="1500m">1500m</option>
+            </select>
+            <div class="help">Used when the app loads.</div>
+          </div>
+
+          <div class="field">
+            <label>Time Format Reminder</label>
+            <input id="timeHint" class="input" value="00:52.300" />
+            <div class="help">Shown as example in the Add Race form.</div>
+          </div>
+        </div>
+
+        <div class="empty" style="margin-top:12px;">
+          <strong>Storage note</strong>
+          <p>All data is stored on this device. To start fresh: Reset. To move devices: Export JSON and import it.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- MODAL: ADD ATHLETE -->
+  <div class="modalOverlay" id="modalAthlete">
+    <div class="modal">
+      <div class="modalTop">
+        <div>
+          <h3>Add Athlete</h3>
+          <p>Create an athlete profile. You can add races after that.</p>
+        </div>
+        <button class="xbtn" data-close="modalAthlete">✕</button>
+      </div>
+
+      <div class="form">
+        <div class="field">
+          <label>Name</label>
+          <input id="athName" class="input" placeholder="e.g., Samarveer" />
+        </div>
+        <div class="field">
+          <label>Birth Year (optional)</label>
+          <input id="athYear" class="input" inputmode="numeric" placeholder="e.g., 2014" />
+        </div>
+      </div>
+
+      <div id="athleteErr" class="error"></div>
+
+      <div class="modalActions">
+        <button class="btn" data-close="modalAthlete">Cancel</button>
+        <button class="btn btnPrimary" id="saveAthlete">Save Athlete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD ENTRY -->
+  <div class="modalOverlay" id="modalEntry">
+    <div class="modal">
+      <div class="modalTop">
+        <div>
+          <h3>Add Race Entry</h3>
+          <p>Enter a race result for the selected athlete.</p>
+        </div>
+        <button class="xbtn" data-close="modalEntry">✕</button>
+      </div>
+
+      <div class="form">
+        <div class="field">
+          <label>Date</label>
+          <input id="enDate" class="input" type="date" />
+        </div>
+
+        <div class="field">
+          <label>Distance</label>
+          <select id="enDist" class="select2">
+            <option value="111m">111m</option>
+            <option value="222m">222m</option>
+            <option value="333m">333m</option>
+            <option value="400m" selected>400m</option>
+            <option value="500m">500m</option>
+            <option value="800m">800m</option>
+            <option value="1000m">1000m</option>
+            <option value="1500m">1500m</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Time (mm:ss.mmm)</label>
+          <input id="enTime" class="input" placeholder="00:52.300" />
+          <div class="help" id="timeHintSmall">Example: 00:52.300</div>
+        </div>
+
+        <div class="field">
+          <label>Notes (optional)</label>
+          <input id="enNotes" class="input" placeholder="e.g., Meet name, lane, fall, etc." />
+        </div>
+      </div>
+
+      <div id="entryErr" class="error"></div>
+
+      <div class="modalActions">
+        <button class="btn" data-close="modalEntry">Cancel</button>
+        <button class="btn btnPrimary" id="saveEntry">Save Entry</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: RESET -->
+  <div class="modalOverlay" id="modalReset">
+    <div class="modal">
+      <div class="modalTop">
+        <div>
+          <h3>Reset</h3>
+          <p>This removes your stored data on this device. Type <strong>RESET</strong> to confirm.</p>
+        </div>
+        <button class="xbtn" data-close="modalReset">✕</button>
+      </div>
+
+      <div class="field">
+        <label>Type RESET</label>
+        <input id="resetConfirm" class="input" placeholder="RESET" />
+        <div class="help">Tip: Export JSON first if you want a backup.</div>
+      </div>
+
+      <div id="resetErr" class="error"></div>
+
+      <div class="modalActions">
+        <button class="btn" data-close="modalReset">Cancel</button>
+        <button class="btn btnDanger" id="doReset">Reset Everything</button>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    /* ==========================================================
+      PB VELOCITYBOARD — SINGLE FILE EDITION
+      Professional UI + localStorage data model
+    ========================================================== */
+
+    // ---------- STORAGE KEYS ----------
+    const LS_KEY = "pb_velocityboard_v7_singlefile";
+    const LS_PREF = "pb_velocityboard_prefs_v7";
+
+    // ---------- DEFAULT STATE ----------
+    const defaultState = {
+      athletes: [],
+      activeAthleteId: null
+    };
+
+    const defaultPrefs = {
+      defaultDistance: "ALL",
+      timeHint: "00:52.300"
+    };
+
+    // ---------- STATE ----------
+    let state = loadState();
+    let prefs = loadPrefs();
+
+    // ---------- ELEMENTS ----------
+    const tabBtns = [...document.querySelectorAll(".tabBtn")];
+    const screens = {
+      home: document.getElementById("screenHome"),
+      analytics: document.getElementById("screenAnalytics"),
+      export: document.getElementById("screenExport"),
+      settings: document.getElementById("screenSettings")
+    };
+
+    const athleteSelect = document.getElementById("athleteSelect");
+    const distanceFilter = document.getElementById("distanceFilter");
+
+    const pbBanner = document.getElementById("pbBanner");
+    const pbBannerText = document.getElementById("pbBannerText");
+
+    // KPIs
+    const kpiPB = document.getElementById("kpiPB");
+    const kpiPBDistance = document.getElementById("kpiPBDistance");
+    const kpiLatest = document.getElementById("kpiLatest");
+    const kpiLatestMeta = document.getElementById("kpiLatestMeta");
+    const kpiAvg10 = document.getElementById("kpiAvg10");
+    const kpiCons = document.getElementById("kpiCons");
+
+    const pillAthlete = document.getElementById("pillAthlete");
+    const pillCount = document.getElementById("pillCount");
+    const pillPBCount = document.getElementById("pillPBCount");
+    const recentWrap = document.getElementById("recentWrap");
+
+    // Analytics
+    const pillAnalytics = document.getElementById("pillAnalytics");
+    const anBest90 = document.getElementById("anBest90");
+    const anBest90Meta = document.getElementById("anBest90Meta");
+    const anImp5 = document.getElementById("anImp5");
+    const anPBCount = document.getElementById("anPBCount");
+    const anTotal = document.getElementById("anTotal");
+    const pbTableBody = document.querySelector("#pbTable tbody");
+
+    // Export
+    const pillExport = document.getElementById("pillExport");
+    const importFile = document.getElementById("importFile");
+    const importMsg = document.getElementById("importMsg");
+
+    // Settings
+    const defaultDistance = document.getElementById("defaultDistance");
+    const timeHint = document.getElementById("timeHint");
+    const timeHintSmall = document.getElementById("timeHintSmall");
+
+    // Buttons
+    document.getElementById("btnAddAthlete").addEventListener("click", () => openModal("modalAthlete"));
+    document.getElementById("btnAddEntry").addEventListener("click", () => {
+      if(!getActiveAthlete()){
+        flashBanner("Please add/select an athlete first.", false);
+        openModal("modalAthlete");
+        return;
+      }
+      openModal("modalEntry");
+    });
+    document.getElementById("btnReset").addEventListener("click", () => openModal("modalReset"));
+
+    // Modal close handlers
+    document.querySelectorAll("[data-close]").forEach(btn => {
+      btn.addEventListener("click", () => closeModal(btn.getAttribute("data-close")));
+    });
+    document.querySelectorAll(".modalOverlay").forEach(ov => {
+      ov.addEventListener("click", (e) => {
+        if(e.target === ov) ov.classList.remove("show");
+      });
+    });
+
+    // Save athlete
+    document.getElementById("saveAthlete").addEventListener("click", saveAthlete);
+
+    // Save entry
+    document.getElementById("saveEntry").addEventListener("click", saveEntry);
+
+    // Reset
+    document.getElementById("doReset").addEventListener("click", doResetAll);
+
+    // Export
+    document.getElementById("btnExportJSON").addEventListener("click", exportJSON);
+    document.getElementById("btnExportCSV").addEventListener("click", exportCSV);
+    document.getElementById("btnImport").addEventListener("click", importJSON);
+
+    // Tabs
+    tabBtns.forEach(btn => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
+
+    // Athlete select change
+    athleteSelect.addEventListener("change", () => {
+      state.activeAthleteId = athleteSelect.value || null;
+      saveState();
+      renderAll();
+    });
+
+    // Distance filter
+    distanceFilter.addEventListener("change", () => renderAll());
+
+    // Settings
+    defaultDistance.addEventListener("change", () => {
+      prefs.defaultDistance = defaultDistance.value;
+      savePrefs();
+      distanceFilter.value = prefs.defaultDistance;
+      renderAll();
+    });
+    timeHint.addEventListener("input", () => {
+      prefs.timeHint = timeHint.value.trim() || "00:52.300";
+      timeHintSmall.textContent = "Example: " + prefs.timeHint;
+      savePrefs();
+    });
+
+    // Trend chart
+    const canvas = document.getElementById("trendCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Init defaults
+    init();
+
+    function init(){
+      // Default date in entry modal
+      document.getElementById("enDate").valueAsDate = new Date();
+
+      // Apply settings to UI
+      defaultDistance.value = prefs.defaultDistance;
+      timeHint.value = prefs.timeHint;
+      timeHintSmall.textContent = "Example: " + prefs.timeHint;
+
+      distanceFilter.value = prefs.defaultDistance;
+
+      if(!state.athletes) state = structuredClone(defaultState);
+      if(!prefs) prefs = structuredClone(defaultPrefs);
+
+      renderAll();
+    }
+
+    function switchTab(tab){
+      tabBtns.forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
+      Object.keys(screens).forEach(k => screens[k].classList.toggle("active", k === tab));
+      renderAll();
+      // scroll to top of content area slightly
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function openModal(id){
+      clearErrors();
+      if(id === "modalEntry"){
+        // refresh athlete + time hint
+        const active = getActiveAthlete();
+        if(active){
+          document.getElementById("enTime").placeholder = prefs.timeHint;
+          timeHintSmall.textContent = "Example: " + prefs.timeHint;
+        }
+      }
+      document.getElementById(id).classList.add("show");
+    }
+    function closeModal(id){
+      document.getElementById(id).classList.remove("show");
+    }
+
+    function clearErrors(){
+      ["athleteErr","entryErr","resetErr","importMsg"].forEach(id=>{
+        const el = document.getElementById(id);
+        if(el){ el.classList.remove("show"); el.textContent=""; }
+      });
+    }
+
+    // ---------- DATA HELPERS ----------
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(LS_KEY);
+        return raw ? JSON.parse(raw) : structuredClone(defaultState);
+      }catch(e){
+        return structuredClone(defaultState);
+      }
+    }
+    function saveState(){
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+    }
+    function loadPrefs(){
+      try{
+        const raw = localStorage.getItem(LS_PREF);
+        return raw ? JSON.parse(raw) : structuredClone(defaultPrefs);
+      }catch(e){
+        return structuredClone(defaultPrefs);
+      }
+    }
+    function savePrefs(){
+      localStorage.setItem(LS_PREF, JSON.stringify(prefs));
+    }
+
+    function getActiveAthlete(){
+      return state.athletes.find(a => a.id === state.activeAthleteId) || null;
+    }
+
+    function uid(){
+      return "a_" + Math.random().toString(16).slice(2) + Date.now().toString(16);
+    }
+
+    // Parse time mm:ss.mmm OR ss.mmm
+    function parseTimeToMs(t){
+      if(!t) return null;
+      t = (""+t).trim();
+      // allow "52.300" as seconds
+      if(/^\d+(\.\d{1,3})?$/.test(t)){
+        const sec = Number(t);
+        return Math.round(sec * 1000);
+      }
+      // mm:ss.mmm
+      const m = t.match(/^(\d{1,2}):([0-5]\d)(?:\.(\d{1,3}))?$/);
+      if(!m) return null;
+      const mm = Number(m[1]);
+      const ss = Number(m[2]);
+      const ms = Number((m[3] || "0").padEnd(3,"0"));
+      return (mm*60 + ss)*1000 + ms;
+    }
+
+    function msToTime(ms){
+      if(ms == null || isNaN(ms)) return "—";
+      const totalSec = Math.floor(ms/1000);
+      const mm = Math.floor(totalSec/60);
+      const ss = totalSec % 60;
+      const msec = ms % 1000;
+      return String(mm).padStart(2,"0")+":"+String(ss).padStart(2,"0")+"."+String(msec).padStart(3,"0");
+    }
+
+    function fmtDate(iso){
+      if(!iso) return "—";
+      try{
+        const d = new Date(iso);
+        return d.toLocaleDateString(undefined, { year:"numeric", month:"short", day:"2-digit" });
+      }catch(e){ return iso; }
+    }
+
+    function sortByDateDesc(entries){
+      return [...entries].sort((a,b)=> new Date(b.date) - new Date(a.date));
+    }
+
+    function mean(arr){
+      if(!arr.length) return null;
+      return arr.reduce((s,x)=>s+x,0)/arr.length;
+    }
+    function stddev(arr){
+      if(arr.length < 2) return null;
+      const m = mean(arr);
+      const v = mean(arr.map(x => (x-m)*(x-m)));
+      return Math.sqrt(v);
+    }
+
+    function computePBMap(entries){
+      // return map distance -> best entry
+      const pb = {};
+      for(const e of entries){
+        const ms = parseTimeToMs(e.time);
+        if(ms == null) continue;
+        if(!pb[e.distance] || ms < pb[e.distance].ms){
+          pb[e.distance] = { ...e, ms };
+        }
+      }
+      return pb;
+    }
+
+    // ---------- ACTIONS ----------
+    function saveAthlete(){
+      clearErrors();
+      const name = document.getElementById("athName").value.trim();
+      const year = document.getElementById("athYear").value.trim();
+
+      if(!name){
+        showError("athleteErr","Please enter a name.");
+        return;
+      }
+      if(year && !/^\d{4}$/.test(year)){
+        showError("athleteErr","Birth year should be 4 digits (e.g., 2014).");
+        return;
+      }
+
+      const newAth = {
+        id: uid(),
+        name,
+        birthYear: year || "",
+        createdAt: new Date().toISOString(),
+        entries: []
+      };
+      state.athletes.push(newAth);
+      state.activeAthleteId = newAth.id;
+      saveState();
+
+      document.getElementById("athName").value = "";
+      document.getElementById("athYear").value = "";
+      closeModal("modalAthlete");
+
+      flashBanner(`Athlete added: ${name}`, false);
+      renderAll();
+    }
+
+    function saveEntry(){
+      clearErrors();
+      const ath = getActiveAthlete();
+      if(!ath){
+        showError("entryErr","No athlete selected. Add/select an athlete first.");
+        return;
+      }
+
+      const date = document.getElementById("enDate").value;
+      const distance = document.getElementById("enDist").value;
+      const timeStr = document.getElementById("enTime").value.trim();
+      const notes = document.getElementById("enNotes").value.trim();
+
+      if(!date){
+        showError("entryErr","Please select a date.");
+        return;
+      }
+      const ms = parseTimeToMs(timeStr);
+      if(ms == null){
+        showError("entryErr",`Invalid time format. Use mm:ss.mmm (example: ${prefs.timeHint}).`);
+        return;
+      }
+
+      // Determine if PB for this distance
+      const beforePB = computePBMap(ath.entries)[distance]?.ms ?? null;
+
+      const entry = {
+        id: "e_" + Math.random().toString(16).slice(2),
+        date,
+        distance,
+        time: timeStr,
+        notes
+      };
+      ath.entries.push(entry);
+      saveState();
+
+      // After add
+      const afterPB = computePBMap(ath.entries)[distance]?.ms ?? null;
+      closeModal("modalEntry");
+
+      // Reset entry form
+      document.getElementById("enTime").value = "";
+      document.getElementById("enNotes").value = "";
+      document.getElementById("enDate").valueAsDate = new Date();
+
+      // Banner
+      if(afterPB != null && (beforePB == null || afterPB < beforePB)){
+        const diff = beforePB == null ? null : (beforePB - afterPB);
+        const msg = diff == null
+          ? `${ath.name} set a first PB for ${distance}: ${msToTime(afterPB)}`
+          : `${ath.name} improved ${distance} by ${(diff/1000).toFixed(3)}s → ${msToTime(afterPB)}`;
+        flashBanner(msg, true);
+      }else{
+        flashBanner(`Race saved for ${ath.name}.`, false);
+      }
+
+      renderAll();
+    }
+
+    function doResetAll(){
+      clearErrors();
+      const txt = document.getElementById("resetConfirm").value.trim();
+      if(txt !== "RESET"){
+        showError("resetErr","Please type RESET exactly to confirm.");
+        return;
+      }
+      localStorage.removeItem(LS_KEY);
+      state = structuredClone(defaultState);
+      closeModal("modalReset");
+      flashBanner("All data cleared on this device.", false);
+      renderAll();
+    }
+
+    function showError(id, msg){
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.classList.add("show");
+    }
+
+    function flashBanner(msg, isPB){
+      pbBannerText.textContent = msg;
+      pbBanner.style.borderColor = isPB ? "rgba(255,204,102,.35)" : "rgba(255,255,255,.12)";
+      pbBanner.style.background = isPB ? "rgba(255,204,102,.11)" : "rgba(255,255,255,.06)";
+      pbBanner.classList.add("show");
+      clearTimeout(flashBanner._t);
+      flashBanner._t = setTimeout(()=> pbBanner.classList.remove("show"), 4200);
+    }
+
+    // ---------- RENDER ----------
+    function renderAll(){
+      renderAthleteSelect();
+      renderHome();
+      renderAnalytics();
+      renderExport();
+      renderSettingsUI();
+    }
+
+    function renderAthleteSelect(){
+      athleteSelect.innerHTML = "";
+
+      if(state.athletes.length === 0){
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "No athletes yet";
+        athleteSelect.appendChild(opt);
+        state.activeAthleteId = null;
+        saveState();
+        return;
+      }
+
+      // keep active id valid
+      if(!state.activeAthleteId || !state.athletes.some(a => a.id === state.activeAthleteId)){
+        state.activeAthleteId = state.athletes[0].id;
+        saveState();
+      }
+
+      for(const a of state.athletes){
+        const opt = document.createElement("option");
+        opt.value = a.id;
+        opt.textContent = a.name + (a.birthYear ? ` (${a.birthYear})` : "");
+        athleteSelect.appendChild(opt);
+      }
+      athleteSelect.value = state.activeAthleteId;
+    }
+
+    function renderHome(){
+      const ath = getActiveAthlete();
+      const dist = distanceFilter.value;
+
+      if(!ath){
+        pillAthlete.textContent = "No athlete selected";
+        pillCount.textContent = "0 races";
+        pillPBCount.textContent = "0 PBs";
+        kpiPB.textContent = "—";
+        kpiPBDistance.textContent = "Pick a distance";
+        kpiLatest.textContent = "—";
+        kpiLatestMeta.textContent = "—";
+        kpiAvg10.textContent = "—";
+        kpiCons.textContent = "—";
+        recentWrap.innerHTML = `
+          <div class="empty">
+            <strong>Add your first athlete</strong>
+            <p>Click <b>Add Athlete</b>, then add race entries to track PBs, trends, and progress.</p>
+          </div>
+        `;
+        drawChart([], dist);
+        return;
+      }
+
+      pillAthlete.textContent = ath.name + (ath.birthYear ? ` • ${ath.birthYear}` : "");
+      const entriesAll = sortByDateDesc(ath.entries || []);
+      pillCount.textContent = `${entriesAll.length} races`;
+
+      // PB map
+      const pbMap = computePBMap(entriesAll);
+      const pbCount = Object.keys(pbMap).length;
+      pillPBCount.textContent = `${pbCount} PBs`;
+
+      // Filter entries by distance
+      const entries = dist === "ALL" ? entriesAll : entriesAll.filter(e => e.distance === dist);
+
+      // Latest
+      const latest = entries[0] || null;
+      if(latest){
+        kpiLatest.textContent = latest.time;
+        kpiLatestMeta.textContent = `${latest.distance} • ${fmtDate(latest.date)}`;
+      }else{
+        kpiLatest.textContent = "—";
+        kpiLatestMeta.textContent = dist === "ALL" ? "No entries yet" : `No entries for ${dist}`;
+      }
+
+      // PB (selected distance)
+      if(dist !== "ALL"){
+        const pb = pbMap[dist] ? pbMap[dist].ms : null;
+        kpiPB.textContent = pb != null ? msToTime(pb) : "—";
+        kpiPBDistance.textContent = pb != null ? `${dist} best` : `No PB for ${dist}`;
+      }else{
+        // show fastest PB across all distances for a headline
+        const allPBs = Object.values(pbMap).map(x => x.ms);
+        const best = allPBs.length ? Math.min(...allPBs) : null;
+        kpiPB.textContent = best != null ? msToTime(best) : "—";
+        kpiPBDistance.textContent = best != null ? "Fastest PB (any distance)" : "No PBs yet";
+      }
+
+      // Avg + consistency last 10 (filtered)
+      const last10 = entries.slice(0,10).map(e => parseTimeToMs(e.time)).filter(x => x!=null);
+      const avg10 = last10.length ? mean(last10) : null;
+      const sd10 = last10.length ? stddev(last10) : null;
+      kpiAvg10.textContent = avg10 != null ? msToTime(Math.round(avg10)) : "—";
+      kpiCons.textContent = sd10 != null ? (sd10/1000).toFixed(3) + "s" : "—";
+
+      // Recent list
+      if(entriesAll.length === 0){
+        recentWrap.innerHTML = `
+          <div class="empty">
+            <strong>No races yet</strong>
+            <p>Add race entries to start tracking improvements and PBs.</p>
+          </div>
+        `;
+      }else{
+        // build table
+        const pbByDist = pbMap;
+        const rows = entriesAll.slice(0,12).map(e => {
+          const ms = parseTimeToMs(e.time);
+          const isPB = pbByDist[e.distance] && ms != null && ms === pbByDist[e.distance].ms;
+          const badge = isPB
+            ? `<span class="badge badgePB">🏅 PB</span>`
+            : `<span class="badge badgeOK">Saved</span>`;
+          const notes = e.notes ? e.notes : "—";
+          return `
+            <tr>
+              <td>${fmtDate(e.date)}</td>
+              <td>${e.distance}</td>
+              <td><b>${e.time}</b></td>
+              <td>${badge}</td>
+              <td style="color:rgba(255,255,255,.70)">${escapeHtml(notes)}</td>
+            </tr>
+          `;
+        }).join("");
+
+        recentWrap.innerHTML = `
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Distance</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        `;
+      }
+
+      // Chart
+      drawChart(entries, dist);
+    }
+
+    function renderAnalytics(){
+      const ath = getActiveAthlete();
+      const dist = distanceFilter.value;
+
+      if(!ath){
+        pillAnalytics.textContent = "No athlete";
+        anBest90.textContent = "—";
+        anBest90Meta.textContent = "—";
+        anImp5.textContent = "—";
+        anPBCount.textContent = "—";
+        anTotal.textContent = "—";
+        pbTableBody.innerHTML = `<tr><td colspan="4">No athlete selected.</td></tr>`;
+        return;
+      }
+
+      const entriesAll = ath.entries || [];
+      pillAnalytics.textContent = ath.name + (dist !== "ALL" ? ` • Focus: ${dist}` : "");
+
+      // total
+      anTotal.textContent = String(entriesAll.length);
+
+      // pb count
+      const pbMap = computePBMap(entriesAll);
+      anPBCount.textContent = String(Object.keys(pbMap).length);
+
+      // season best 90 days (based on focus distance if not ALL)
+      const now = new Date();
+      const cutoff = new Date(now.getTime() - 90*24*3600*1000);
+      const scoped = entriesAll
+        .filter(e => dist === "ALL" ? true : e.distance === dist)
+        .filter(e => new Date(e.date) >= cutoff);
+
+      const scopedMs = scoped.map(e => parseTimeToMs(e.time)).filter(x=>x!=null);
+      if(scopedMs.length){
+        const best = Math.min(...scopedMs);
+        anBest90.textContent = msToTime(best);
+        anBest90Meta.textContent = dist === "ALL" ? "Any distance • last 90 days" : `${dist} • last 90 days`;
+      }else{
+        anBest90.textContent = "—";
+        anBest90Meta.textContent = "No entries in last 90 days";
+      }
+
+      // improvement last 5 (focus)
+      const focusEntries = sortByDateDesc(entriesAll).filter(e => dist==="ALL" ? true : e.distance===dist);
+      const last5 = focusEntries.slice(0,5).map(e=>parseTimeToMs(e.time)).filter(x=>x!=null);
+      if(last5.length >= 2){
+        const imp = last5[last5.length-1] - last5[0]; // older - latest (negative means improved)
+        const improved = imp > 0; // if older is slower than latest -> positive = improved
+        const val = (Math.abs(imp)/1000).toFixed(3) + "s";
+        anImp5.textContent = improved ? ("↓ " + val) : ("↑ " + val);
+      }else{
+        anImp5.textContent = "—";
+      }
+
+      // PB table
+      const distances = Object.keys(pbMap).sort((a,b)=> a.localeCompare(b, undefined, {numeric:true}));
+      if(!distances.length){
+        pbTableBody.innerHTML = `<tr><td colspan="4">No PBs yet. Add race entries.</td></tr>`;
+      }else{
+        pbTableBody.innerHTML = distances.map(d=>{
+          const pb = pbMap[d];
+          return `
+            <tr>
+              <td><span class="badge">${d}</span></td>
+              <td><b>${msToTime(pb.ms)}</b></td>
+              <td>${fmtDate(pb.date)}</td>
+              <td style="color:rgba(255,255,255,.72)">${pb.notes ? escapeHtml(pb.notes) : "—"}</td>
+            </tr>
+          `;
+        }).join("");
+      }
+    }
+
+    function renderExport(){
+      const ath = getActiveAthlete();
+      pillExport.textContent = ath ? `Selected: ${ath.name}` : "No athlete";
+    }
+
+    function renderSettingsUI(){
+      // keep distance filter synced with default if first load
+      timeHintSmall.textContent = "Example: " + (prefs.timeHint || "00:52.300");
+    }
+
+    // ---------- CHART DRAW ----------
+    function drawChart(entries, dist){
+      // entries should be sorted newest first or any; we will sort oldest->newest
+      const data = [...entries]
+        .filter(e => parseTimeToMs(e.time)!=null)
+        .sort((a,b)=> new Date(a.date)-new Date(b.date));
+
+      const points = data.map(e => ({
+        x: new Date(e.date).getTime(),
+        y: parseTimeToMs(e.time),
+        label: `${fmtDate(e.date)} • ${e.distance} • ${e.time}`
+      }));
+
+      // canvas sizing
+      // (we draw in the internal resolution already set; CSS stretches)
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      // background grid
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = "rgba(255,255,255,0.00)";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      // if no points
+      if(points.length < 2){
+        // message
+        ctx.fillStyle = "rgba(255,255,255,.65)";
+        ctx.font = "700 26px " + getCanvasFont();
+        ctx.fillText("Add race entries to see trend", 50, 210);
+        ctx.fillStyle = "rgba(255,255,255,.45)";
+        ctx.font = "600 18px " + getCanvasFont();
+        ctx.fillText(dist === "ALL" ? "Tip: choose a distance for a cleaner line." : `Distance: ${dist}`, 50, 245);
+        return;
+      }
+
+      const padL = 70, padR=30, padT=28, padB=56;
+      const W = canvas.width - padL - padR;
+      const H = canvas.height - padT - padB;
+
+      const xs = points.map(p=>p.x);
+      const ys = points.map(p=>p.y);
+
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+
+      // For time (ms), lower is better; we want lower near TOP
+      let minY = Math.min(...ys);
+      let maxY = Math.max(...ys);
+
+      // Add some padding range
+      const padY = Math.max(120, (maxY-minY)*0.12);
+      minY = minY - padY;
+      maxY = maxY + padY;
+
+      // Grid lines
+      ctx.strokeStyle = "rgba(255,255,255,.08)";
+      ctx.lineWidth = 1;
+
+      const gridCount = 5;
+      for(let i=0;i<=gridCount;i++){
+        const y = padT + (H/gridCount)*i;
+        ctx.beginPath();
+        ctx.moveTo(padL, y);
+        ctx.lineTo(padL+W, y);
+        ctx.stroke();
+      }
+
+      // Y labels
+      ctx.fillStyle = "rgba(255,255,255,.55)";
+      ctx.font = "800 15px " + getCanvasFont();
+      for(let i=0;i<=gridCount;i++){
+        const y = padT + (H/gridCount)*i;
+        const val = maxY - ( (maxY-minY)/gridCount )*i;
+        ctx.fillText(msToTime(Math.round(val)), 14, y+5);
+      }
+
+      // X labels (start/end)
+      ctx.fillStyle = "rgba(255,255,255,.55)";
+      ctx.font = "800 15px " + getCanvasFont();
+      ctx.fillText(fmtDate(new Date(minX).toISOString().slice(0,10)), padL, canvas.height-18);
+      const endLabel = fmtDate(new Date(maxX).toISOString().slice(0,10));
+      const endWidth = ctx.measureText(endLabel).width;
+      ctx.fillText(endLabel, padL+W-endWidth, canvas.height-18);
+
+      // Line
+      const toX = (x)=> padL + ((x-minX)/(maxX-minX))*W;
+      const toY = (y)=> padT + ((maxY-y)/(maxY-minY))*H;
+
+      // gradient line
+      const grad = ctx.createLinearGradient(padL,0,padL+W,0);
+      grad.addColorStop(0, "rgba(124,92,255,.92)");
+      grad.addColorStop(1, "rgba(74,217,255,.92)");
+
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      points.forEach((p,idx)=>{
+        const x = toX(p.x);
+        const y = toY(p.y);
+        if(idx===0) ctx.moveTo(x,y);
+        else ctx.lineTo(x,y);
+      });
+      ctx.stroke();
+
+      // points
+      points.forEach((p)=>{
+        const x = toX(p.x);
+        const y = toY(p.y);
+        ctx.fillStyle = "rgba(255,255,255,.95)";
+        ctx.beginPath();
+        ctx.arc(x,y,5,0,Math.PI*2);
+        ctx.fill();
+      });
+
+      // Title inside chart
+      ctx.fillStyle = "rgba(255,255,255,.78)";
+      ctx.font = "900 20px " + getCanvasFont();
+      ctx.fillText("Trend Line", padL, 26);
+    }
+
+    function getCanvasFont(){
+      // best effort match UI font stack
+      return "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
+    }
+
+    // ---------- EXPORT / IMPORT ----------
+    function exportJSON(){
+      const blob = new Blob([JSON.stringify({ state, prefs }, null, 2)], { type:"application/json" });
+      downloadBlob(blob, "PB-VelocityBoard-backup.json");
+      flashBanner("JSON backup downloaded.", false);
+    }
+
+    function exportCSV(){
+      const ath = getActiveAthlete();
+      if(!ath){
+        flashBanner("No athlete selected.", false);
+        return;
+      }
+      const rows = [["Athlete","BirthYear","Date","Distance","Time","Notes"]];
+      for(const e of sortByDateDesc(ath.entries || [])){
+        rows.push([ath.name, ath.birthYear || "", e.date, e.distance, e.time, (e.notes||"")]);
+      }
+      const csv = rows.map(r => r.map(cell => `"${String(cell).replaceAll('"','""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type:"text/csv" });
+      downloadBlob(blob, `PB-${ath.name.replaceAll(" ","_")}.csv`);
+      flashBanner("CSV downloaded.", false);
+    }
+
+    function downloadBlob(blob, filename){
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function importJSON(){
+      clearErrors();
+      const file = importFile.files && importFile.files[0];
+      if(!file){
+        showError("importMsg","Please choose a JSON file first.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        try{
+          const parsed = JSON.parse(reader.result);
+          if(!parsed.state || !Array.isArray(parsed.state.athletes)){
+            showError("importMsg","Invalid backup structure (missing state.athletes).");
+            return;
+          }
+
+          // Merge strategy: if athlete id exists, merge entries; else add athlete
+          const incoming = parsed.state.athletes;
+          for(const inc of incoming){
+            if(!inc.id || !inc.name) continue;
+            const existing = state.athletes.find(a => a.id === inc.id);
+            if(existing){
+              // merge entries by id
+              const existingIds = new Set((existing.entries||[]).map(e=>e.id));
+              (inc.entries||[]).forEach(e=>{
+                if(e && e.id && !existingIds.has(e.id)) existing.entries.push(e);
+              });
+              // update name/year if blank
+              if(!existing.birthYear && inc.birthYear) existing.birthYear = inc.birthYear;
+              if(existing.name !== inc.name) existing.name = inc.name; // keep imported name
+            }else{
+              state.athletes.push(inc);
+            }
+          }
+
+          // bring prefs (optional)
+          if(parsed.prefs){
+            prefs = { ...prefs, ...parsed.prefs };
+            savePrefs();
+            defaultDistance.value = prefs.defaultDistance;
+            timeHint.value = prefs.timeHint;
+            timeHintSmall.textContent = "Example: " + prefs.timeHint;
+          }
+
+          // ensure active athlete
+          if(!state.activeAthleteId && state.athletes.length){
+            state.activeAthleteId = state.athletes[0].id;
+          }
+          saveState();
+
+          importMsg.classList.remove("show");
+          flashBanner("Import complete. Data merged.", false);
+          renderAll();
+
+        }catch(e){
+          showError("importMsg","Could not read JSON. Please upload a valid backup file.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // ---------- UTILS ----------
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+  </script>
+
+</body>
+</html>
