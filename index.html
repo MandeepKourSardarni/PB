@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PB VelocityBoard</title>
 
+  <!-- ✅ SheetJS for Excel import/export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
   <style>
     :root{
       --bg1:#07162f;
@@ -86,7 +89,7 @@
       justify-content:space-between;
       gap: 12px;
       padding: 12px 18px;
-      flex-wrap: wrap; /* ✅ allow wrap by default */
+      flex-wrap: wrap;
     }
 
     .brand{
@@ -198,7 +201,7 @@
       align-items:center;
       gap: 8px;
       justify-content:flex-end;
-      flex-wrap: wrap; /* ✅ allow wrap so buttons don't disappear on tablets */
+      flex-wrap: wrap;
       flex: 1 1 520px;
     }
 
@@ -646,7 +649,24 @@
 
     .foot{ margin-top: 14px; color: var(--muted2); font-size: 12px; line-height:1.45; }
 
-    /* ✅ large screens can still be neat */
+    /* ✅ Distance Focus (for cards) pill look */
+    .focusWrap{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+    }
+    .focusLabel{
+      font-size: 12px;
+      font-weight: 950;
+      color: rgba(15,21,38,.72);
+      white-space: nowrap;
+    }
+    .focusSelect{
+      min-width: 180px;
+    }
+
     @media (min-width: 980px){
       .appbarInner{ flex-wrap: nowrap; padding: 10px 18px; }
       .rightTools{ flex-wrap: nowrap; }
@@ -671,6 +691,8 @@
       .modal{ max-height: calc(100vh - 40px); }
       .chartHint{ white-space:normal; width: 90%; text-align:center; }
       .distList{ max-height: 52vh; }
+      .focusWrap{ justify-content:flex-start; }
+      .focusSelect{ min-width: 100%; }
     }
   </style>
 </head>
@@ -721,26 +743,39 @@
           </div>
           <div class="pill" id="pillAthlete">No athlete selected</div>
         </div>
+
         <div class="cardHeader" style="margin-top:10px;">
           <div class="pill" id="pillPBCount">0 PBs</div>
         </div>
-
 
         <div id="pbSummaryWrap"></div>
 
         <div style="height:12px;"></div>
 
-        <div class="cardHeader">
+        <!-- ✅ Distance Focus moved next to Race Cards header -->
+        <div class="cardHeader" style="align-items:center;">
           <div>
             <div class="title" style="font-size:16px;">Race Cards (by distance)</div>
             <div class="sub">Swipe cards left/right</div>
           </div>
-          <div class="pill" id="pillCount">0 races</div>
+
+          <div class="focusWrap">
+            <div class="pill" id="pillCount">0 races</div>
+
+            <div class="field" style="min-width: 220px; margin:0;">
+              <label style="margin:0; font-size:11px; font-weight:950; color:rgba(15,21,38,.66);">
+                Distance Focus (for cards)
+              </label>
+              <select id="distanceFilter" class="select2 focusSelect"></select>
+            </div>
+          </div>
         </div>
 
         <div id="cardsWrap" class="handWrap"></div>
 
-        <div class="foot">Tip: Everything is saved on this device (local storage). To view in other device, download the excel template for selected athlete and upload on the other device on this page </div>
+        <div class="foot">
+          Tip: Everything is saved on this device (local storage). To view on another device, download the Excel for the selected athlete and upload it on the other device.
+        </div>
       </div>
     </section>
 
@@ -777,30 +812,31 @@
       </div>
     </section>
 
+    <!-- ✅ EXCEL Export/Import tab -->
     <section id="screenExport" class="screen">
       <div class="card">
         <div class="cardHeader">
           <div>
-            <div class="title">CSV Import / Template</div>
-            <div class="sub">Download the template, fill it, and upload to import into the selected athlete.</div>
+            <div class="title">Excel Import / Template</div>
+            <div class="sub">Download the Excel template, fill it, and upload to import into the selected athlete.</div>
           </div>
           <div class="pill" id="pillExport">—</div>
         </div>
 
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn" id="btnExportCSV">Download CSV (selected athlete)</button>
-          <button class="btn" id="btnDownloadTemplate">⬇️ Download CSV Template</button>
+          <button class="btn" id="btnExportXLSX">Download Excel (selected athlete)</button>
+          <button class="btn" id="btnDownloadTemplateXLSX">⬇️ Download Excel Template</button>
         </div>
 
         <div class="empty" style="margin-top:12px;">
-          <strong>Upload CSV</strong>
+          <strong>Upload Excel</strong>
           <p>Data from this file will be added to the currently selected athlete.</p>
           <div class="field" style="margin-top:10px;">
-            <label>Choose CSV file</label>
-            <input class="input" id="csvFile" type="file" accept=".csv" />
+            <label>Choose Excel file</label>
+            <input class="input" id="excelFile" type="file" accept=".xlsx,.xls" />
           </div>
           <div style="margin-top:10px;">
-            <button class="btn btnPrimary" id="btnImportCSV">Import into selected athlete</button>
+            <button class="btn btnPrimary" id="btnImportXLSX">Import into selected athlete</button>
           </div>
           <div id="importMsg" class="error"></div>
         </div>
@@ -934,7 +970,6 @@
         <p>Choose a photo. It will be stored on this device (as a small data file).</p>
         <div class="field" style="margin-top:10px;">
           <label>Choose image</label>
-          <!-- ✅ phone-friendly capture + accept -->
           <input id="avatarFile" class="input" type="file" accept="image/*" capture="environment" />
         </div>
       </div>
@@ -993,7 +1028,7 @@
     </div>
   </div>
 
-  <!-- ✅ Edit Entry Modal -->
+  <!-- Edit Entry Modal -->
   <div class="modalOverlay" id="modalEditEntry">
     <div class="modal">
       <div class="modalTop">
@@ -1112,7 +1147,7 @@
   </div>
 
   <script>
-    const PAYPAL_ME = "https://paypal.me/MandeepSardarni"; // ✅ hardcoded as requested
+    const PAYPAL_ME = "https://paypal.me/MandeepSardarni";
 
     const LS_KEY  = "pb_velocityboard_v11";
     const LS_PREF = "pb_velocityboard_prefs_v11";
@@ -1150,7 +1185,7 @@
     const anCount = document.getElementById("anCount");
 
     const pillExport = document.getElementById("pillExport");
-    const csvFile = document.getElementById("csvFile");
+    const excelFile = document.getElementById("excelFile");
     const importMsg = document.getElementById("importMsg");
 
     const timeHint = document.getElementById("timeHint");
@@ -1164,6 +1199,7 @@
     // Buttons
     document.getElementById("btnAddAthlete").addEventListener("click", () => openModal("modalAthlete"));
     document.getElementById("btnEditAthlete").addEventListener("click", openEditAthlete);
+
     document.getElementById("btnAddEntry").addEventListener("click", () => {
       if(!getActiveAthlete()){
         flashBanner("Please add/select an athlete first.", false);
@@ -1172,6 +1208,7 @@
       }
       openEntryModal();
     });
+
     document.getElementById("btnReset").addEventListener("click", () => openModal("modalReset"));
 
     // Donate
@@ -1218,10 +1255,10 @@
     document.getElementById("saveEntry").addEventListener("click", saveEntryMulti);
     document.getElementById("doReset").addEventListener("click", doResetAll);
 
-    // Export/Import
-    document.getElementById("btnExportCSV").addEventListener("click", exportCSV);
-    document.getElementById("btnDownloadTemplate").addEventListener("click", downloadTemplateCSV);
-    document.getElementById("btnImportCSV").addEventListener("click", importCSVIntoSelectedAthlete);
+    // ✅ Excel Export/Import
+    document.getElementById("btnExportXLSX").addEventListener("click", exportXLSX);
+    document.getElementById("btnDownloadTemplateXLSX").addEventListener("click", downloadTemplateXLSX);
+    document.getElementById("btnImportXLSX").addEventListener("click", importXLSXIntoSelectedAthlete);
 
     // Tabs
     tabBtns.forEach(btn => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
@@ -1233,13 +1270,17 @@
       renderAll(false);
     });
 
-    // Distance Focus
+    // Distance Focus (cards <-> chart sync)
     distanceFilter.addEventListener("change", () => {
       analyticsDistance.value = distanceFilter.value;
+      prefs.defaultDistance = distanceFilter.value;
+      savePrefs();
       renderAll(true);
     });
     analyticsDistance.addEventListener("change", () => {
       distanceFilter.value = analyticsDistance.value;
+      prefs.defaultDistance = analyticsDistance.value;
+      savePrefs();
       renderAll(true);
     });
 
@@ -1381,6 +1422,9 @@
       let raw = String(t).trim();
       if(!raw) return { ms:null, normalized:null, note:null };
 
+      // remove internal spaces like "00: 50.738"
+      raw = raw.replace(/\s+/g,"");
+
       // 1) strict mm:ss(.mmm)
       let m = raw.match(/^(\d{1,2}):([0-5]\d)(?:\.(\d{1,3}))?$/);
       if(m){
@@ -1391,8 +1435,7 @@
         return { ms: total, normalized: msToTime(total), note: null };
       }
 
-      // 2) m.ss shorthand like 2.1 => 02:01.000  | 1.2 => 01:02.000 | 2.15 => 02:15.000
-      //    only if left side looks like minutes and seconds is < 60
+      // 2) m.ss shorthand like 2.1 => 02:01.000
       m = raw.match(/^(\d{1,2})\.(\d{1,2})$/);
       if(m){
         const mm = Number(m[1]);
@@ -1659,7 +1702,6 @@
           return;
         }
 
-        // ✅ confirm when we had to interpret (like 2.1)
         if(parsed.note){
           const ok = confirm(`Just checking 🙂\n\nWe interpreted "${timeStr}" as "${parsed.normalized}".\n\nSave it?`);
           if(!ok){
@@ -1757,7 +1799,7 @@
       saveState();
       closeModal("modalEditEntry");
       flashBanner("Entry updated.", false);
-      renderAll(true); // safe: edit could change PB table
+      renderAll(true);
     }
 
     function deleteEntryFromEditModal(){
@@ -1868,7 +1910,6 @@
       const pbCount = Object.keys(pbMap).length;
       pillPBCount.textContent = `${pbCount} PBs`;
 
-      // PB Summary (clickable rows for edit)
       if(pbCount === 0){
         pbSummaryWrap.innerHTML = `
           <div class="empty">
@@ -1905,7 +1946,6 @@
         `;
       }
 
-      // Cards
       const scopedEntries = (distanceFilter.value === "ALL")
         ? entriesAll
         : entriesAll.filter(e => e.distance === distanceFilter.value);
@@ -2086,66 +2126,111 @@
       ctx.stroke();
     }
 
-    function exportCSV(){
+    /* ✅ Excel Export */
+    function exportXLSX(){
       const ath = getActiveAthlete();
       if(!ath){ flashBanner("No athlete selected.", false); return; }
+
       const rows = [["Athlete","BirthYear","Date","Location","Distance","Time","Notes"]];
       for(const e of sortByDateDesc(ath.entries || [])){
         rows.push([ath.name, ath.birthYear || "", e.date, e.location || "", e.distance, e.time, (e.notes||"")]);
       }
-      const csv = rows.map(r => r.map(cell => `"${String(cell).replaceAll('"','""')}"`).join(",")).join("\n");
-      const blob = new Blob([csv], { type:"text/csv" });
-      downloadBlob(blob, `PB-${ath.name.replaceAll(" ","_")}.csv`);
-      flashBanner("CSV downloaded.", false);
+
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "PB Data");
+
+      const safeName = (ath.name || "Athlete").replaceAll(/[^\w\- ]/g,"").replaceAll(" ","_");
+      XLSX.writeFile(wb, `PB-${safeName}.xlsx`);
+      flashBanner("Excel downloaded.", false);
     }
 
-    function downloadTemplateCSV(){
+    /* ✅ Excel Template */
+    function downloadTemplateXLSX(){
       const sample = [
         ["Athlete","BirthYear","Date","Location","Distance","Time","Notes"],
-        ["Alex","2015","2025-11-29","Kingston","400m","00:52.300","Sample row"]
+        ["Samarveer","2014","2025-11-29","Ontario Provincial Circuit - Brampton","400m","00:48.720","Sample row"]
       ];
-      const csv = sample.map(r => r.map(cell => `"${String(cell).replaceAll('"','""')}"`).join(",")).join("\n");
-      const blob = new Blob([csv], { type:"text/csv" });
-      downloadBlob(blob, "PB-VelocityBoard-Template.csv");
+      const ws = XLSX.utils.aoa_to_sheet(sample);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Template");
+      XLSX.writeFile(wb, "PB-VelocityBoard-Template.xlsx");
       flashBanner("Template downloaded.", false);
     }
 
-    function importCSVIntoSelectedAthlete(){
+    /* ✅ Excel Import */
+    function importXLSXIntoSelectedAthlete(){
       clearErrors();
       const ath = getActiveAthlete();
       if(!ath){ showError("importMsg","Please select an athlete first."); return; }
-      const file = csvFile.files && csvFile.files[0];
-      if(!file){ showError("importMsg","Please choose a CSV file first."); return; }
+
+      const file = excelFile.files && excelFile.files[0];
+      if(!file){ showError("importMsg","Please choose an Excel file first."); return; }
 
       const reader = new FileReader();
+
       reader.onload = () => {
         try{
-          const text = String(reader.result || "");
-          const rows = parseCSV(text);
-          if(rows.length < 2){ showError("importMsg","CSV looks empty. Please use the template."); return; }
+          const data = new Uint8Array(reader.result);
+          const wb = XLSX.read(data, { type: "array" });
+          const sheetName = wb.SheetNames[0];
+          const ws = wb.Sheets[sheetName];
 
-          const header = rows[0].map(h => h.trim().toLowerCase());
-          const idx = (name) => header.indexOf(name.toLowerCase());
-
-          for(const k of ["date","location","distance","time"]){
-            if(idx(k) === -1){ showError("importMsg",`Missing column "${k}". Please use the template.`); return; }
+          const json = XLSX.utils.sheet_to_json(ws, { defval: "" });
+          if(!json.length){
+            showError("importMsg","Excel looks empty. Please use the template.");
+            return;
           }
 
+          const norm = (s)=> String(s||"").trim().toLowerCase();
+          const get = (row, key)=>{
+            const k = Object.keys(row).find(h => norm(h) === norm(key));
+            return k ? String(row[k] ?? "").trim() : "";
+          };
+
           let added = 0;
-          for(let i=1;i<rows.length;i++){
-            const r = rows[i];
-            if(!r || r.every(c => !String(c||"").trim())) continue;
+          let skipped = 0;
+          let firstBad = "";
 
-            const date = (r[idx("date")]||"").trim();
-            const location = (r[idx("location")]||"").trim();
-            const distance = (r[idx("distance")]||"").trim();
-            const time = (r[idx("time")]||"").trim();
-            const notes = idx("notes") >= 0 ? (r[idx("notes")]||"").trim() : "";
+          for(let i=0;i<json.length;i++){
+            const row = json[i];
 
-            if(!date || !location || !distance || !time) continue;
+            let date = get(row,"Date");
+            const location = get(row,"Location");
+            const distance = get(row,"Distance");
+            let time = get(row,"Time");
+            const notes = get(row,"Notes");
+
+            time = time.replace(/\s+/g,"");
+
+            if(!date || !location || !distance || !time){
+              skipped++;
+              continue;
+            }
+
+            // Excel date conversions
+            if(Object.prototype.toString.call(row.Date) === "[object Date]" && !isNaN(row.Date)){
+              const d = row.Date;
+              const yyyy = d.getFullYear();
+              const mm = String(d.getMonth()+1).padStart(2,"0");
+              const dd = String(d.getDate()).padStart(2,"0");
+              date = `${yyyy}-${mm}-${dd}`;
+            } else if(typeof row.Date === "number"){
+              const d = XLSX.SSF.parse_date_code(row.Date);
+              if(d){
+                const yyyy = d.y;
+                const mm = String(d.m).padStart(2,"0");
+                const dd = String(d.d).padStart(2,"0");
+                date = `${yyyy}-${mm}-${dd}`;
+              }
+            }
 
             const parsed = parseTimeSmart(time);
-            if(parsed.ms == null) continue;
+            if(parsed.ms == null){
+              skipped++;
+              if(!firstBad) firstBad = `Row ${i+2}: bad time "${time}"`;
+              continue;
+            }
 
             ath.entries.push({
               id: "e_" + Math.random().toString(16).slice(2) + Date.now().toString(16),
@@ -2155,50 +2240,21 @@
           }
 
           saveState();
-          flashBanner(`CSV import complete: ${added} row(s) added to ${ath.name}.`, false);
+
+          if(added === 0){
+            showError("importMsg", `No rows imported. ${firstBad || "Please use the template columns: Date, Location, Distance, Time."}`);
+            return;
+          }
+
+          flashBanner(`Excel import complete: ${added} row(s) added to ${ath.name}${skipped ? ` • ${skipped} skipped` : ""}.`, false);
           renderAll(true);
 
         }catch(e){
-          showError("importMsg","Could not import CSV. Please use the template format.");
+          showError("importMsg","Could not import Excel. Please use the template format.");
         }
       };
-      reader.readAsText(file);
-    }
 
-    function parseCSV(text){
-      const rows = [];
-      let row = [];
-      let cur = "";
-      let inQuotes = false;
-
-      for(let i=0;i<text.length;i++){
-        const ch = text[i];
-        const next = text[i+1];
-
-        if(ch === '"' ){
-          if(inQuotes && next === '"'){ cur += '"'; i++; }
-          else{ inQuotes = !inQuotes; }
-          continue;
-        }
-
-        if(!inQuotes && ch === ','){ row.push(cur); cur = ""; continue; }
-
-        if(!inQuotes && (ch === '\n' || ch === '\r')){
-          if(ch === '\r' && next === '\n') i++;
-          row.push(cur);
-          rows.push(row);
-          row = [];
-          cur = "";
-          continue;
-        }
-
-        cur += ch;
-      }
-      row.push(cur);
-      rows.push(row);
-
-      while(rows.length && rows[rows.length-1].every(c => !String(c||"").trim())) rows.pop();
-      return rows;
+      reader.readAsArrayBuffer(file);
     }
 
     function donateAmount(amountStr){
@@ -2216,6 +2272,11 @@
       window.open(url, "_blank", "noopener,noreferrer");
       closeModal("modalDonate");
       flashBanner("Opening PayPal donation page… 💙", false);
+    }
+
+    function renderExport(){
+      const ath = getActiveAthlete();
+      pillExport.textContent = ath ? `Selected: ${ath.name}` : "No athlete";
     }
 
     function downloadBlob(blob, filename){
