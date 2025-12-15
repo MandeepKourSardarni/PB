@@ -1322,9 +1322,8 @@
     document.getElementById("btnSaveEntryEdits").addEventListener("click", saveEntryEdits);
     document.getElementById("btnDeleteEntry").addEventListener("click", deleteEntryFromEditModal);
 
-    document.querySelectorAll("[data-close]").forEach(btn => {
-      btn.addEventListener("click", () => closeModal(btn.getAttribute("data-close")));
-    });
+    document.querySelectorAll(".modalOverlay").forEach(ov => {ov.addEventListener("click", (e) => {if (e.target === ov) closeModal(ov.id);});});
+
     document.querySelectorAll(".modalOverlay").forEach(ov => {
       ov.addEventListener("click", (e) => {
         if(e.target === ov) ov.classList.remove("show");
