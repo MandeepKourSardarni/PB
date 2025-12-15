@@ -686,6 +686,7 @@
     }
 
     @media (max-width: 560px){
+      /* (Will be overridden by the scrollable appbar patch below) */
       .brandText span{ display:none; }
       .rightTools{
         display:grid;
@@ -704,55 +705,121 @@
       .focusSelect{ min-width: 100%; }
     }
 
-/* =========================================================
-   DARK THEME: Make key tab headings/subtexts WHITE
-   (and keep LIGHT theme BLACK)
-========================================================= */
+    /* =========================================================
+       DARK THEME: Make key tab headings/subtexts WHITE
+       (and keep LIGHT theme BLACK)
+    ========================================================= */
 
-/* Only when theme is dark */
-html[data-theme="dark"] .card{
-  /* make the card itself darker so white text makes sense */
-  background: linear-gradient(180deg, rgba(0,0,0,.30), rgba(0,0,0,.18));
-  border: 1px solid rgba(255,255,255,.16);
-  box-shadow: 0 24px 70px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.10) inset;
-  color: var(--pageText);
-}
+    html[data-theme="dark"] .card{
+      background: linear-gradient(180deg, rgba(0,0,0,.30), rgba(0,0,0,.18));
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: 0 24px 70px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.10) inset;
+      color: var(--pageText);
+    }
 
-/* Titles + subtitles (the exact texts you listed) */
-html[data-theme="dark"] .card .title{
-  color: rgba(255,255,255,.95) !important;
-}
-html[data-theme="dark"] .card .sub{
-  color: rgba(255,255,255,.78) !important;
-}
+    html[data-theme="dark"] .card .title{
+      color: rgba(255,255,255,.95) !important;
+    }
+    html[data-theme="dark"] .card .sub{
+      color: rgba(255,255,255,.78) !important;
+    }
 
-/* Pills like: "SAMARVEER • 2014", "31 races", "2 PBs", "Local Storage" etc. */
-html[data-theme="dark"] .card .pill{
-  color: rgba(255,255,255,.90) !important;
-  background: rgba(255,255,255,.08);
-  border-color: rgba(255,255,255,.18);
-}
+    html[data-theme="dark"] .card .pill{
+      color: rgba(255,255,255,.90) !important;
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.18);
+    }
 
-/* Labels like: Distance Focus (for cards/chart), Theme */
-html[data-theme="dark"] .card .field label{
-  color: rgba(255,255,255,.78) !important;
-}
+    html[data-theme="dark"] .card .field label{
+      color: rgba(255,255,255,.78) !important;
+    }
 
-/* Analytics helper text like: "31 total races" */
-html[data-theme="dark"] .card .help,
-html[data-theme="dark"] .card #anCount{
-  color: rgba(255,255,255,.78) !important;
-}
+    html[data-theme="dark"] .card .help,
+    html[data-theme="dark"] .card #anCount{
+      color: rgba(255,255,255,.78) !important;
+    }
 
-/* Keep table/cards inside readable (optional: only if your table text became too dark/odd) */
-html[data-theme="dark"] .table,
-html[data-theme="dark"] .distCard,
-html[data-theme="dark"] .empty,
-html[data-theme="dark"] .chart{
-  color: var(--surfaceText); /* keep these areas normal since they are light surfaces */
-}
+    html[data-theme="dark"] .table,
+    html[data-theme="dark"] .distCard,
+    html[data-theme="dark"] .empty,
+    html[data-theme="dark"] .chart{
+      color: var(--surfaceText);
+    }
 
-    
+    /* =========================================================
+       APPBAR PATCH (keep brand prominent; Tabs + Tools scrollable)
+       ✅ This OVERRIDES the grid stacking that made appbar too tall
+    ========================================================= */
+
+    @media (max-width: 760px){
+      .appbarInner{
+        padding: 10px 12px;
+        gap: 10px;
+      }
+      .brand{
+        min-width: unset;
+      }
+      .brandText strong{ font-size: 16px; }
+      .brandText span{ font-size: 12px; }
+    }
+
+    @media (max-width: 560px){
+      .brandText span{ display:block; }
+
+      .tabs{
+        width: 100%;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+      }
+      .tabBtn, .giftBtn{
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+      }
+
+      .rightTools{
+        width: 100%;
+        display:flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 8px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+      }
+      .rightTools::-webkit-scrollbar{ display:none; }
+
+      .rightTools > *{
+        flex: 0 0 auto !important;
+      }
+
+      .selectWrap{
+        min-width: 220px !important;
+        width: 220px !important;
+        grid-column: unset !important;
+      }
+      #athleteSelect{
+        width: 220px !important;
+      }
+
+      .btn{
+        width: auto !important;
+        justify-content:center;
+        padding: 9px 10px;
+      }
+    }
+
+    @media (max-width: 560px){
+      .brand{
+        padding-bottom: 2px;
+        border-bottom: 1px solid rgba(255,255,255,.10);
+      }
+      html[data-theme="light"] .brand{
+        border-bottom: 1px solid rgba(15,21,38,.10);
+      }
+    }
   </style>
 </head>
 
@@ -767,10 +834,10 @@ html[data-theme="dark"] .chart{
         </div>
       </div>
 
+      <!-- ✅ EXPORT TAB REMOVED -->
       <div class="tabs" role="tablist" aria-label="PB VelocityBoard Tabs">
         <button class="tabBtn active" data-tab="home">Home</button>
         <button class="tabBtn" data-tab="analytics">Analytics</button>
-        <button class="tabBtn" data-tab="export">Export</button>
         <button class="tabBtn" data-tab="settings">Settings</button>
         <button class="giftBtn" id="btnDonate" title="Donate / Support">🎁</button>
       </div>
@@ -870,36 +937,7 @@ html[data-theme="dark"] .chart{
       </div>
     </section>
 
-    <section id="screenExport" class="screen">
-      <div class="card">
-        <div class="cardHeader">
-          <div>
-            <div class="title">Excel Import / Template</div>
-            <div class="sub">Download the Excel template, fill it, and upload to import into the selected athlete.</div>
-          </div>
-          <div class="pill" id="pillExport">—</div>
-        </div>
-
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn" id="btnExportXLSX">Download Excel (selected athlete)</button>
-          <button class="btn" id="btnDownloadTemplateXLSX">⬇️ Download Excel Template</button>
-        </div>
-
-        <div class="empty" style="margin-top:12px;">
-          <strong>Upload Excel</strong>
-          <p>Data from this file will be added to the currently selected athlete.</p>
-          <div class="field" style="margin-top:10px;">
-            <label>Choose Excel file</label>
-            <input class="input" id="excelFile" type="file" accept=".xlsx,.xls" />
-          </div>
-          <div style="margin-top:10px;">
-            <button class="btn btnPrimary" id="btnImportXLSX">Upload data to selected athlete</button>
-          </div>
-          <div id="importMsg" class="error"></div>
-        </div>
-      </div>
-    </section>
-
+    <!-- ✅ SETTINGS now contains 2 glass panels: Preferences + Excel Import/Export -->
     <section id="screenSettings" class="screen">
       <div class="card">
         <div class="cardHeader">
@@ -928,6 +966,36 @@ html[data-theme="dark"] .chart{
         <div class="empty" style="margin-top:12px;">
           <strong>Storage note</strong>
           <p>All data is stored on this device. To start fresh: Reset.</p>
+        </div>
+      </div>
+
+      <div style="height:14px;"></div>
+
+      <div class="card">
+        <div class="cardHeader">
+          <div>
+            <div class="title">Excel Import / Template</div>
+            <div class="sub">Download the Excel template, fill it, and upload to import into the selected athlete.</div>
+          </div>
+          <div class="pill" id="pillExport">—</div>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn" id="btnExportXLSX">Download Excel (selected athlete)</button>
+          <button class="btn" id="btnDownloadTemplateXLSX">⬇️ Download Excel Template</button>
+        </div>
+
+        <div class="empty" style="margin-top:12px;">
+          <strong>Upload Excel</strong>
+          <p>Data from this file will be added to the currently selected athlete.</p>
+          <div class="field" style="margin-top:10px;">
+            <label>Choose Excel file</label>
+            <input class="input" id="excelFile" type="file" accept=".xlsx,.xls" />
+          </div>
+          <div style="margin-top:10px;">
+            <button class="btn btnPrimary" id="btnImportXLSX">Upload data to selected athlete</button>
+          </div>
+          <div id="importMsg" class="error"></div>
         </div>
       </div>
     </section>
@@ -1170,7 +1238,6 @@ html[data-theme="dark"] .chart{
     const screens = {
       home: document.getElementById("screenHome"),
       analytics: document.getElementById("screenAnalytics"),
-      export: document.getElementById("screenExport"),
       settings: document.getElementById("screenSettings")
     };
 
@@ -1193,6 +1260,7 @@ html[data-theme="dark"] .chart{
     const anPBMeta = document.getElementById("anPBMeta");
     const anCount = document.getElementById("anCount");
 
+    // ✅ now lives in Settings (Excel panel)
     const pillExport = document.getElementById("pillExport");
     const excelFile = document.getElementById("excelFile");
     const importMsg = document.getElementById("importMsg");
@@ -1257,6 +1325,7 @@ html[data-theme="dark"] .chart{
     document.getElementById("saveEntry").addEventListener("click", saveEntryMulti);
     document.getElementById("doReset").addEventListener("click", doResetAll);
 
+    // ✅ Excel buttons now in Settings (same IDs kept)
     document.getElementById("btnExportXLSX").addEventListener("click", exportXLSX);
     document.getElementById("btnDownloadTemplateXLSX").addEventListener("click", downloadTemplateXLSX);
     document.getElementById("btnImportXLSX").addEventListener("click", importXLSXIntoSelectedAthlete);
@@ -1544,6 +1613,18 @@ html[data-theme="dark"] .chart{
         const d = new Date(iso);
         return d.toLocaleDateString(undefined, { year:"numeric", month:"short", day:"2-digit" });
       }catch(e){ return iso; }
+    }
+
+    // ✅ DD-MON-YY (for X-axis)
+    function fmtDateAxis(iso){
+      if(!iso) return "—";
+      const d = new Date(iso);
+      if(isNaN(d)) return "—";
+      const dd = String(d.getDate()).padStart(2,"0");
+      const mons = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      const mon = mons[d.getMonth()] || "—";
+      const yy = String(d.getFullYear()).slice(-2);
+      return `${dd}-${mon}-${yy}`;
     }
 
     function sortByDateDesc(entries){
@@ -1886,7 +1967,7 @@ html[data-theme="dark"] .chart{
       renderAvatar();
       renderHome();
       renderAnalytics(allowChartRedraw);
-      renderExport();
+      renderSettingsExcelPill();
       syncAppbarHeight();
     }
 
@@ -1902,6 +1983,7 @@ html[data-theme="dark"] .chart{
         saveState();
         pillAthlete.textContent = "No athlete selected";
         pillAnalytics.textContent = "No athlete";
+        if(pillExport) pillExport.textContent = "No athlete";
         return;
       }
 
@@ -1917,6 +1999,12 @@ html[data-theme="dark"] .chart{
         athleteSelect.appendChild(opt);
       }
       athleteSelect.value = state.activeAthleteId;
+    }
+
+    function renderSettingsExcelPill(){
+      const ath = getActiveAthlete();
+      if(!pillExport) return;
+      pillExport.textContent = ath ? `Selected: ${ath.name}` : "No athlete";
     }
 
     function renderHome(){
@@ -2085,18 +2173,15 @@ html[data-theme="dark"] .chart{
       }
     }
 
-    function renderExport(){
-      const ath = getActiveAthlete();
-      pillExport.textContent = ath ? `Selected: ${ath.name}` : "No athlete";
-    }
-
-    // Simple chart line
+    // -----------------------------
+    // Chart (with X-axis date labels DD-MON-YY)
+    // -----------------------------
     function drawChart(entries){
       const data = [...entries]
         .filter(e => parseTimeSmart(e.time).ms!=null)
         .sort((a,b)=> new Date(a.date)-new Date(b.date));
 
-      const points = data.map(e => ({ x: new Date(e.date).getTime(), y: parseTimeSmart(e.time).ms }));
+      const points = data.map(e => ({ x: new Date(e.date).getTime(), y: parseTimeSmart(e.time).ms, iso: e.date }));
 
       ctx.clearRect(0,0,canvas.width,canvas.height);
 
@@ -2110,7 +2195,7 @@ html[data-theme="dark"] .chart{
         return;
       }
 
-      const padL = 70, padR=30, padT=28, padB=56;
+      const padL = 70, padR=30, padT=28, padB=66; // a bit more for x labels
       const W = canvas.width - padL - padR;
       const H = canvas.height - padT - padB;
 
@@ -2127,6 +2212,7 @@ html[data-theme="dark"] .chart{
       minY -= padY;
       maxY += padY;
 
+      // Y grid
       ctx.strokeStyle = gridCol;
       ctx.lineWidth = 1;
 
@@ -2139,6 +2225,7 @@ html[data-theme="dark"] .chart{
         ctx.stroke();
       }
 
+      // Y labels
       ctx.fillStyle = labelCol;
       ctx.font = "800 14px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
       for(let i=0;i<=gridCount;i++){
@@ -2150,6 +2237,31 @@ html[data-theme="dark"] .chart{
       const toX = (x)=> padL + ((x-minX)/(maxX-minX))*W;
       const toY = (y)=> padT + ((maxY-y)/(maxY-minY))*H;
 
+      // X-axis labels (DD-MON-YY)
+      const tickCount = Math.min(6, Math.max(3, Math.round(points.length/2)));
+      ctx.fillStyle = labelCol;
+      ctx.font = "900 12px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
+      ctx.textAlign = "center";
+
+      for(let i=0;i<tickCount;i++){
+        const idx = Math.round((points.length-1) * (i/(tickCount-1)));
+        const p = points[idx];
+        const x = toX(p.x);
+        const yBase = padT + H + 22;
+
+        // small tick
+        ctx.strokeStyle = "rgba(15,21,38,.16)";
+        ctx.beginPath();
+        ctx.moveTo(x, padT + H);
+        ctx.lineTo(x, padT + H + 6);
+        ctx.stroke();
+
+        ctx.fillStyle = labelCol;
+        ctx.fillText(fmtDateAxis(p.iso), x, yBase);
+      }
+      ctx.textAlign = "start";
+
+      // Line
       const grad = ctx.createLinearGradient(padL,0,padL+W,0);
       grad.addColorStop(0, "rgba(47,107,255,.95)");
       grad.addColorStop(1, "rgba(43,183,255,.95)");
@@ -2164,6 +2276,16 @@ html[data-theme="dark"] .chart{
         else ctx.lineTo(x,y);
       });
       ctx.stroke();
+
+      // Points
+      ctx.fillStyle = "rgba(15,21,38,.85)";
+      points.forEach(p=>{
+        const x = toX(p.x);
+        const y = toY(p.y);
+        ctx.beginPath();
+        ctx.arc(x,y,4,0,Math.PI*2);
+        ctx.fill();
+      });
     }
 
     // -----------------------------
@@ -2201,7 +2323,7 @@ html[data-theme="dark"] .chart{
       flashBanner("Template downloaded.", false);
     }
 
-    // ✅ CLEAN IMPORT (no duplicate logic, supports fill-down, supports 28-Jan-24, supports 00:01:00)
+    // ✅ CLEAN IMPORT (supports fill-down, supports 28-Jan-24, supports 00:01:00)
     function importXLSXIntoSelectedAthlete(){
       clearErrors();
       const ath = getActiveAthlete();
@@ -2240,30 +2362,25 @@ html[data-theme="dark"] .chart{
           for(let i=0;i<json.length;i++){
             const row = json[i];
 
-            // read raw
             let rawDate = get(row,"Date");
             let rawLocation = get(row,"Location");
             let rawDistance = get(row,"Distance");
             let rawTime = get(row,"Time");
             let notes = String(get(row,"Notes") || "").trim();
 
-            // fill-down date/location
             if(String(rawDate).trim()) lastDate = rawDate;
             else rawDate = lastDate;
 
             if(String(rawLocation).trim()) lastLocation = rawLocation;
             else rawLocation = lastLocation;
 
-            // normalize
             let date = excelDateToISO(rawDate);
             let location = String(rawLocation || "").trim();
             let distance = normalizeDistance(rawDistance);
             let timeRaw = (rawTime == null) ? "" : rawTime;
 
-            // remove spaces if string time like " 00: 50.738 "
             if(typeof timeRaw === "string") timeRaw = timeRaw.replace(/\s+/g,"");
 
-            // validate required fields
             if(!date || !location || !distance || (timeRaw === "" || timeRaw == null)){
               skipped++;
               continue;
@@ -2307,11 +2424,9 @@ html[data-theme="dark"] .chart{
 
     function excelDateToISO(v){
       if(v == null) return "";
-      // if already ISO yyyy-mm-dd
       const s = String(v).trim();
       if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
 
-      // JS Date
       if(Object.prototype.toString.call(v) === "[object Date]" && !isNaN(v)){
         const yyyy = v.getFullYear();
         const mm = String(v.getMonth()+1).padStart(2,"0");
@@ -2319,7 +2434,6 @@ html[data-theme="dark"] .chart{
         return `${yyyy}-${mm}-${dd}`;
       }
 
-      // Excel serial date number
       if(typeof v === "number" && isFinite(v)){
         const d = XLSX.SSF.parse_date_code(v);
         if(d){
@@ -2327,7 +2441,6 @@ html[data-theme="dark"] .chart{
         }
       }
 
-      // format like 28-Jan-24
       const m = s.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{2,4})$/);
       if(m){
         const months = {jan:"01",feb:"02",mar:"03",apr:"04",may:"05",jun:"06",jul:"07",aug:"08",sep:"09",oct:"10",nov:"11",dec:"12"};
