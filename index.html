@@ -2371,9 +2371,7 @@ function drawChart(entries){
     function downloadTemplateXLSX(){
       const sample = [
         ["Athlete","BirthYear","Date","Location","Distance","Time","Notes"],
-        ["Samarveer","2014","2025-11-29","Ontario Provincial Circuit - Brampton","400m","00:48.700","Sample row"],
-        ["Samarveer","2014","","","500m","00:59.300","(optional) leave date/location blank to fill-down like Excel"],
-        ["Samarveer","2014","","","400m","00:01:00","HH:MM:SS is allowed (Excel style)"]
+        ["ALEX","2015","2025-11-29","Ontario Provincial Circuit -MILTON","400m","00:52.100","This is Sample row (HH:MM:SS is allowed in Time column)"],
       ];
       const ws = XLSX.utils.aoa_to_sheet(sample);
       const wb = XLSX.utils.book_new();
