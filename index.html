@@ -850,11 +850,9 @@
         <button class="btn" id="btnEditAthlete">Edit</button>
         <button class="btn btnPrimary" id="btnAddAthlete">+ Add Athlete</button>
         <button class="btn" id="btnAddEntry">+ Add Race</button>
-
-        <!-- ✅ NEW BUTTON: Ranking Dashboard (beside Reset) -->
-        <button class="btn" id="btnRankingDashboard">Ranking Dashboard</button>
-
         <button class="btn btnDanger" id="btnReset">Reset</button>
+        <button class="btn" id="btnRanking">Ranking Dashboard</button>
+
       </div>
     </div>
   </div>
@@ -1302,21 +1300,15 @@
       openEntryModal();
     });
 
-    // ✅ NEW: Ranking Dashboard button
-    document.getElementById("btnRankingDashboard").addEventListener("click", () => {
-      window.open(
-        "https://mandeepkoursardarni.github.io/Ice-Skating-short-track-Ranking-Dashboard/",
-        "_blank",
-        "noopener,noreferrer"
-      );
-    });
+    document.getElementById("btnReset").addEventListener("click", () => openModal("modalReset"))
+    document.getElementById("btnRanking").addEventListener("click", () => {window.open("https://mandeepkoursardarni.github.io/Ice-Skating-short-track-Ranking-Dashboard/","_blank","noopener,noreferrer");});
 
-    document.getElementById("btnReset").addEventListener("click", () => openModal("modalReset"));
 
-    // ❓ Help button
+    
+// ❓ Help button
     document.getElementById("btnHelp").addEventListener("click", () => {openModal("modalHelp");});
     document.getElementById("btnDonate").addEventListener("click", () => openModal("modalDonate"));
-
+    
     document.getElementById("btnDonateCustom").addEventListener("click", ()=>{
       const v = document.getElementById("donateCustom").value.trim();
       donateAmount(v);
@@ -1392,100 +1384,100 @@
     });
 
     // -----------------------------
-    // Init
-    // -----------------------------
-    init();
+// Init
+// -----------------------------
+init();
 
-    function init(){
-      if(!state.athletes) state = structuredClone(defaultState);
-      if(!prefs) prefs = structuredClone(defaultPrefs);
+function init(){
+  if(!state.athletes) state = structuredClone(defaultState);
+  if(!prefs) prefs = structuredClone(defaultPrefs);
 
-      applyTheme();
+  applyTheme();
 
-      timeHint.value = prefs.timeHint || "00:52.300";
-      themeSelect.value = prefs.theme || "dark";
+  timeHint.value = prefs.timeHint || "00:52.300";
+  themeSelect.value = prefs.theme || "dark";
 
-      renderAll(true);
-      syncAppbarHeight();
-      window.addEventListener("resize", syncAppbarHeight);
-    }
+  renderAll(true);
+  syncAppbarHeight();
+  window.addEventListener("resize", syncAppbarHeight);
+}
 
-    function applyTheme(){
-      const t = prefs.theme || "dark";
-      document.documentElement.setAttribute("data-theme", t);
-      syncAppbarHeight();
-    }
+function applyTheme(){
+  const t = prefs.theme || "dark";
+  document.documentElement.setAttribute("data-theme", t);
+  syncAppbarHeight();
+}
 
-    function syncAppbarHeight(){
-      const appbar = document.querySelector(".appbar");
-      if(!appbar) return;
-      const h = appbar.offsetHeight || 84;
-      document.documentElement.style.setProperty("--appbarH", h + "px");
-    }
+function syncAppbarHeight(){
+  const appbar = document.querySelector(".appbar");
+  if(!appbar) return;
+  const h = appbar.offsetHeight || 84;
+  document.documentElement.style.setProperty("--appbarH", h + "px");
+}
 
-    function switchTab(tab){
-      tabBtns.forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
-      Object.keys(screens).forEach(k => screens[k].classList.toggle("active", k === tab));
-      renderAll(false);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+function switchTab(tab){
+  tabBtns.forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
+  Object.keys(screens).forEach(k => screens[k].classList.toggle("active", k === tab));
+  renderAll(false);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
 
-    function openModal(id){
-      clearErrors();
-      const el = document.getElementById(id);
-      if(!el) return;
-      el.classList.add("show");
-      document.body.style.overflow = "hidden";
-      syncAppbarHeight();
-    }
+function openModal(id){
+  clearErrors();
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.classList.add("show");
+  document.body.style.overflow = "hidden";
+  syncAppbarHeight();
+}
 
-    function closeModal(id){
-      const el = document.getElementById(id);
-      if(!el) return;
+function closeModal(id){
+  const el = document.getElementById(id);
+  if(!el) return;
 
-      el.classList.remove("show");
+  el.classList.remove("show");
 
-      const anyOpen = [...document.querySelectorAll(".modalOverlay")]
-        .some(x => x.classList.contains("show"));
+  const anyOpen = [...document.querySelectorAll(".modalOverlay")]
+    .some(x => x.classList.contains("show"));
 
-      if(!anyOpen) document.body.style.overflow = "";
-      syncAppbarHeight();
-    }
+  if(!anyOpen) document.body.style.overflow = "";
+  syncAppbarHeight();
+}
 
-    /* =========================================================
-       ✅ GLOBAL MODAL CLOSE HANDLER (FIXES ❓ + 🎁 ISSUE)
-       ========================================================= */
+/* =========================================================
+   ✅ GLOBAL MODAL CLOSE HANDLER (FIXES ❓ + 🎁 ISSUE)
+   ========================================================= */
 
-    // Close button + backdrop (works even if modal HTML is added later)
-    document.addEventListener("click", (e) => {
+// Close button + backdrop (works even if modal HTML is added later)
+document.addEventListener("click", (e) => {
 
-      // 1) Close buttons (✕ / Close / any element with data-close)
-      const closeBtn = e.target.closest("[data-close]");
-      if (closeBtn) {
-        const id = closeBtn.getAttribute("data-close");
-        if (id) closeModal(id);
-        return;
-      }
+  // 1) Close buttons (✕ / Close / any element with data-close)
+  const closeBtn = e.target.closest("[data-close]");
+  if (closeBtn) {
+    const id = closeBtn.getAttribute("data-close");
+    if (id) closeModal(id);
+    return;
+  }
 
-      // 2) Click on dark overlay closes modal
-      const overlay = e.target.classList.contains("modalOverlay") ? e.target : null;
-      if (overlay?.id) closeModal(overlay.id);
-    });
+  // 2) Click on dark overlay closes modal
+  const overlay = e.target.classList.contains("modalOverlay") ? e.target : null;
+  if (overlay?.id) closeModal(overlay.id);
+});
 
-    // 3) ESC closes the top-most open modal
-    document.addEventListener("keydown", (e) => {
-      if (e.key !== "Escape") return;
-      const open = [...document.querySelectorAll(".modalOverlay.show")];
-      const top = open[open.length - 1];
-      if (top?.id) closeModal(top.id);
-    });
+// 3) ESC closes the top-most open modal
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  const open = [...document.querySelectorAll(".modalOverlay.show")];
+  const top = open[open.length - 1];
+  if (top?.id) closeModal(top.id);
+});
 
-    function clearErrors(){
-      ["athleteErr","entryErr","resetErr","importMsg","editAthErr","donateErr","editEntryErr"].forEach(id=>{
-        const el = document.getElementById(id);
-        if(el){ el.classList.remove("show"); el.textContent=""; }
-      });
-    }
+function clearErrors(){
+  ["athleteErr","entryErr","resetErr","importMsg","editAthErr","donateErr","editEntryErr"].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el){ el.classList.remove("show"); el.textContent=""; }
+  });
+}
 
     // -----------------------------
     // Storage
@@ -1658,6 +1650,7 @@
       return String(mm).padStart(2,"0")+":"+String(ss).padStart(2,"0")+"."+String(msec).padStart(3,"0")
     }
 
+
     function fmtDate(iso){
       if(!iso) return "—";
       try{
@@ -1665,6 +1658,16 @@
         return d.toLocaleDateString(undefined, { year:"numeric", month:"short", day:"2-digit" });
       }catch(e){ return iso; }
     }
+    function fmtDateAxis(iso){
+      const d=new Date(iso);
+      return d.toLocaleDateString(undefined,{
+        day:"2-digit",
+        month:"short",
+        year:"2-digit"
+      });
+    }
+
+
 
     // ✅ DD-MON-YY (for X-axis)
     function fmtDateAxis(iso){
@@ -1794,92 +1797,133 @@
     // -----------------------------
     // Entry modal
     // -----------------------------
-        function openEntryModal(){
+    function openEntryModal(){
       clearErrors();
-      document.getElementById("enDate").value = "";
+      document.getElementById("enDate").valueAsDate = new Date();
       document.getElementById("enLocation").value = "";
       document.getElementById("enNotes").value = "";
+
       entryRowsEl.innerHTML = "";
-      addEntryRow();
+      addEntryRow("400m", "", true);
       openModal("modalEntry");
     }
 
-    function addEntryRow(dist="", time=""){
+    function addEntryRow(distance="500m", time="", isFirst=false){
       const row = document.createElement("div");
       row.className = "entryRow";
+
       row.innerHTML = `
         <div class="field">
           <label>Distance</label>
-          <input class="input enDist" list="distanceList" placeholder="e.g., 500m" value="${escapeHtml(dist)}" />
+          <input class="input jsDist" list="distanceList" placeholder="e.g., 500m" value="${escapeHtml(distance || "")}" />
         </div>
+
         <div class="field">
           <label>Time</label>
-          <input class="input enTime" placeholder="${escapeHtml(prefs.timeHint)}" value="${escapeHtml(time)}" />
+          <input class="input jsTime" placeholder="${escapeHtml(prefs.timeHint || "00:52.300")}" value="${escapeHtml(time || "")}" />
         </div>
-        <button class="miniBtn miniBtnDanger">✕</button>
+
+        <div style="display:flex; justify-content:flex-end;">
+          <button class="miniBtn miniBtnDanger jsRemove" ${isFirst ? "disabled style='opacity:.45; cursor:not-allowed;'" : ""}>Remove</button>
+        </div>
       `;
-      row.querySelector(".miniBtnDanger").onclick = () => row.remove();
+
       entryRowsEl.appendChild(row);
+
+      const removeBtn = row.querySelector(".jsRemove");
+      removeBtn.addEventListener("click", () => {
+        if(removeBtn.disabled) return;
+        row.remove();
+      });
     }
 
     function saveEntryMulti(){
       clearErrors();
       const ath = getActiveAthlete();
-      if(!ath){ showError("entryErr","No athlete selected."); return; }
+      if(!ath){ showError("entryErr","No athlete selected. Add/select an athlete first."); return; }
 
       const date = document.getElementById("enDate").value;
-      if(!date){ showError("entryErr","Please select a date."); return; }
-
       const location = document.getElementById("enLocation").value.trim();
       const notes = document.getElementById("enNotes").value.trim();
 
-      const rows = [...entryRowsEl.querySelectorAll(".entryRow")];
-      if(rows.length === 0){ showError("entryErr","Add at least one distance."); return; }
+      if(!date){ showError("entryErr","Please select a date."); return; }
+      if(!location){ showError("entryErr","Please enter a location."); return; }
 
-      let added = 0;
-      rows.forEach(r=>{
-        const dist = normalizeDistance(r.querySelector(".enDist").value);
-        const timeRaw = r.querySelector(".enTime").value;
-        const parsed = parseTimeSmart(timeRaw);
-        if(!dist || parsed.ms == null) return;
+      const rows = [...entryRowsEl.querySelectorAll(".entryRow")];
+      if(rows.length === 0){ showError("entryErr","Please add at least one distance/time."); return; }
+
+      const beforePBMap = computePBMap(ath.entries || []);
+      let savedCount = 0;
+      let pbMessages = [];
+
+      for(const r of rows){
+        const dist = normalizeDistance(r.querySelector(".jsDist").value);
+        const timeStr = r.querySelector(".jsTime").value.trim();
+
+        if(!dist){ showError("entryErr","Please enter a distance (example: 500m)."); return; }
+
+        const parsed = parseTimeSmart(timeStr);
+        if(parsed.ms == null){
+          showError("entryErr",`Time looks invalid. Try mm:ss.mmm or HH:MM:SS (example: ${prefs.timeHint} or 00:01:00).`);
+          return;
+        }
+
+        if(parsed.note){
+          const ok = confirm(`Just checking 🙂\n\nWe interpreted "${timeStr}" as "${parsed.normalized}".\n\nSave it?`);
+          if(!ok){
+            showError("entryErr","Please correct the time and try again.");
+            return;
+          }
+        }
+
+        const beforePB = beforePBMap[dist]?.ms ?? null;
 
         ath.entries.push({
-          id: uid(),
-          date,
-          location,
-          notes,
-          distance: dist,
-          time: parsed.normalized,
-          createdAt: new Date().toISOString()
+          id: "e_" + Math.random().toString(16).slice(2) + Date.now().toString(16),
+          date, distance: dist, time: parsed.normalized, location, notes
         });
-        added++;
-      });
+        savedCount++;
 
-      if(added === 0){
-        showError("entryErr","Enter valid distance and time.");
-        return;
+        if(beforePB == null || parsed.ms < beforePB){
+          const diff = beforePB == null ? null : (beforePB - parsed.ms);
+          pbMessages.push(
+            diff == null
+              ? `First PB for ${dist}: ${parsed.normalized}`
+              : `${dist} improved by ${(diff/1000).toFixed(3)}s → ${parsed.normalized}`
+          );
+        }
       }
 
       saveState();
       closeModal("modalEntry");
+
       refreshDistanceUI();
-      flashBanner(`${added} race(s) added`, false);
+
+      if(pbMessages.length){
+        flashBanner(`🎉 ${ath.name}: ${pbMessages[0]}${pbMessages.length>1 ? ` (+${pbMessages.length-1} more)` : ""}`, true);
+      }else{
+        flashBanner(`${savedCount} race entr${savedCount===1?"y":"ies"} saved for ${ath.name}.`, false);
+      }
+
       renderAll(true);
     }
 
-    function openEditEntryModal(id){
+    function openEditEntryModal(entryId){
+      clearErrors();
       const ath = getActiveAthlete();
       if(!ath) return;
-      const e = ath.entries.find(x=>x.id===id);
+
+      const e = (ath.entries || []).find(x=>x.id===entryId);
       if(!e) return;
 
       document.getElementById("editEntryId").value = e.id;
       document.getElementById("editEnDate").value = e.date || "";
       document.getElementById("editEnLocation").value = e.location || "";
       document.getElementById("editEnNotes").value = e.notes || "";
-      document.getElementById("editEnDistance").value = e.distance || "";
+      document.getElementById("editEnDistance").value = normalizeDistance(e.distance) || "";
       document.getElementById("editEnTime").value = e.time || "";
 
+      refreshDistanceUI();
       openModal("modalEditEntry");
     }
 
@@ -1889,249 +1933,687 @@
       if(!ath){ showError("editEntryErr","No athlete selected."); return; }
 
       const id = document.getElementById("editEntryId").value;
-      const e = ath.entries.find(x=>x.id===id);
+      const e = (ath.entries || []).find(x=>x.id===id);
       if(!e){ showError("editEntryErr","Entry not found."); return; }
 
       const date = document.getElementById("editEnDate").value;
-      const dist = normalizeDistance(document.getElementById("editEnDistance").value);
-      const parsed = parseTimeSmart(document.getElementById("editEnTime").value);
+      const location = document.getElementById("editEnLocation").value.trim();
+      const notes = document.getElementById("editEnNotes").value.trim();
+      const distance = normalizeDistance(document.getElementById("editEnDistance").value);
+      const timeStr = document.getElementById("editEnTime").value.trim();
 
-      if(!date || !dist || parsed.ms == null){
-        showError("editEntryErr","Please enter valid date, distance and time.");
+      if(!date){ showError("editEntryErr","Please select a date."); return; }
+      if(!location){ showError("editEntryErr","Please enter a location."); return; }
+      if(!distance){ showError("editEntryErr","Please enter a distance (example: 500m)."); return; }
+
+      const parsed = parseTimeSmart(timeStr);
+      if(parsed.ms == null){
+        showError("editEntryErr",`Time looks invalid. Try mm:ss.mmm or HH:MM:SS.`);
         return;
       }
 
       e.date = date;
-      e.location = document.getElementById("editEnLocation").value.trim();
-      e.notes = document.getElementById("editEnNotes").value.trim();
-      e.distance = dist;
+      e.location = location;
+      e.notes = notes;
+      e.distance = distance;
       e.time = parsed.normalized;
 
       saveState();
-      closeModal("modalEditEntry");
       refreshDistanceUI();
+
+      closeModal("modalEditEntry");
       flashBanner("Entry updated.", false);
       renderAll(true);
     }
 
     function deleteEntryFromEditModal(){
       const id = document.getElementById("editEntryId").value;
-      deleteEntry(id);
-      closeModal("modalEditEntry");
+      if(!id) return;
+      if(!confirm("Delete this entry?")) return;
+      deleteEntry(id, true);
     }
 
-    function deleteEntry(id){
+    function deleteEntry(entryId, fromEditModal=false){
       const ath = getActiveAthlete();
       if(!ath) return;
-      ath.entries = ath.entries.filter(e=>e.id!==id);
+
+      const entry = (ath.entries || []).find(e => e.id === entryId);
+      if(!entry) return;
+
+      if(!fromEditModal){
+        const msg = `Delete this entry?\n\n${fmtDate(entry.date)} • ${entry.location || "—"} • ${entry.distance} • ${entry.time}`;
+        if(!confirm(msg)) return;
+      }
+
+      ath.entries = (ath.entries || []).filter(e => e.id !== entryId);
       saveState();
+
+      refreshDistanceUI();
+
+      if(fromEditModal) closeModal("modalEditEntry");
       flashBanner("Entry deleted.", false);
       renderAll(true);
     }
 
+    // -----------------------------
+    // Reset
+    // -----------------------------
     function doResetAll(){
       clearErrors();
-      const v = document.getElementById("resetConfirm").value.trim();
-      if(v !== "RESET"){
-        showError("resetErr","Type RESET to confirm.");
-        return;
-      }
+      const txt = document.getElementById("resetConfirm").value.trim();
+      if(txt !== "RESET"){ showError("resetErr","Please type RESET exactly to confirm."); return; }
       localStorage.removeItem(LS_KEY);
       localStorage.removeItem(LS_PREF);
       state = structuredClone(defaultState);
       prefs = structuredClone(defaultPrefs);
       closeModal("modalReset");
-      flashBanner("All data reset.", false);
+      flashBanner("All data cleared on this device.", false);
+      applyTheme();
       renderAll(true);
     }
 
     // -----------------------------
-    // Rendering
+    // Render
     // -----------------------------
-    function renderAll(force){
-      renderAthletes();
-      renderAvatar();
+    function renderAll(allowChartRedraw){
+      renderAthleteSelect();
       refreshDistanceUI();
-      renderSummary();
-      renderCards();
-      renderAnalytics();
+      renderAvatar();
+      renderHome();
+      renderAnalytics(allowChartRedraw);
+      renderSettingsExcelPill();
+      syncAppbarHeight();
     }
 
-    function renderAthletes(){
-      athleteSelect.innerHTML = `<option value="">Select athlete</option>`;
-      state.athletes.forEach(a=>{
+    function renderAthleteSelect(){
+      athleteSelect.innerHTML = "";
+
+      if(state.athletes.length === 0){
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "No athletes yet";
+        athleteSelect.appendChild(opt);
+        state.activeAthleteId = null;
+        saveState();
+        pillAthlete.textContent = "No athlete selected";
+        pillAnalytics.textContent = "No athlete";
+        if(pillExport) pillExport.textContent = "No athlete";
+        return;
+      }
+
+      if(!state.activeAthleteId || !state.athletes.some(a => a.id === state.activeAthleteId)){
+        state.activeAthleteId = state.athletes[0].id;
+        saveState();
+      }
+
+      for(const a of state.athletes){
         const opt = document.createElement("option");
         opt.value = a.id;
-        opt.textContent = a.name;
+        opt.textContent = a.name + (a.birthYear ? ` (${a.birthYear})` : "");
         athleteSelect.appendChild(opt);
-      });
-      athleteSelect.value = state.activeAthleteId || "";
-      pillAthlete.textContent = getActiveAthlete()
-        ? `${getActiveAthlete().name}${getActiveAthlete().birthYear ? " ("+getActiveAthlete().birthYear+")":""}`
-        : "No athlete selected";
-    }
-
-    function renderSummary(){
-      const ath = getActiveAthlete();
-      if(!ath || ath.entries.length === 0){
-        pbSummaryWrap.innerHTML = `<div class="empty"><strong>No data yet</strong><p>Add races to see PBs.</p></div>`;
-        pillPBCount.textContent = "0 PBs";
-        return;
       }
-
-      const pb = computePBMap(ath.entries);
-      const rows = Object.values(pb);
-      pillPBCount.textContent = `${rows.length} PBs`;
-
-      let html = `<table class="table"><thead><tr>
-        <th>Distance</th><th>PB</th><th>Date</th><th>Location</th>
-      </tr></thead><tbody>`;
-
-      rows.forEach(e=>{
-        html += `<tr data-entry-id="${e.id}">
-          <td>${escapeHtml(e.distance)}</td>
-          <td><span class="badge badgePB">${escapeHtml(e.time)}</span></td>
-          <td>${fmtDate(e.date)}</td>
-          <td>${escapeHtml(e.location||"—")}</td>
-        </tr>`;
-      });
-      html += "</tbody></table>";
-      pbSummaryWrap.innerHTML = html;
+      athleteSelect.value = state.activeAthleteId;
     }
 
-    function renderCards(){
+    function renderSettingsExcelPill(){
       const ath = getActiveAthlete();
-      cardsWrap.innerHTML = "";
-      if(!ath || ath.entries.length === 0){
-        cardsWrap.innerHTML = `<div class="empty"><strong>No races</strong><p>Add races to see cards.</p></div>`;
+      if(!pillExport) return;
+      pillExport.textContent = ath ? `Selected: ${ath.name}` : "No athlete";
+    }
+
+    function renderHome(){
+      const ath = getActiveAthlete();
+
+      if(!ath){
+        pillAthlete.textContent = "No athlete selected";
         pillCount.textContent = "0 races";
+        pillPBCount.textContent = "0 PBs";
+        pbSummaryWrap.innerHTML = `
+          <div class="empty">
+            <strong>No athlete selected</strong>
+            <p>Add an athlete and start entering races.</p>
+          </div>
+        `;
+        cardsWrap.innerHTML = `
+          <div class="empty" style="min-width: min(520px, 86vw);">
+            <strong>No cards yet</strong>
+            <p>Add races to see distance cards here.</p>
+          </div>
+        `;
         return;
       }
 
-      const focus = distanceFilter.value;
-      let entries = sortByDateDesc(ath.entries);
-      if(focus !== "ALL"){
-        entries = entries.filter(e=>normalizeDistance(e.distance)===focus);
+      pillAthlete.textContent = ath.name + (ath.birthYear ? ` • ${ath.birthYear}` : "");
+      const entriesAll = sortByDateDesc(ath.entries || []);
+      pillCount.textContent = `${entriesAll.length} races`;
+
+      const pbMap = computePBMap(entriesAll);
+      const pbCount = Object.keys(pbMap).length;
+      pillPBCount.textContent = `${pbCount} PBs`;
+
+      if(pbCount === 0){
+        pbSummaryWrap.innerHTML = `
+          <div class="empty">
+            <strong>No PBs yet</strong>
+            <p>Add race entries and PBs will appear automatically for each distance.</p>
+          </div>
+        `;
+      }else{
+        const distances = Object.keys(pbMap).sort((a,b)=> a.localeCompare(b, undefined, {numeric:true}));
+        pbSummaryWrap.innerHTML = `
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Distance</th>
+                <th>PB</th>
+                <th>Date</th>
+                <th>Location</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${distances.map(d=>{
+                const pb = pbMap[d];
+                return `
+                  <tr data-entry-id="${pb.id}" title="Click to edit this entry">
+                    <td><span class="badge">${escapeHtml(d)}</span></td>
+                    <td><b>${msToTime(pb.ms)}</b></td>
+                    <td>${fmtDate(pb.date)}</td>
+                    <td>${escapeHtml((pb.location || "").trim() || "—")}</td>
+                  </tr>
+                `;
+              }).join("")}
+            </tbody>
+          </table>
+        `;
       }
 
-      pillCount.textContent = `${entries.length} races`;
+      const scopedEntries = (distanceFilter.value === "ALL")
+        ? entriesAll
+        : entriesAll.filter(e => normalizeDistance(e.distance) === distanceFilter.value);
+
+      if(scopedEntries.length === 0){
+        cardsWrap.innerHTML = `
+          <div class="empty" style="min-width: min(520px, 86vw);">
+            <strong>No entries</strong>
+            <p>${distanceFilter.value === "ALL" ? "Add races to see cards by distance." : `No entries for ${distanceFilter.value}.`}</p>
+          </div>
+        `;
+        return;
+      }
 
       const groups = {};
-      entries.forEach(e=>{
-        const d = normalizeDistance(e.distance);
-        if(!groups[d]) groups[d]=[];
-        groups[d].push(e);
-      });
+      for(const e of scopedEntries){
+        const key = normalizeDistance(e.distance) || "—";
+        (groups[key] ||= []).push({ ...e, distance: key });
+      }
+      const groupKeys = Object.keys(groups).sort((a,b)=> a.localeCompare(b, undefined, {numeric:true}));
 
-      Object.keys(groups).forEach(dist=>{
-        const list = groups[dist];
-        const pb = computePBMap(list)[dist];
-        let html = `
-          <div class="distCard">
-            <div class="distTop">
-              <div class="distTitle">
-                <div class="big">${escapeHtml(dist)}</div>
-                <div class="small">${list.length} races</div>
-              </div>
-              ${pb ? `<div class="distStats"><div class="pb">PB ${escapeHtml(pb.time)}</div></div>`:""}
-            </div>
-            <div class="distList">
-        `;
+      cardsWrap.innerHTML = groupKeys.map(dKey => {
+        const list = sortByDateDesc(groups[dKey]);
+        const pbForDist = pbMap[dKey]?.ms ?? null;
+        const pbLabel = pbForDist != null ? `PB ${msToTime(pbForDist)}` : "No PB";
+        const countLabel = `${list.length} entr${list.length===1?"y":"ies"}`;
 
-        list.forEach(e=>{
-          html += `
+        const itemsHtml = list.map(e=>{
+          const parsed = parseTimeSmart(e.time);
+          const ms = parsed.ms;
+          const isPB = pbMap[e.distance] && ms != null && ms === pbMap[e.distance].ms;
+          const badge = isPB ? `<span class="badge badgePB">🏅 PB</span>` : `<span class="badge badgeOK">Saved</span>`;
+
+          return `
             <div class="entryItem">
               <div class="entryMain">
                 <div class="line1">
                   <span class="time">${escapeHtml(e.time)}</span>
-                  <span class="meta">${fmtDate(e.date)} • ${escapeHtml(e.location||"—")}</span>
+                  ${badge}
                 </div>
-                ${e.notes ? `<div class="notes">${escapeHtml(e.notes)}</div>`:""}
+                <div class="meta">${fmtDate(e.date)} • ${escapeHtml((e.location||"").trim() || "—")}</div>
+                <div class="notes">${e.notes ? escapeHtml(e.notes) : "—"}</div>
               </div>
               <div class="entryActions">
-                <button class="iconBtn" data-edit-entry-id="${e.id}">✏️</button>
-                <button class="iconBtn iconBtnDanger" data-del-entry-id="${e.id}">🗑️</button>
+                <button class="iconBtn" title="Edit entry" data-edit-entry-id="${e.id}">✏️</button>
+                <button class="iconBtn iconBtnDanger" title="Delete entry" data-del-entry-id="${e.id}">🗑️</button>
               </div>
             </div>
           `;
-        });
+        }).join("");
 
-        html += `</div></div>`;
-        cardsWrap.insertAdjacentHTML("beforeend", html);
-      });
+        return `
+          <div class="distCard">
+            <div class="distTop">
+              <div class="distTitle">
+                <div class="big"><span class="badge">${escapeHtml(dKey)}</span> Entries</div>
+                <div class="small">Latest first (by date)</div>
+              </div>
+              <div class="distStats">
+                <div class="pb">${pbLabel}</div>
+                <div class="count">${countLabel}</div>
+              </div>
+            </div>
+            <div class="distList">${itemsHtml}</div>
+          </div>
+        `;
+      }).join("");
     }
 
-    function renderAnalytics(){
+    function renderAnalytics(allowChartRedraw){
       const ath = getActiveAthlete();
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      if(!ath){ anPB.textContent="—"; anPBMeta.textContent="—"; return; }
+
+      if(!ath){
+        pillAnalytics.textContent = "No athlete";
+        anPB.textContent = "—";
+        anPBMeta.textContent = "Pick a distance for PB + chart";
+        anCount.textContent = "—";
+        if(allowChartRedraw) drawChart([], analyticsDistance.value);
+        return;
+      }
+
+      pillAnalytics.textContent = ath.name + (ath.birthYear ? ` • ${ath.birthYear}` : "");
+
+      const entriesAll = ath.entries || [];
+      const pbMap = computePBMap(entriesAll);
 
       const dist = analyticsDistance.value;
-      pillAnalytics.textContent = dist==="ALL" ? "All distances" : dist;
+      const scoped = (dist === "ALL") ? [] : entriesAll.filter(e => normalizeDistance(e.distance) === dist);
 
-      if(dist==="ALL"){
-        anPB.textContent = "—";
-        anPBMeta.textContent = "Select a distance";
-        return;
+      anCount.textContent = dist === "ALL" ? `${entriesAll.length} total races` : `${scoped.length} races for ${dist}`;
+
+      const pb = dist !== "ALL" ? (pbMap[dist]?.ms ?? null) : null;
+      anPB.textContent = pb != null ? msToTime(pb) : "—";
+      anPBMeta.textContent = pb != null ? `${dist} best` : (dist === "ALL" ? "Pick a distance for PB + chart" : `No PB for ${dist}`);
+
+      if(allowChartRedraw){
+        drawChart(sortByDateDesc(scoped).map(e=>({...e, distance: normalizeDistance(e.distance)})), dist);
       }
-
-      const entries = ath.entries
-        .filter(e=>normalizeDistance(e.distance)===dist)
-        .sort((a,b)=> new Date(a.date)-new Date(b.date));
-
-      if(entries.length===0){
-        anPB.textContent="—";
-        anPBMeta.textContent="No races for this distance";
-        return;
-      }
-
-      const pts = entries.map(e=>({
-        x: new Date(e.date).getTime(),
-        y: parseTimeSmart(e.time).ms,
-        label: fmtDateAxis(e.date),
-        raw: e
-      }));
-
-      const pb = computePBMap(entries)[dist];
-      anPB.textContent = pb ? pb.time : "—";
-      anPBMeta.textContent = pb ? `PB on ${fmtDate(pb.date)}` : "—";
-      anCount.textContent = `${entries.length} races`;
-
-      drawChart(pts);
     }
 
-    function drawChart(points){
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      if(points.length===0) return;
+    // -----------------------------
+    // Chart (with X-axis date labels DD-MON-YY)
+    // -----------------------------
+function drawChart(entries){
+  const data = [...entries]
+    .filter(e => parseTimeSmart(e.time).ms != null && e.date)
+    .sort((a,b)=> new Date(a.date) - new Date(b.date));
 
-      const pad = 50;
-      const xs = points.map(p=>p.x);
-      const ys = points.map(p=>p.y);
-      const minX = Math.min(...xs), maxX = Math.max(...xs);
-      const minY = Math.min(...ys), maxY = Math.max(...ys);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
 
-      function sx(x){ return pad + (x-minX)/(maxX-minX||1) * (canvas.width-2*pad); }
-      function sy(y){ return canvas.height-pad - (y-minY)/(maxY-minY||1) * (canvas.height-2*pad); }
+  // reset saved points
+  chartLast = null;
 
-      ctx.strokeStyle = "rgba(47,107,255,.8)";
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      points.forEach((p,i)=>{
-        const X = sx(p.x), Y = sy(p.y);
-        if(i===0) ctx.moveTo(X,Y);
-        else ctx.lineTo(X,Y);
-      });
-      ctx.stroke();
+  if(data.length < 2){
+    ctx.fillStyle = "rgba(15,21,38,.75)";
+    ctx.font = "900 18px system-ui";
+    ctx.fillText("Add at least 2 races to see a trend", 50, 200);
+    return;
+  }
 
-      ctx.fillStyle = "rgba(47,107,255,.9)";
-      points.forEach(p=>{
-        ctx.beginPath();
-        ctx.arc(sx(p.x), sy(p.y), 4, 0, Math.PI*2);
-        ctx.fill();
-      });
+  const pts = data.map((e,i)=>{
+    const parsed = parseTimeSmart(e.time);
+    return {
+      idx: i,
+      date: e.date,
+      label: fmtDateAxis(e.date),
+      ms: parsed.ms,
+      time: parsed.normalized
+    };
+  });
+
+  const pb = pts.reduce((b,p)=> (p.ms < b.ms ? p : b), pts[0]);
+
+  const padL=80, padR=30, padT=30, padB=70;
+  const W = canvas.width - padL - padR;
+  const H = canvas.height - padT - padB;
+
+  let minY = Math.min(...pts.map(p=>p.ms));
+  let maxY = Math.max(...pts.map(p=>p.ms));
+  const pad = (maxY - minY) * 0.2 || 200;
+
+  // ✅ keep axis values clean (integers) to avoid long decimals
+  minY = Math.round(minY - pad);
+  maxY = Math.round(maxY + pad);
+
+  const toX = i => padL + (i/(pts.length-1)) * W;
+  const toY = y => padT + ((maxY - y)/(maxY - minY)) * H;
+
+  // ✅ SAVE pixel positions for clicking points later
+  chartLast = {
+    pts: pts.map(p => ({
+      ...p,
+      px: toX(p.idx),
+      py: toY(p.ms),
+      fullDate: fmtDate(p.date)
+    }))
+  };
+
+  // Grid + Y labels
+  ctx.strokeStyle = "rgba(15,21,38,.10)";
+  ctx.fillStyle = "rgba(15,21,38,.65)";
+  ctx.font = "900 12px system-ui";
+  ctx.textAlign = "right";
+
+  for(let i=0;i<=5;i++){
+    const y = padT + (H/5)*i;
+    ctx.beginPath();
+    ctx.moveTo(padL, y);
+    ctx.lineTo(padL+W, y);
+    ctx.stroke();
+
+    const val = Math.round(maxY - ((maxY-minY)/5)*i);
+    ctx.fillText(msToTime(val), padL-10, y+4);
+  }
+
+  // PB reference line
+  ctx.setLineDash([6,6]);
+  ctx.strokeStyle = "rgba(200,139,0,.6)";
+  ctx.beginPath();
+  ctx.moveTo(padL, toY(pb.ms));
+  ctx.lineTo(padL+W, toY(pb.ms));
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Line
+  const grad = ctx.createLinearGradient(padL, 0, padL+W, 0);
+  grad.addColorStop(0, "#2f6bff");
+  grad.addColorStop(1, "#2bb7ff");
+
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  pts.forEach((p,i)=>{
+    const x = toX(p.idx), y = toY(p.ms);
+    i ? ctx.lineTo(x,y) : ctx.moveTo(x,y);
+  });
+  ctx.stroke();
+
+  // Points
+  pts.forEach(p=>{
+    const x = toX(p.idx), y = toY(p.ms);
+    ctx.fillStyle = (p === pb) ? "#c88b00" : "#fff";
+    ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle = "#0f1526";
+    ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill();
+  });
+
+  // X axis labels
+  ctx.fillStyle = "rgba(15,21,38,.65)";
+  ctx.font = "900 12px system-ui";
+  ctx.textAlign = "center";
+
+  for(let i=0;i<Math.min(6,pts.length);i++){
+    const idx = Math.round((pts.length-1)*(i/5));
+    const p = pts[idx];
+    ctx.fillText(p.label, toX(p.idx), padT+H+26);
+  }
+}
+
+
+    // -----------------------------
+    // Excel export/template
+    // -----------------------------
+    function exportXLSX(){
+      const ath = getActiveAthlete();
+      if(!ath){ flashBanner("No athlete selected.", false); return; }
+
+      const rows = [["Athlete","BirthYear","Date","Location","Distance","Time","Notes"]];
+      for(const e of sortByDateDesc(ath.entries || [])){
+        rows.push([ath.name, ath.birthYear || "", e.date, e.location || "", normalizeDistance(e.distance), e.time, (e.notes||"")]);
+      }
+
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "PB Data");
+
+      const safeName = (ath.name || "Athlete").replaceAll(/[^\w\- ]/g,"").replaceAll(" ","_");
+      XLSX.writeFile(wb, `PB-${safeName}.xlsx`);
+      flashBanner("Excel downloaded.", false);
     }
+
+    function downloadTemplateXLSX(){
+      const sample = [
+        ["Athlete","BirthYear","Date","Location","Distance","Time","Notes"],
+        ["Samarveer","2014","2025-11-29","Ontario Provincial Circuit - Brampton","400m","00:48.700","Sample row"],
+        ["Samarveer","2014","","","500m","00:59.300","(optional) leave date/location blank to fill-down like Excel"],
+        ["Samarveer","2014","","","400m","00:01:00","HH:MM:SS is allowed (Excel style)"]
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(sample);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Template");
+      XLSX.writeFile(wb, "PB-VelocityBoard-Template.xlsx");
+      flashBanner("Template downloaded.", false);
+    }
+
+    // ✅ CLEAN IMPORT (supports fill-down, supports 28-Jan-24, supports 00:01:00)
+    function importXLSXIntoSelectedAthlete(){
+      clearErrors();
+      const ath = getActiveAthlete();
+      if(!ath){ showError("importMsg","Please select an athlete first."); return; }
+
+      const file = excelFile.files && excelFile.files[0];
+      if(!file){ showError("importMsg","Please choose an Excel file first."); return; }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        try{
+          const data = new Uint8Array(reader.result);
+          const wb = XLSX.read(data, { type: "array" });
+          const sheetName = wb.SheetNames[0];
+          const ws = wb.Sheets[sheetName];
+
+          const json = XLSX.utils.sheet_to_json(ws, { defval: "" });
+          if(!json.length){
+            showError("importMsg","Excel looks empty. Please use the template.");
+            return;
+          }
+
+          const norm = (s)=> String(s||"").trim().toLowerCase();
+          const get = (row, key)=>{
+            const k = Object.keys(row).find(h => norm(h) === norm(key));
+            return k ? row[k] : "";
+          };
+
+          let added = 0;
+          let skipped = 0;
+          let firstBad = "";
+
+          let lastDate = "";
+          let lastLocation = "";
+
+          for(let i=0;i<json.length;i++){
+            const row = json[i];
+
+            let rawDate = get(row,"Date");
+            let rawLocation = get(row,"Location");
+            let rawDistance = get(row,"Distance");
+            let rawTime = get(row,"Time");
+            let notes = String(get(row,"Notes") || "").trim();
+
+            if(String(rawDate).trim()) lastDate = rawDate;
+            else rawDate = lastDate;
+
+            if(String(rawLocation).trim()) lastLocation = rawLocation;
+            else rawLocation = lastLocation;
+
+            let date = excelDateToISO(rawDate);
+            let location = String(rawLocation || "").trim();
+            let distance = normalizeDistance(rawDistance);
+            let timeRaw = (rawTime == null) ? "" : rawTime;
+
+            if(typeof timeRaw === "string") timeRaw = timeRaw.replace(/\s+/g,"");
+
+            if(!date || !location || !distance || (timeRaw === "" || timeRaw == null)){
+              skipped++;
+              continue;
+            }
+
+            const parsed = parseTimeSmart(timeRaw);
+            if(parsed.ms == null){
+              skipped++;
+              if(!firstBad) firstBad = `Row ${i+2}: invalid time "${timeRaw}"`;
+              continue;
+            }
+
+            ath.entries.push({
+              id: "e_" + Math.random().toString(16).slice(2) + Date.now().toString(16),
+              date,
+              location,
+              distance,
+              time: parsed.normalized,
+              notes: notes || ""
+            });
+            added++;
+          }
+
+          saveState();
+          refreshDistanceUI();
+
+          if(added === 0){
+            showError("importMsg", `No rows imported. ${firstBad || "Please use columns: Date, Location, Distance, Time."}`);
+            return;
+          }
+
+          flashBanner(`Excel import complete: ${added} row(s) added to ${ath.name}${skipped ? ` • ${skipped} skipped` : ""}.`, false);
+          renderAll(true);
+
+        }catch(e){
+          showError("importMsg","Could not import Excel. Please use the template format.");
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function excelDateToISO(v){
+      if(v == null) return "";
+      const s = String(v).trim();
+      if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+
+      if(Object.prototype.toString.call(v) === "[object Date]" && !isNaN(v)){
+        const yyyy = v.getFullYear();
+        const mm = String(v.getMonth()+1).padStart(2,"0");
+        const dd = String(v.getDate()).padStart(2,"0");
+        return `${yyyy}-${mm}-${dd}`;
+      }
+
+      if(typeof v === "number" && isFinite(v)){
+        const d = XLSX.SSF.parse_date_code(v);
+        if(d){
+          return `${d.y}-${String(d.m).padStart(2,"0")}-${String(d.d).padStart(2,"0")}`;
+        }
+      }
+
+      const m = s.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{2,4})$/);
+      if(m){
+        const months = {jan:"01",feb:"02",mar:"03",apr:"04",may:"05",jun:"06",jul:"07",aug:"08",sep:"09",oct:"10",nov:"11",dec:"12"};
+        const yyyy = m[3].length === 2 ? `20${m[3]}` : m[3];
+        const mon = months[m[2].toLowerCase()];
+        if(mon) return `${yyyy}-${mon}-${String(m[1]).padStart(2,"0")}`;
+      }
+
+      return "";
+    }
+
+    // -----------------------------
+    // Donate
+    // -----------------------------
+    function donateAmount(amountStr){
+      clearErrors();
+      const amt = String(amountStr || "").trim();
+      const n = Number(amt);
+      if(!amt || !isFinite(n) || n <= 0){
+        showError("donateErr","Please enter a valid amount (example: 2, 5, 10, 3.50).");
+        return;
+      }
+      const base = PAYPAL_ME.replace(/\/+$/,"");
+      const url = `${base}/${n}`;
+      window.open(url, "_blank", "noopener,noreferrer");
+      closeModal("modalDonate");
+      flashBanner("Opening PayPal donation page… 💙", false);
+    }
+
+
+    
   </script>
+
+<div class="modalOverlay" id="modalHelp">
+  <div class="modal">
+    <div class="modalTop">
+      <div>
+        <h3>❓ Help & Instructions</h3>
+        <p>A gentle guide to use this tracker smoothly.</p>
+      </div>
+      <button class="xbtn" data-close="modalHelp">✕</button>
+    </div>
+
+    <div class="empty" style="margin-top:0;">
+      <strong>Getting Started</strong>
+      <p>
+        • Start by clicking <b>+ Add Athlete</b><br>
+        • Enter name (and optional birth year + avatar emoji)<br>
+        • Select the athlete from the dropdown at the top
+      </p>
+    </div>
+
+    <div class="empty">
+      <strong>Add Race Entries</strong>
+      <p>
+        • Click <b>+ Add Race</b><br>
+        • Choose the race <b>date</b> and enter <b>location</b><br>
+        • Add one or more distances in the same race (example: 400m + 500m)<br>
+        • Time formats allowed: <b>mm:ss.mmm</b> (00:52.300) or <b>HH:MM:SS</b> (00:01:00)
+      </p>
+    </div>
+
+    <div class="empty">
+      <strong>PB Summary (Home)</strong>
+      <p>
+        • The PB table shows the best time automatically for each distance<br>
+        • You can click any PB row to edit that entry
+      </p>
+    </div>
+
+    <div class="empty">
+      <strong>Race Cards (Home)</strong>
+      <p>
+        • Cards are grouped by distance and sorted by latest date<br>
+        • Use <b>Distance Focus</b> to filter cards (or choose “All distances”)<br>
+        • Tap ✏️ to edit, 🗑️ to delete
+      </p>
+    </div>
+
+    <div class="empty">
+      <strong>Analytics (Chart)</strong>
+      <p>
+        • Select a distance to see the trend line for that distance<br>
+        • PB for the selected distance is shown above the chart<br>
+        • Tip: Add at least 2 races to see a proper trend
+      </p>
+    </div>
+
+    <div class="empty">
+      <strong>Excel Import / Export</strong>
+      <p>
+        • Go to <b>Settings → Excel Import / Template</b><br>
+        • Download template, fill it, and upload it to import<br>
+        • You can download Excel for the selected athlete and upload it on another device
+      </p>
+    </div>
+
+    <div class="empty">
+      <strong>Storage & Reset</strong>
+      <p>
+        • Everything is saved safely on this device (local storage)<br>
+        • If you want a fresh start, click <b>Reset</b><br>
+        • Reset removes data from this device only
+      </p>
+    </div>
+
+    <div class="foot">
+      If something feels confusing, it’s completely okay — just open this help anytime ❄️
+    </div>
+
+    <div class="modalActions">
+      <button class="btn btnPrimary" data-close="modalHelp">Close</button>
+    </div>
+  </div>
+</div>  
 </body>
 </html>
-
-
