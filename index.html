@@ -2233,21 +2233,73 @@
           let skipped = 0;
           let firstBad = "";
 
-          for(let i=0;i<json.length;i++){
-            const row = json[i];
+let lastDate = "";
+let lastLocation = "";
 
-            let date = get(row,"Date");
-            const location = get(row,"Location");
-            const distance = normalizeDistance(get(row,"Distance"));
-            let time = get(row,"Time");
-            const notes = get(row,"Notes");
+for(let i=0;i<json.length;i++){
+  const row = json[i];
 
-            time = time.replace(/\s+/g,"");
+  let date      = get(row,"Date");
+  let location  = get(row,"Location");
+  const distance = normalizeDistance(get(row,"Distance"));
+  let time      = get(row,"Time");
+  const notes   = get(row,"Notes");
 
-            if(!date || !location || !distance || !time){
-              skipped++;
-              continue;
-            }
+  // clean time like " 00: 50.738 "
+  time = String(time || "").replace(/\s+/g,"");
+
+  // ✅ FILL-DOWN logic (Excel-style)
+  if(date) lastDate = date;
+  else date = lastDate;
+
+  if(location) lastLocation = location;
+  else location = lastLocation;
+
+  // Convert Excel Date objects or serials
+  if(Object.prototype.toString.call(row.Date) === "[object Date]" && !isNaN(row.Date)){
+    const d = row.Date;
+    date = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  }
+  else if(typeof row.Date === "number"){
+    const d = XLSX.SSF.parse_date_code(row.Date);
+    if(d){
+      date = `${d.y}-${String(d.m).padStart(2,"0")}-${String(d.d).padStart(2,"0")}`;
+    }
+  }
+  else{
+    // Accept 28-Jan-24
+    const m = String(date||"").match(/^(\d{1,2})-([A-Za-z]{3})-(\d{2,4})$/);
+    if(m){
+      const months = {jan:"01",feb:"02",mar:"03",apr:"04",may:"05",jun:"06",jul:"07",aug:"08",sep:"09",oct:"10",nov:"11",dec:"12"};
+      const yyyy = m[3].length === 2 ? `20${m[3]}` : m[3];
+      date = `${yyyy}-${months[m[2].toLowerCase()]}-${String(m[1]).padStart(2,"0")}`;
+    }
+  }
+
+  // Validate after fill-down
+  if(!date || !location || !distance || !time){
+    skipped++;
+    continue;
+  }
+
+  const parsed = parseTimeSmart(time);
+  if(parsed.ms == null){
+    skipped++;
+    if(!firstBad) firstBad = `Row ${i+2}: invalid time "${time}"`;
+    continue;
+  }
+
+  ath.entries.push({
+    id: "e_" + Math.random().toString(16).slice(2) + Date.now().toString(16),
+    date,
+    location,
+    distance,
+    time: parsed.normalized,
+    notes: notes || ""
+  });
+  added++;
+}
+
 
             if(Object.prototype.toString.call(row.Date) === "[object Date]" && !isNaN(row.Date)){
               const d = row.Date;
