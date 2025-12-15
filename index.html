@@ -839,6 +839,7 @@
         <button class="tabBtn active" data-tab="home">Home</button>
         <button class="tabBtn" data-tab="analytics">Analytics</button>
         <button class="tabBtn" data-tab="settings">Settings</button>
+        <button class="giftBtn" id="btnHelp" title="Help / Instructions">❓</button>
         <button class="giftBtn" id="btnDonate" title="Donate / Support">🎁</button>
       </div>
 
@@ -1298,7 +1299,8 @@
     });
 
     document.getElementById("btnReset").addEventListener("click", () => openModal("modalReset"));
-
+// ❓ Help button
+    document.getElementById("btnHelp").addEventListener("click", () => {openModal("modalHelp");});
     document.getElementById("btnDonate").addEventListener("click", () => openModal("modalDonate"));
     document.querySelectorAll("[data-donate]").forEach(b=>{
       b.addEventListener("click", ()=> donateAmount(b.getAttribute("data-donate")));
@@ -2495,6 +2497,95 @@ function drawChart(entries){
       closeModal("modalDonate");
       flashBanner("Opening PayPal donation page… 💙", false);
     }
+
+
+    
   </script>
+
+<div class="modalOverlay" id="modalHelp">
+  <div class="modal">
+    <div class="modalTop">
+      <div>
+        <h3>❓ Help & Instructions</h3>
+        <p>A gentle guide to use this tracker smoothly.</p>
+      </div>
+      <button class="xbtn" data-close="modalHelp">✕</button>
+    </div>
+
+    <div class="empty" style="margin-top:0;">
+      <strong>Getting Started</strong>
+      <p>
+        • Start by clicking <b>+ Add Athlete</b><br>
+        • Enter name (and optional birth year + avatar emoji)<br>
+        • Select the athlete from the dropdown at the top
+      </p>
+    </div>
+
+    <div class="empty">
+      <strong>Add Race Entries</strong>
+      <p>
+        • Click <b>+ Add Race</b><br>
+        • Choose the race <b>date</b> and enter <b>location</b><br>
+        • Add one or more distances in the same race (example: 400m + 500m)<br>
+        • Time formats allowed: <b>mm:ss.mmm</b> (00:52.300) or <b>HH:MM:SS</b> (00:01:00)
+      </p>
+    </div>
+
+    <div class="empty">
+      <strong>PB Summary (Home)</strong>
+      <p>
+        • The PB table shows the best time automatically for each distance<br>
+        • You can click any PB row to edit that entry
+      </p>
+    </div>
+
+    <div class="empty">
+      <strong>Race Cards (Home)</strong>
+      <p>
+        • Cards are grouped by distance and sorted by latest date<br>
+        • Use <b>Distance Focus</b> to filter cards (or choose “All distances”)<br>
+        • Tap ✏️ to edit, 🗑️ to delete
+      </p>
+    </div>
+
+    <div class="empty">
+      <strong>Analytics (Chart)</strong>
+      <p>
+        • Select a distance to see the trend line for that distance<br>
+        • PB for the selected distance is shown above the chart<br>
+        • Tip: Add at least 2 races to see a proper trend
+      </p>
+    </div>
+
+    <div class="empty">
+      <strong>Excel Import / Export</strong>
+      <p>
+        • Go to <b>Settings → Excel Import / Template</b><br>
+        • Download template, fill it, and upload it to import<br>
+        • You can download Excel for the selected athlete and upload it on another device
+      </p>
+    </div>
+
+    <div class="empty">
+      <strong>Storage & Reset</strong>
+      <p>
+        • Everything is saved safely on this device (local storage)<br>
+        • If you want a fresh start, click <b>Reset</b><br>
+        • Reset removes data from this device only
+      </p>
+    </div>
+
+    <div class="foot">
+      If something feels confusing, it’s completely okay — just open this help anytime ❄️
+    </div>
+
+    <div class="modalActions">
+      <button class="btn btnPrimary" data-close="modalHelp">Close</button>
+    </div>
+  </div>
+</div>
+
+
+  
 </body>
 </html>
