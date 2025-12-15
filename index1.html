@@ -5,61 +5,89 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PB VelocityBoard</title>
 
+  <!-- SheetJS for Excel import/export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
   <style>
-    /* ============================================================
-       CLEAN PROFESSIONAL THEME (Trenara-like feel)
-       + consistent spacing + table polish + chart tooltip
-    ============================================================ */
-
     :root{
-      --text: rgba(20, 24, 38, .92);
-      --muted: rgba(20, 24, 38, .62);
-      --muted2: rgba(20, 24, 38, .46);
+      --bg1:#07162f;
+      --bg2:#041022;
 
-      --primary: #2f6bff;
-      --primary2:#2bb7ff;
+      --accent:#2f6bff;
+      --accent2:#2bb7ff;
+
+      /* ✅ text on page background (dark blue) */
+      --pageText: rgba(255,255,255,.92);
+      --pageMuted: rgba(255,255,255,.70);
+      --pageMuted2: rgba(255,255,255,.55);
+
+      /* ✅ text on surfaces (cards/tables/white panels) */
+      --surfaceText:#0f1526;
+      --surfaceMuted:rgba(15,21,38,.62);
+      --surfaceMuted2:rgba(15,21,38,.46);
+
       --danger:#e23b57;
       --ok:#18a965;
       --warn:#c88b00;
 
       --radius: 22px;
-      --shadow: 0 18px 60px rgba(15, 18, 28, .08);
-      --shadow2: 0 10px 26px rgba(15, 18, 28, .10);
+      --shadow: 0 18px 60px rgba(0,0,0,.18);
+      --shadow2: 0 10px 26px rgba(0,0,0,.14);
 
       --w: 1180px;
-      --gap: 14px;
+      --appbarH: 84px;
 
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
 
-    * { box-sizing:border-box; }
-    html, body { height:100%; }
+    html[data-theme="light"]{
+      --bg1:#eef4ff;
+      --bg2:#f6fbff;
+
+      --pageText:#0f1526;
+      --pageMuted:rgba(15,21,38,.62);
+      --pageMuted2:rgba(15,21,38,.46);
+
+      --surfaceText:#0f1526;
+      --surfaceMuted:rgba(15,21,38,.62);
+      --surfaceMuted2:rgba(15,21,38,.46);
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
 
     body{
       margin:0;
       font-family: var(--font);
-      color: var(--text);
-      background: linear-gradient(180deg, #f7f8fc, #f3f5fb 60%, #eef2fb);
+      color: var(--pageText);
+      background:
+        radial-gradient(1200px 800px at 12% 8%, rgba(47,107,255,.22), transparent 60%),
+        radial-gradient(1000px 700px at 86% 18%, rgba(43,183,255,.16), transparent 58%),
+        radial-gradient(900px 650px at 38% 92%, rgba(11,42,111,.32), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
       overflow-x:hidden;
     }
 
-    button, input, select { font-family:inherit; }
+    button, input, select{ font-family:inherit; }
 
     .wrap{
       max-width: var(--w);
       margin: 0 auto;
-      padding: 92px 18px 26px;
+      padding: calc(var(--appbarH) + 18px) 18px 26px;
     }
 
-    /* ---------- APP BAR ---------- */
     .appbar{
       position:fixed;
       top:0; left:0; right:0;
       z-index:50;
       backdrop-filter: blur(14px);
-      background: rgba(255,255,255,.78);
-      border-bottom: 1px solid rgba(20,24,38,.10);
+      -webkit-backdrop-filter: blur(14px);
+      background: rgba(255,255,255,.80);
+      border-bottom:1px solid rgba(15,21,38,.10);
+      color: var(--surfaceText);
     }
+    html[data-theme="light"] .appbar{ background: rgba(255,255,255,.88); }
+
     .appbarInner{
       max-width: var(--w);
       margin:0 auto;
@@ -68,144 +96,189 @@
       justify-content:space-between;
       gap: 12px;
       padding: 12px 18px;
+      flex-wrap: wrap;
     }
+
     .brand{
       display:flex;
       align-items:center;
       gap: 10px;
-      min-width: 220px;
+      min-width: 210px;
+      flex: 1 1 auto;
     }
-    .logo{
-      width: 36px; height: 36px;
-      border-radius: 12px;
+
+    .avatar{
+      width: 42px; height: 42px;
+      border-radius: 16px;
       background:
-        radial-gradient(circle at 30% 30%, rgba(255,255,255,.30), transparent 55%),
-        linear-gradient(135deg, var(--primary), var(--primary2));
-      box-shadow: 0 14px 30px rgba(47,107,255,.18);
-    }
-    .brandText{
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 55%),
+        linear-gradient(135deg, rgba(47,107,255,.18), rgba(43,183,255,.18));
+      border: 1px solid rgba(15,21,38,.10);
+      box-shadow: 0 14px 30px rgba(47,107,255,.12);
+      flex: 0 0 auto;
       display:flex;
-      flex-direction:column;
-      line-height:1.12;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      cursor:pointer;
+      user-select:none;
     }
-    .brandText strong{
-      font-size: 15.5px;
-      letter-spacing:.2px;
-      font-weight: 900;
-    }
-    .brandText span{
-      font-size: 12px;
-      color: var(--muted);
-    }
+    .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .avatar .emoji{ font-size: 20px; font-weight: 900; line-height: 1; }
+
+    .brandText{ display:flex; flex-direction:column; line-height:1.12; min-width: 160px; }
+    .brandText strong{ font-size: 18px; letter-spacing:.2px; font-weight: 950; }
+    .brandText span{ font-size: 13px; color: var(--surfaceMuted); font-weight: 800; }
 
     .tabs{
       display:flex;
       gap: 8px;
       padding: 6px;
-      border:1px solid rgba(20,24,38,.10);
+      border:1px solid rgba(15,21,38,.12);
       border-radius: 999px;
       background: rgba(255,255,255,.70);
+      flex: 0 0 auto;
+      overflow-x:auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      align-items:center;
     }
+    .tabs::-webkit-scrollbar{ display:none; }
+
     .tabBtn{
       border:0;
       padding: 9px 14px;
       border-radius: 999px;
       background: transparent;
-      color: rgba(20,24,38,.62);
+      color: rgba(15,21,38,.62);
       font-weight:800;
       letter-spacing:.2px;
       cursor:pointer;
       transition: .18s ease;
+      white-space: nowrap;
+      flex: 0 0 auto;
     }
-    .tabBtn:hover{ color: rgba(20,24,38,.92); background: rgba(20,24,38,.04); }
+    .tabBtn:hover{ color: var(--surfaceText); background: rgba(15,21,38,.05); }
     .tabBtn.active{
-      color: rgba(20,24,38,.92);
+      color: var(--surfaceText);
       background: rgba(47,107,255,.10);
       border: 1px solid rgba(47,107,255,.18);
-      box-shadow: none;
     }
+
+    .giftBtn{
+      border:1px solid rgba(15,21,38,.12);
+      background: rgba(255,255,255,.82);
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      cursor:pointer;
+      font-size: 18px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      transition: .18s ease;
+      flex: 0 0 auto;
+    }
+    .giftBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.96); }
 
     .rightTools{
       display:flex;
       align-items:center;
       gap: 8px;
       justify-content:flex-end;
-      flex-wrap:nowrap;
+      flex-wrap: wrap;
+      flex: 1 1 520px;
+      color: var(--surfaceText);
     }
 
-    .select{
-      appearance:none;
-      -webkit-appearance:none;
-      border:1px solid rgba(20,24,38,.12);
-      background: rgba(255,255,255,.92);
-      color: var(--text);
-      padding: 10px 34px 10px 12px;
-      border-radius: 14px;
-      font-weight:900;
-      outline:none;
-      cursor:pointer;
-      min-width: 210px;
-    }
-    .selectWrap{ position:relative; }
+    .selectWrap{ position:relative; flex: 1 1 220px; min-width: 220px; }
     .selectWrap:after{
       content:"▾";
       position:absolute;
       right: 12px;
       top: 50%;
       transform: translateY(-52%);
-      color: var(--muted);
+      color: var(--surfaceMuted);
       pointer-events:none;
       font-size: 12px;
     }
 
+    .select{
+      width:100%;
+      appearance:none;
+      -webkit-appearance:none;
+      border:1px solid rgba(15,21,38,.12);
+      background: rgba(255,255,255,.92);
+      color: var(--surfaceText);
+      padding: 10px 34px 10px 12px;
+      border-radius: 14px;
+      font-weight:900;
+      outline:none;
+      cursor:pointer;
+    }
+
+    select, option{ color: var(--surfaceText); background-color: #ffffff; }
+
     .btn{
-      border:1px solid rgba(20,24,38,.12);
+      border:1px solid rgba(15,21,38,.12);
       background: rgba(255,255,255,.86);
-      color: rgba(20,24,38,.92);
+      color: var(--surfaceText);
       padding: 10px 12px;
       border-radius: 14px;
       font-weight:900;
       cursor:pointer;
       transition: .18s ease;
-      box-shadow: none;
       display:inline-flex;
       align-items:center;
       gap: 8px;
       white-space:nowrap;
+      box-shadow: none;
     }
     .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.96); }
-    .btn:active{ transform: translateY(0px); }
-
     .btnPrimary{
       border: none;
       background: linear-gradient(135deg, rgba(47,107,255,.98), rgba(43,183,255,.92));
       color: white;
+      box-shadow: 0 14px 34px rgba(47,107,255,.18);
     }
     .btnDanger{
       border: 1px solid rgba(226,59,87,.22);
       background: rgba(226,59,87,.10);
-      color: rgba(20,24,38,.92);
+      color: var(--surfaceText);
     }
 
-    .grid{
-      display:grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap: var(--gap);
-      align-items:start;
-    }
-    @media (max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
-      .brand{ min-width: 160px; }
-      .select{ min-width: 180px; }
-    }
-
+    /* ✅ MAIN GLASS PANEL */
     .card{
-      border: 1px solid rgba(20,24,38,.10);
-      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(255,255,255,.16);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.12));
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      box-shadow:
+        0 24px 70px rgba(0,0,0,.22),
+        0 1px 0 rgba(255,255,255,.12) inset;
       padding: 16px;
+      backdrop-filter: blur(18px) saturate(120%);
+      -webkit-backdrop-filter: blur(18px) saturate(120%);
+      position: relative;
+      overflow: hidden;
+
+      /* ✅ text inside card should be dark (readable on translucent white surface) */
+      color: var(--surfaceText);
     }
+    .card:before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(900px 420px at 18% 10%, rgba(255,255,255,.22), transparent 55%),
+        radial-gradient(800px 380px at 82% 12%, rgba(43,183,255,.10), transparent 60%),
+        radial-gradient(900px 520px at 50% 120%, rgba(47,107,255,.12), transparent 60%);
+      pointer-events:none;
+      mix-blend-mode: screen;
+      opacity: .85;
+    }
+    .card > *{ position: relative; z-index: 1; }
+
     .cardHeader{
       display:flex;
       justify-content:space-between;
@@ -213,17 +286,8 @@
       gap: 12px;
       margin-bottom: 10px;
     }
-    .title{
-      font-size: 18px;
-      font-weight: 900;
-      letter-spacing:.1px;
-    }
-    .sub{
-      color: var(--muted);
-      font-size: 13px;
-      margin-top: 3px;
-      line-height:1.35;
-    }
+    .title{ font-size: 18px; font-weight: 900; letter-spacing:.2px; }
+    .sub{ color: var(--surfaceMuted); font-size: 13px; margin-top: 3px; }
 
     .pill{
       display:inline-flex;
@@ -231,75 +295,29 @@
       gap: 8px;
       padding: 7px 10px;
       border-radius: 999px;
-      border:1px solid rgba(20,24,38,.10);
-      background: rgba(20,24,38,.04);
-      color: rgba(20,24,38,.70);
+      border:1px solid rgba(15,21,38,.12);
+      background: rgba(15,21,38,.04);
+      color: rgba(15,21,38,.70);
       font-size: 12px;
       font-weight:900;
       white-space:nowrap;
     }
 
-    .kpis{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-top: 12px;
-    }
-    @media (max-width: 980px){
-      .kpis{ grid-template-columns: repeat(2, 1fr); }
-    }
-    .kpi{
-      border:1px solid rgba(20,24,38,.10);
-      background: rgba(255,255,255,.86);
-      border-radius: 16px;
-      padding: 12px;
-    }
-    .kpi .label{ color: var(--muted); font-size: 12px; font-weight:900; }
-    .kpi .value{ margin-top: 6px; font-size: 18px; font-weight: 900; letter-spacing:.3px; }
-    .kpi .mini{ margin-top: 4px; color: var(--muted2); font-size: 12px; }
-
-    .row{
-      display:flex;
-      flex-wrap:wrap;
-      gap: 10px;
-      align-items:flex-end;
-      justify-content:space-between;
-      margin-top: 12px;
-    }
-
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap: 6px;
-      min-width: 220px;
-    }
-    .field label{
-      font-size: 12px;
-      font-weight: 900;
-      color: var(--muted);
-      letter-spacing:.2px;
-    }
-
+    .field{ display:flex; flex-direction:column; gap: 6px; }
+    .field label{ font-size: 12px; font-weight: 900; color: var(--surfaceMuted); letter-spacing:.2px; }
     .input, .select2{
-      border:1px solid rgba(20,24,38,.12);
+      border:1px solid rgba(15,21,38,.12);
       background: rgba(255,255,255,.92);
-      color: var(--text);
+      color: var(--surfaceText);
       border-radius: 14px;
       padding: 10px 12px;
       outline:none;
       font-weight: 900;
-      box-shadow:none;
     }
     .input:focus, .select:focus, .select2:focus{
-      outline: none;
+      outline:none;
       border-color: rgba(47,107,255,.35);
       box-shadow: 0 0 0 4px rgba(47,107,255,.12);
-    }
-
-    .help{
-      font-size: 12px;
-      color: var(--muted2);
-      line-height:1.35;
     }
 
     .table{
@@ -308,28 +326,26 @@
       margin-top: 10px;
       overflow:hidden;
       border-radius: 16px;
-      border:1px solid rgba(20,24,38,.10);
+      border:1px solid rgba(15,21,38,.10);
+      background: rgba(255,255,255,.80);
+      color: var(--surfaceText);
     }
     .table th, .table td{
       padding: 10px 10px;
       font-size: 13px;
-      border-bottom:1px solid rgba(20,24,38,.06);
+      border-bottom:1px solid rgba(15,21,38,.06);
       text-align:left;
       vertical-align:top;
+      color: var(--surfaceText);
     }
     .table th{
-      position: sticky;
-      top: 0;
-      z-index: 1;
-      color: rgba(20,24,38,.65);
+      color: rgba(15,21,38,.65);
       font-weight: 900;
       font-size: 12px;
       letter-spacing:.3px;
-      background: rgba(20,24,38,.03);
+      background: rgba(15,21,38,.03);
     }
-    .table tr:nth-child(even) td{ background: rgba(20,24,38,.012); }
-    .table tr:hover td{ background: rgba(47,107,255,.04); }
-    .num{ text-align:right; }
+    .table tr:hover td{ background: rgba(47,107,255,.04); cursor:pointer; }
 
     .badge{
       display:inline-flex;
@@ -339,18 +355,18 @@
       padding: 6px 10px;
       font-size: 12px;
       font-weight: 900;
-      border:1px solid rgba(20,24,38,.10);
-      background: rgba(20,24,38,.04);
-      color: rgba(20,24,38,.78);
+      border:1px solid rgba(15,21,38,.10);
+      background: rgba(15,21,38,.04);
       white-space:nowrap;
+      color: rgba(15,21,38,.78);
     }
     .badgeOK{ border-color: rgba(24,169,101,.22); background: rgba(24,169,101,.10); }
     .badgePB{ border-color: rgba(200,139,0,.22); background: rgba(200,139,0,.10); }
 
     .iconBtn{
-      border:1px solid rgba(20,24,38,.10);
-      background: rgba(20,24,38,.04);
-      color: rgba(20,24,38,.92);
+      border:1px solid rgba(15,21,38,.10);
+      background: rgba(15,21,38,.04);
+      color: var(--surfaceText);
       width: 34px;
       height: 34px;
       border-radius: 12px;
@@ -359,68 +375,45 @@
       align-items:center;
       justify-content:center;
       transition:.18s ease;
-      box-shadow: none;
     }
-    .iconBtn:hover{ transform: translateY(-1px); background: rgba(20,24,38,.06); }
-    .iconBtnDanger{
-      border-color: rgba(226,59,87,.22);
-      background: rgba(226,59,87,.10);
-    }
+    .iconBtn:hover{ transform: translateY(-1px); background: rgba(15,21,38,.06); }
+    .iconBtnDanger{ background: rgba(226,59,87,.10); border: 1px solid rgba(226,59,87,.22); }
 
     .chart{
       width:100%;
-      height: 240px;
+      height: 260px;
       border-radius: 16px;
-      border:1px solid rgba(20,24,38,.10);
-      background: rgba(255,255,255,.86);
+      border:1px solid rgba(15,21,38,.10);
+      background: rgba(255,255,255,.78);
       overflow:hidden;
       margin-top: 12px;
       position:relative;
+      color: var(--surfaceText);
     }
-    .chart canvas{
-      width:100%;
-      height:100%;
-      display:block;
-    }
+    .chart canvas{ width:100%; height:100%; display:block; }
     .chartHint{
       position:absolute;
       left: 50%;
       transform: translateX(-50%);
       top: 10px;
-      font-size: 12px;
-      color: rgba(20,24,38,.55);
+      font-size: 13px;
+      color: rgba(15,21,38,.70);
       font-weight: 900;
       letter-spacing:.2px;
       text-align:center;
-      pointer-events:none;
       white-space:nowrap;
-    }
-    .chartTooltip{
-      position:absolute;
-      display:none;
       pointer-events:none;
-      background: rgba(255,255,255,.96);
-      border: 1px solid rgba(20,24,38,.12);
-      border-radius: 14px;
-      padding: 10px 12px;
-      box-shadow: var(--shadow2);
-      font-size: 12px;
-      color: rgba(20,24,38,.92);
-      min-width: 180px;
     }
-    .chartTooltip .tTitle{ font-weight: 900; margin-bottom: 4px; }
-    .chartTooltip .tRow{ color: rgba(20,24,38,.72); line-height:1.35; }
-    .chartTooltip .tRow b{ color: rgba(20,24,38,.92); }
 
     .empty{
-      border:1px dashed rgba(20,24,38,.22);
+      border:1px dashed rgba(15,21,38,.18);
       border-radius: 18px;
       padding: 18px;
-      color: rgba(20,24,38,.68);
-      background: rgba(255,255,255,.72);
+      color: var(--surfaceMuted);
+      background: rgba(255,255,255,.60);
       margin-top: 10px;
     }
-    .empty strong{ color: rgba(20,24,38,.92); }
+    .empty strong{ color: var(--surfaceText); }
     .empty p{ margin: 8px 0 0; font-size: 13px; line-height:1.45; }
 
     .banner{
@@ -429,18 +422,145 @@
       border-radius: 18px;
       padding: 12px 14px;
       border: 1px solid rgba(47,107,255,.18);
-      background: rgba(47,107,255,.08);
-      box-shadow: 0 18px 50px rgba(47,107,255,.10);
-      color: rgba(20,24,38,.92);
+      background: rgba(255,255,255,.72);
+      box-shadow: 0 18px 50px rgba(0,0,0,.10);
+      color: var(--surfaceText);
     }
     .banner.show{ display:block; }
     .banner strong{ font-weight: 900; }
-    .banner .small{ color: rgba(20,24,38,.62); font-size: 12px; margin-top: 3px; }
+    .banner .small{ color: var(--surfaceMuted); font-size: 12px; margin-top: 3px; }
+
+    .handWrap{
+      margin-top: 12px;
+      padding: 6px 2px 12px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      scroll-snap-type: x mandatory;
+      display:flex;
+      gap: 12px;
+      align-items: stretch;
+      flex-wrap: nowrap;
+      width: 100%;
+    }
+    .handWrap::-webkit-scrollbar{ display:none; }
+
+    .distCard{
+      flex: 0 0 clamp(300px, 86vw, 380px);
+      scroll-snap-align: start;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.70), rgba(255,255,255,.54));
+      box-shadow: var(--shadow2);
+      padding: 12px;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position:relative;
+      overflow:hidden;
+      min-width: 300px;
+      color: var(--surfaceText);
+    }
+
+    .distTop{ display:flex; align-items:flex-start; justify-content:space-between; gap: 10px; }
+    .distTitle{ display:flex; flex-direction:column; gap: 4px; min-width: 0; }
+    .distTitle .big{
+      font-weight: 950;
+      font-size: 16px;
+      line-height: 1.1;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .distTitle .small{
+      font-size: 12px;
+      color: var(--surfaceMuted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 240px;
+    }
+    .distStats{ display:flex; flex-direction:column; align-items:flex-end; gap: 4px; flex: 0 0 auto; }
+    .distStats .pb{
+      font-weight: 950;
+      font-size: 13px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(47,107,255,.08);
+      border: 1px solid rgba(47,107,255,.16);
+      white-space:nowrap;
+    }
+    .distStats .count{ font-size: 12px; color: var(--surfaceMuted); font-weight: 900; white-space:nowrap; }
+
+    .distList{
+      border-radius: 14px;
+      border: 1px solid rgba(15,21,38,.10);
+      background: rgba(255,255,255,.78);
+      padding: 8px;
+      overflow-y: auto;
+      max-height: 320px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .entryItem{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      padding: 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(15,21,38,.08);
+      background: rgba(255,255,255,.86);
+      margin-bottom: 8px;
+    }
+    .entryItem:last-child{ margin-bottom: 0; }
+
+    .entryMain{ display:flex; flex-direction:column; gap: 4px; min-width: 0; }
+    .entryMain .line1{ display:flex; gap: 8px; align-items:center; flex-wrap:wrap; }
+    .entryMain .time{
+      font-weight: 950;
+      font-size: 14px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(15,21,38,.04);
+      border: 1px solid rgba(15,21,38,.08);
+      white-space:nowrap;
+    }
+    .entryMain .meta{
+      font-size: 12px;
+      color: var(--surfaceMuted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 240px;
+    }
+    .entryMain .notes{
+      font-size: 12px;
+      color: var(--surfaceMuted2);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 280px;
+    }
+
+    .entryActions{
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+      align-items:flex-end;
+      justify-content:flex-start;
+    }
+
+    .screen{ display:none; }
+    .screen.active{ display:block; }
 
     .modalOverlay{
       position:fixed;
       inset:0;
-      background: rgba(10,12,18,.40);
+      background: rgba(0,0,0,.45);
       display:none;
       z-index: 100;
       align-items:center;
@@ -450,19 +570,20 @@
       -webkit-overflow-scrolling: touch;
     }
     .modalOverlay.show{ display:flex; }
-
     .modal{
       width: min(720px, 100%);
-      max-height: calc(100vh - 40px);
+      max-height: calc(100vh - 70px);
       overflow:auto;
       -webkit-overflow-scrolling: touch;
       border-radius: 20px;
-      border: 1px solid rgba(20,24,38,.12);
+      border: 1px solid rgba(15,21,38,.12);
       background: rgba(255,255,255,.92);
       box-shadow: var(--shadow);
       padding: 16px;
+      position: relative;
+      z-index: 2;
+      color: var(--surfaceText);
     }
-
     .modalTop{
       display:flex;
       align-items:flex-start;
@@ -473,23 +594,14 @@
       top: 0;
       background: rgba(255,255,255,.92);
       padding-bottom: 10px;
-      z-index: 2;
+      z-index: 3;
     }
-    .modalTop h3{
-      margin:0;
-      font-size: 16px;
-      font-weight: 900;
-    }
-    .modalTop p{
-      margin:4px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height:1.4;
-    }
+    .modalTop h3{ margin:0; font-size: 16px; font-weight: 900; color: var(--surfaceText); }
+    .modalTop p{ margin:4px 0 0; color: var(--surfaceMuted); font-size: 13px; line-height:1.4; }
     .xbtn{
-      border: 1px solid rgba(20,24,38,.10);
-      background: rgba(20,24,38,.04);
-      color: rgba(20,24,38,.92);
+      border: 1px solid rgba(15,21,38,.10);
+      background: rgba(15,21,38,.04);
+      color: var(--surfaceText);
       border-radius: 12px;
       width: 38px; height: 38px;
       cursor:pointer;
@@ -497,20 +609,11 @@
       flex: 0 0 auto;
     }
 
-    .form{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    @media (max-width: 560px){
-      .form{ grid-template-columns: 1fr; }
-    }
-
     .error{
       display:none;
-      color: rgba(20,24,38,.92);
-      background: rgba(226,59,87,.10);
-      border: 1px solid rgba(226,59,87,.22);
+      color: #7d1424;
+      background: rgba(226,59,87,.12);
+      border: 1px solid rgba(226,59,87,.25);
       border-radius: 14px;
       padding: 10px 12px;
       font-size: 12px;
@@ -529,33 +632,24 @@
       bottom: 0;
       background: rgba(255,255,255,.92);
       padding-top: 10px;
-      z-index: 2;
+      z-index: 3;
     }
 
-    .entryRows{
-      display:flex;
-      flex-direction:column;
-      gap: 10px;
-      margin-top: 8px;
-    }
+    .entryRows{ display:flex; flex-direction:column; gap: 10px; margin-top: 8px; }
     .entryRow{
       display:grid;
       grid-template-columns: 1fr 1fr auto;
       gap: 10px;
       align-items:end;
-      border: 1px solid rgba(20,24,38,.10);
-      background: rgba(20,24,38,.02);
+      border: 1px solid rgba(15,21,38,.10);
+      background: rgba(255,255,255,.82);
       border-radius: 16px;
       padding: 10px;
     }
-    @media (max-width: 560px){
-      .entryRow{ grid-template-columns: 1fr; }
-    }
-
     .miniBtn{
-      border:1px solid rgba(20,24,38,.12);
-      background: rgba(255,255,255,.86);
-      color: rgba(20,24,38,.92);
+      border:1px solid rgba(15,21,38,.12);
+      background: rgba(255,255,255,.88);
+      color: var(--surfaceText);
       padding: 10px 12px;
       border-radius: 14px;
       font-weight: 900;
@@ -564,78 +658,188 @@
       white-space:nowrap;
     }
     .miniBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.96); }
-    .miniBtnDanger{
-      border:1px solid rgba(226,59,87,.22);
-      background: rgba(226,59,87,.10);
-    }
+    .miniBtnDanger{ border:1px solid rgba(226,59,87,.22); background: rgba(226,59,87,.10); }
 
     .foot{
       margin-top: 14px;
-      color: var(--muted2);
+      color: var(--surfaceMuted2);
       font-size: 12px;
       line-height:1.45;
     }
 
-    .screen{ display:none; }
-    .screen.active{ display:block; }
+    .focusWrap{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+    }
+    .focusSelect{ min-width: 180px; }
+
+    @media (min-width: 980px){
+      .appbarInner{ flex-wrap: nowrap; padding: 10px 18px; }
+      .rightTools{ flex-wrap: nowrap; }
+      .tabs{ padding: 4px; gap: 6px; }
+      .tabBtn{ padding: 8px 12px; font-size: 13px; }
+      .btn{ padding: 9px 11px; border-radius: 13px; }
+      .select{ padding: 9px 34px 9px 12px; border-radius: 13px; }
+    }
 
     @media (max-width: 560px){
-      .tabs{ display:none; }
+      /* (Will be overridden by the scrollable appbar patch below) */
       .brandText span{ display:none; }
-      .wrap{ padding-top: 84px; }
-      .rightTools{ flex-wrap:wrap; justify-content:flex-start; }
-      .select{ min-width: 100%; }
-      .field{ min-width: 100%; }
-      .chartHint{ white-space:normal; width: 90%; }
+      .rightTools{
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        width: 100%;
+        justify-content:flex-start;
+      }
+      .selectWrap{ grid-column: 1 / -1; min-width: 100%; }
+      .btn{ width: 100%; justify-content:center; }
+      .entryRow{ grid-template-columns: 1fr; }
+      .modal{ max-height: calc(100vh - 40px); }
+      .chartHint{ white-space:normal; width: 90%; text-align:center; }
+      .distList{ max-height: 52vh; }
+      .focusWrap{ justify-content:flex-start; }
+      .focusSelect{ min-width: 100%; }
     }
 
-    /* Session group block */
-    .sessionBlock{
-      border: 1px solid rgba(20,24,38,.10);
-      background: rgba(255,255,255,.86);
-      border-radius: 18px;
-      padding: 12px;
-      margin-top: 10px;
-    }
-    .sessionHead{
-      display:flex;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-    .sessionTitle{
-      font-weight: 900;
-      letter-spacing:.2px;
-    }
-    .sessionMeta{
-      color: rgba(20,24,38,.62);
-      font-size: 12px;
-      font-weight: 800;
+    /* =========================================================
+       DARK THEME: Make key tab headings/subtexts WHITE
+       (and keep LIGHT theme BLACK)
+    ========================================================= */
+
+    html[data-theme="dark"] .card{
+      background: linear-gradient(180deg, rgba(0,0,0,.30), rgba(0,0,0,.18));
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: 0 24px 70px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.10) inset;
+      color: var(--pageText);
     }
 
+    html[data-theme="dark"] .card .title{
+      color: rgba(255,255,255,.95) !important;
+    }
+    html[data-theme="dark"] .card .sub{
+      color: rgba(255,255,255,.78) !important;
+    }
+
+    html[data-theme="dark"] .card .pill{
+      color: rgba(255,255,255,.90) !important;
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.18);
+    }
+
+    html[data-theme="dark"] .card .field label{
+      color: rgba(255,255,255,.78) !important;
+    }
+
+    html[data-theme="dark"] .card .help,
+    html[data-theme="dark"] .card #anCount{
+      color: rgba(255,255,255,.78) !important;
+    }
+
+    html[data-theme="dark"] .table,
+    html[data-theme="dark"] .distCard,
+    html[data-theme="dark"] .empty,
+    html[data-theme="dark"] .chart{
+      color: var(--surfaceText);
+    }
+
+    /* =========================================================
+       APPBAR PATCH (keep brand prominent; Tabs + Tools scrollable)
+       ✅ This OVERRIDES the grid stacking that made appbar too tall
+    ========================================================= */
+
+    @media (max-width: 760px){
+      .appbarInner{
+        padding: 10px 12px;
+        gap: 10px;
+      }
+      .brand{
+        min-width: unset;
+      }
+      .brandText strong{ font-size: 16px; }
+      .brandText span{ font-size: 12px; }
+    }
+
+    @media (max-width: 560px){
+      .brandText span{ display:block; }
+
+      .tabs{
+        width: 100%;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+      }
+      .tabBtn, .giftBtn{
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+      }
+
+      .rightTools{
+        width: 100%;
+        display:flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 8px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+      }
+      .rightTools::-webkit-scrollbar{ display:none; }
+
+      .rightTools > *{
+        flex: 0 0 auto !important;
+      }
+
+      .selectWrap{
+        min-width: 220px !important;
+        width: 220px !important;
+        grid-column: unset !important;
+      }
+      #athleteSelect{
+        width: 220px !important;
+      }
+
+      .btn{
+        width: auto !important;
+        justify-content:center;
+        padding: 9px 10px;
+      }
+    }
+
+    @media (max-width: 560px){
+      .brand{
+        padding-bottom: 2px;
+        border-bottom: 1px solid rgba(255,255,255,.10);
+      }
+      html[data-theme="light"] .brand{
+        border-bottom: 1px solid rgba(15,21,38,.10);
+      }
+    }
   </style>
 </head>
 
 <body>
-
   <div class="appbar">
     <div class="appbarInner">
-
       <div class="brand">
-        <div class="logo"></div>
+        <div class="avatar" id="avatarBtn" title="Click to set athlete avatar"></div>
         <div class="brandText">
           <strong>PB VelocityBoard</strong>
           <span>Track • Improve • Celebrate</span>
         </div>
       </div>
 
+      <!-- ✅ EXPORT TAB REMOVED -->
       <div class="tabs" role="tablist" aria-label="PB VelocityBoard Tabs">
         <button class="tabBtn active" data-tab="home">Home</button>
         <button class="tabBtn" data-tab="analytics">Analytics</button>
-        <button class="tabBtn" data-tab="export">Export</button>
         <button class="tabBtn" data-tab="settings">Settings</button>
+        <button class="giftBtn" id="btnDonate" title="Donate / Support">🎁</button>
       </div>
 
       <div class="rightTools">
@@ -647,287 +851,183 @@
         <button class="btn" id="btnAddEntry">+ Add Race</button>
         <button class="btn btnDanger" id="btnReset">Reset</button>
       </div>
-
     </div>
   </div>
 
   <div class="wrap">
-
     <div id="pbBanner" class="banner">
-      <strong>🎉 Update</strong>
+      <strong>🎉 New PB!</strong>
       <div class="small" id="pbBannerText">Saved.</div>
     </div>
 
     <section id="screenHome" class="screen active">
-      <div class="grid">
+      <div class="card">
+        <div class="cardHeader" style="margin-bottom:6px;">
+          <div>
+            <div class="title">PB Summary</div>
+            <div class="sub">Best time for each distance.</div>
+          </div>
+          <div class="pill" id="pillAthlete">No athlete selected</div>
+        </div>
 
-        <div class="card">
-          <div class="cardHeader">
-            <div>
-              <div class="title">Performance Snapshot</div>
-              <div class="sub">KPIs + trend for the selected athlete, filtered by distance/location.</div>
-            </div>
-            <div class="pill" id="pillAthlete">No athlete selected</div>
+        <div class="cardHeader" style="margin-top:10px;">
+          <div class="pill" id="pillPBCount">0 PBs</div>
+        </div>
+
+        <div id="pbSummaryWrap"></div>
+
+        <div style="height:12px;"></div>
+
+        <div class="cardHeader" style="align-items:center;">
+          <div>
+            <div class="title" style="font-size:16px;">Race Cards (by distance)</div>
+            <div class="sub">Swipe cards left/right</div>
           </div>
 
-          <div class="kpis">
-            <div class="kpi">
-              <div class="label">PB (Selected Distance)</div>
-              <div class="value" id="kpiPB">—</div>
-              <div class="mini" id="kpiPBDistance">Pick a distance</div>
-            </div>
-
-            <div class="kpi">
-              <div class="label">Latest Time</div>
-              <div class="value" id="kpiLatest">—</div>
-              <div class="mini" id="kpiLatestMeta">—</div>
-            </div>
-
-            <div class="kpi">
-              <div class="label">Avg (Last 10)</div>
-              <div class="value" id="kpiAvg10">—</div>
-              <div class="mini">Lower is better</div>
-            </div>
-
-            <div class="kpi">
-              <div class="label">Consistency</div>
-              <div class="value" id="kpiCons">—</div>
-              <div class="mini">Std Dev (last 10)</div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="field">
-              <label for="distanceFilter">Distance Focus</label>
-              <select id="distanceFilter" class="select2">
-                <option value="ALL">All distances</option>
-                <option value="111m">111m</option>
-                <option value="222m">222m</option>
-                <option value="333m">333m</option>
-                <option value="400m">400m</option>
-                <option value="500m">500m</option>
-                <option value="800m">800m</option>
-                <option value="1000m">1000m</option>
-                <option value="1500m">1500m</option>
-              </select>
-              <div class="help">Affects KPIs + chart + recent groups.</div>
-            </div>
-
-            <div class="field">
-              <label for="locationFilter">Location Filter</label>
-              <input id="locationFilter" class="input" placeholder="All locations (type to filter)" list="locationList" />
-              <datalist id="locationList"></datalist>
-              <div class="help">Type “Scarborough”, “Milton”, etc. Leave blank = All.</div>
-            </div>
-
+          <div class="focusWrap">
             <div class="pill" id="pillCount">0 races</div>
-          </div>
 
-          <div class="chart" id="chartBox">
-            <div class="chartHint">Trend (Time vs Race Date)</div>
-            <div class="chartTooltip" id="chartTooltip"></div>
-            <canvas id="trendCanvas" width="1200" height="420"></canvas>
-          </div>
-
-          <div class="foot">
-            Tip: Data is saved on this device (local storage). Export JSON for backup.
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="cardHeader">
-            <div>
-              <div class="title">PB Summary + Recent Sessions</div>
-              <div class="sub">PBs by distance + grouped sessions (Date + Location).</div>
+            <div class="field" style="min-width: 220px; margin:0;">
+              <label style="margin:0; font-size:11px; font-weight:950; color:rgba(15,21,38,.66);">
+                Distance Focus (for cards)
+              </label>
+              <select id="distanceFilter" class="select2 focusSelect"></select>
             </div>
-            <div class="pill" id="pillPBCount">0 PBs</div>
-          </div>
-
-          <div id="pbSummaryWrap"></div>
-
-          <div style="height:10px;"></div>
-
-          <div id="recentWrap"></div>
-
-          <div class="foot">
-            Sessions are grouped by <b>Date + Location</b>.
           </div>
         </div>
 
+        <div id="cardsWrap" class="handWrap"></div>
+
+        <div class="foot">
+          Tip: Everything is saved on this device (local storage). To view on another device, download the Excel for the selected athlete and upload it on the other device.
+        </div>
       </div>
     </section>
 
-    <!-- ANALYTICS -->
     <section id="screenAnalytics" class="screen">
       <div class="card">
         <div class="cardHeader">
           <div>
-            <div class="title">Analytics</div>
-            <div class="sub">PB progression + simple compare mode (side-by-side PBs).</div>
+            <div class="title">Performance Snapshot</div>
+            <div class="sub">Trend (Time vs Race Date) for the selected athlete and distance focus</div>
           </div>
           <div class="pill" id="pillAnalytics">—</div>
         </div>
 
-        <div class="row">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="formGrid">
           <div class="field">
-            <label for="compareSelect">Compare with (optional)</label>
-            <select id="compareSelect" class="select2"></select>
-            <div class="help">Pick another athlete to compare PBs side-by-side.</div>
-          </div>
-          <div class="pill" id="pillCompare">Compare: Off</div>
-        </div>
-
-        <div class="kpis">
-          <div class="kpi">
-            <div class="label">Season Best (90d)</div>
-            <div class="value" id="anBest90">—</div>
-            <div class="mini" id="anBest90Meta">—</div>
+            <label>Distance Focus (for chart)</label>
+            <select id="analyticsDistance" class="select2"></select>
+            <div class="help" id="anCount" style="margin-top:6px; color:var(--surfaceMuted); font-weight:900;">—</div>
           </div>
 
-          <div class="kpi">
-            <div class="label">Improvement (Last 5)</div>
-            <div class="value" id="anImp5">—</div>
-            <div class="mini">Latest vs oldest of last 5</div>
-          </div>
-
-          <div class="kpi">
-            <div class="label">PB Count</div>
-            <div class="value" id="anPBCount">—</div>
-            <div class="mini">Across all distances</div>
-          </div>
-
-          <div class="kpi">
-            <div class="label">Total Races</div>
-            <div class="value" id="anTotal">—</div>
-            <div class="mini">Entries stored</div>
+          <div class="field">
+            <label>PB (Selected Distance)</label>
+            <div class="input" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+              <div style="font-weight:950;" id="anPB">—</div>
+              <div style="font-size:12px; color:var(--surfaceMuted); font-weight:900;" id="anPBMeta">Select a distance to display PB</div>
+            </div>
           </div>
         </div>
 
-        <table class="table" id="pbTable">
-          <thead>
-            <tr id="pbHeadRow">
-              <th>Distance</th>
-              <th>PB Time</th>
-              <th>Date</th>
-              <th>Location</th>
-              <th>Notes</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-
-        <div class="foot">
-          Compare mode shows two PB columns when enabled.
+        <div class="chart">
+          <div class="chartHint">Trend (Time vs Race Date)</div>
+          <canvas id="trendCanvas" width="1200" height="420"></canvas>
         </div>
       </div>
     </section>
 
-    <!-- EXPORT -->
-    <section id="screenExport" class="screen">
-      <div class="grid">
-        <div class="card">
-          <div class="cardHeader">
-            <div>
-              <div class="title">Export / Backup</div>
-              <div class="sub">Download your data so you can move devices or share with a coach.</div>
-            </div>
-            <div class="pill" id="pillExport">—</div>
-          </div>
-
-          <div class="row">
-            <button class="btn btnPrimary" id="btnExportJSON">Download JSON</button>
-            <button class="btn" id="btnExportCSV">Download CSV (selected athlete)</button>
-          </div>
-
-          <div class="empty">
-            <strong>Pro tip</strong>
-            <p>Export JSON is the best backup. CSV is handy for coaches who prefer Excel.</p>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="cardHeader">
-            <div>
-              <div class="title">Import JSON</div>
-              <div class="sub">Restore your VelocityBoard backup.</div>
-            </div>
-          </div>
-
-          <div class="field" style="min-width:100%;">
-            <label>Upload JSON backup</label>
-            <input class="input" id="importFile" type="file" accept=".json" />
-            <div class="help">This will merge athletes.</div>
-          </div>
-
-          <div class="modalActions" style="justify-content:flex-start;">
-            <button class="btn" id="btnImport">Import</button>
-          </div>
-
-          <div id="importMsg" class="error"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SETTINGS -->
+    <!-- ✅ SETTINGS now contains 2 glass panels: Preferences + Excel Import/Export -->
     <section id="screenSettings" class="screen">
       <div class="card">
         <div class="cardHeader">
           <div>
             <div class="title">Settings</div>
-            <div class="sub">Simple preferences for a clean experience.</div>
+            <div class="sub">Preferences.</div>
           </div>
           <div class="pill">Local Storage</div>
         </div>
 
-        <div class="form">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="formGrid">
           <div class="field">
-            <label>Default Distance Focus</label>
-            <select id="defaultDistance" class="select2">
-              <option value="ALL">All distances</option>
-              <option value="400m">400m</option>
-              <option value="500m">500m</option>
-              <option value="800m">800m</option>
-              <option value="1000m">1000m</option>
-              <option value="1500m">1500m</option>
+            <label>Theme</label>
+            <select id="themeSelect" class="select2">
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
             </select>
-            <div class="help">Used when the app loads.</div>
           </div>
 
           <div class="field">
-            <label>Time Placeholder</label>
+            <label>Time placeholder</label>
             <input id="timeHint" class="input" value="00:52.300" />
-            <div class="help">Used as placeholder in Add/Edit entry.</div>
           </div>
         </div>
 
         <div class="empty" style="margin-top:12px;">
           <strong>Storage note</strong>
-          <p>All data is stored on this device. To start fresh: Reset. To move devices: Export JSON and import it.</p>
+          <p>All data is stored on this device. To start fresh: Reset.</p>
+        </div>
+      </div>
+
+      <div style="height:14px;"></div>
+
+      <div class="card">
+        <div class="cardHeader">
+          <div>
+            <div class="title">Excel Import / Template</div>
+            <div class="sub">Download the Excel template, fill it, and upload to import into the selected athlete.</div>
+          </div>
+          <div class="pill" id="pillExport">—</div>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn" id="btnExportXLSX">Download Excel (selected athlete)</button>
+          <button class="btn" id="btnDownloadTemplateXLSX">⬇️ Download Excel Template</button>
+        </div>
+
+        <div class="empty" style="margin-top:12px;">
+          <strong>Upload Excel</strong>
+          <p>Data from this file will be added to the currently selected athlete.</p>
+          <div class="field" style="margin-top:10px;">
+            <label>Choose Excel file</label>
+            <input class="input" id="excelFile" type="file" accept=".xlsx,.xls" />
+          </div>
+          <div style="margin-top:10px;">
+            <button class="btn btnPrimary" id="btnImportXLSX">Upload data to selected athlete</button>
+          </div>
+          <div id="importMsg" class="error"></div>
         </div>
       </div>
     </section>
-
   </div>
 
-  <!-- MODAL: ADD ATHLETE -->
+  <!-- Distance list for typing suggestions -->
+  <datalist id="distanceList"></datalist>
+
+  <!-- MODALS -->
   <div class="modalOverlay" id="modalAthlete">
     <div class="modal">
       <div class="modalTop">
         <div>
           <h3>Add Athlete</h3>
-          <p>Create an athlete profile. You can add races after that.</p>
+          <p>Create an athlete profile (with an avatar).</p>
         </div>
         <button class="xbtn" data-close="modalAthlete">✕</button>
       </div>
 
-      <div class="form">
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;" class="modalGrid">
         <div class="field">
           <label>Name</label>
           <input id="athName" class="input" placeholder="e.g., Samarveer" />
         </div>
         <div class="field">
           <label>Birth Year (optional)</label>
-          <input id="athYear" class="input" inputmode="numeric" placeholder="e.g., 2014" />
+          <input id="athYear" class="input" inputmode="numeric" placeholder="e.g., 2015" />
+        </div>
+
+        <div class="field" style="grid-column:1 / -1;">
+          <label>Avatar Emoji (optional)</label>
+          <input id="athEmoji" class="input" placeholder="Default ❄️ (example: ⛸️ 🏁 ⭐)" />
         </div>
       </div>
 
@@ -940,18 +1040,17 @@
     </div>
   </div>
 
-  <!-- MODAL: EDIT ATHLETE -->
   <div class="modalOverlay" id="modalEditAthlete">
     <div class="modal">
       <div class="modalTop">
         <div>
           <h3>Edit Athlete</h3>
-          <p>Update the athlete name (and birth year).</p>
+          <p>Update athlete name (and birth year).</p>
         </div>
         <button class="xbtn" data-close="modalEditAthlete">✕</button>
       </div>
 
-      <div class="form">
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;" class="modalGrid">
         <div class="field">
           <label>Name</label>
           <input id="editAthName" class="input" />
@@ -971,18 +1070,17 @@
     </div>
   </div>
 
-  <!-- MODAL: ADD ENTRY -->
   <div class="modalOverlay" id="modalEntry">
     <div class="modal">
       <div class="modalTop">
         <div>
           <h3>Add Race Entry</h3>
-          <p>Same date + location can include multiple distances (400/500/800/1000 etc.).</p>
+          <p>Same date + location can include multiple distances.</p>
         </div>
         <button class="xbtn" data-close="modalEntry">✕</button>
       </div>
 
-      <div class="form">
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;" class="modalGrid">
         <div class="field">
           <label>Date</label>
           <input id="enDate" class="input" type="date" />
@@ -999,11 +1097,9 @@
         </div>
       </div>
 
-      <div class="field" style="margin-top:10px; min-width:100%;">
+      <div class="field" style="margin-top:10px;">
         <label>Distances & Times</label>
-
         <div class="entryRows" id="entryRows"></div>
-
         <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
           <button class="miniBtn" id="btnAddRow">+ Add another distance</button>
         </div>
@@ -1018,72 +1114,66 @@
     </div>
   </div>
 
-  <!-- MODAL: EDIT ENTRY -->
   <div class="modalOverlay" id="modalEditEntry">
     <div class="modal">
       <div class="modalTop">
         <div>
           <h3>Edit Entry</h3>
-          <p>Update date/location/distance/time/notes for this race.</p>
+          <p>Fix time, distance, date, location, notes.</p>
         </div>
         <button class="xbtn" data-close="modalEditEntry">✕</button>
       </div>
 
-      <div class="form">
+      <input type="hidden" id="editEntryId" />
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;" class="modalGrid">
         <div class="field">
           <label>Date</label>
-          <input id="eeDate" class="input" type="date" />
+          <input id="editEnDate" class="input" type="date" />
         </div>
+
         <div class="field">
           <label>Location</label>
-          <input id="eeLocation" class="input" />
+          <input id="editEnLocation" class="input" placeholder="e.g., Scarborough" />
+        </div>
+
+        <div class="field" style="grid-column:1 / -1;">
+          <label>Notes (optional)</label>
+          <input id="editEnNotes" class="input" placeholder="e.g., Meet name, lane, fall, etc." />
         </div>
 
         <div class="field">
           <label>Distance</label>
-          <select id="eeDistance" class="select2">
-            <option value="111m">111m</option>
-            <option value="222m">222m</option>
-            <option value="333m">333m</option>
-            <option value="400m">400m</option>
-            <option value="500m">500m</option>
-            <option value="800m">800m</option>
-            <option value="1000m">1000m</option>
-            <option value="1500m">1500m</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Time (mm:ss.mmm)</label>
-          <input id="eeTime" class="input" />
+          <input id="editEnDistance" class="input" list="distanceList" placeholder="e.g., 500m" />
         </div>
 
-        <div class="field" style="grid-column:1 / -1;">
-          <label>Notes</label>
-          <input id="eeNotes" class="input" />
+        <div class="field">
+          <label>Time (mm:ss.mmm or HH:MM:SS)</label>
+          <input id="editEnTime" class="input" placeholder="00:52.300 or 00:01:00" />
         </div>
       </div>
 
       <div id="editEntryErr" class="error"></div>
 
       <div class="modalActions">
+        <button class="btn btnDanger" id="btnDeleteEntry">Delete</button>
         <button class="btn" data-close="modalEditEntry">Cancel</button>
-        <button class="btn btnPrimary" id="saveEntryEdits">Save Changes</button>
+        <button class="btn btnPrimary" id="btnSaveEntryEdits">Save Changes</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: RESET -->
   <div class="modalOverlay" id="modalReset">
     <div class="modal">
       <div class="modalTop">
         <div>
           <h3>Reset</h3>
-          <p>This removes your stored data on this device. Type <strong>RESET</strong> to confirm.</p>
+          <p>This removes stored data on this device. Type <strong>RESET</strong> to confirm.</p>
         </div>
         <button class="xbtn" data-close="modalReset">✕</button>
       </div>
 
-      <div class="field" style="min-width:100%;">
+      <div class="field">
         <label>Type RESET</label>
         <input id="resetConfirm" class="input" placeholder="RESET" />
       </div>
@@ -1097,86 +1187,98 @@
     </div>
   </div>
 
+  <div class="modalOverlay" id="modalDonate">
+    <div class="modal">
+      <div class="modalTop">
+        <div>
+          <h3>🎁 Support / Donate</h3>
+          <p>If this tracker helped you, you can support it with a small donation (PayPal).</p>
+        </div>
+        <button class="xbtn" data-close="modalDonate">✕</button>
+      </div>
+
+      <div class="empty" style="margin-top:0;">
+        <strong>Choose an amount</strong>
+        <p>Pick a quick amount or enter a custom value.</p>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+          <button class="btn" data-donate="2">$2</button>
+          <button class="btn" data-donate="5">$5</button>
+          <button class="btn" data-donate="10">$10</button>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr auto; gap:10px; margin-top:12px;">
+          <input id="donateCustom" class="input" placeholder="Custom amount (e.g., 3.50)" inputmode="decimal" />
+          <button class="btn btnPrimary" id="btnDonateCustom">Donate</button>
+        </div>
+
+        <div id="donateErr" class="error"></div>
+      </div>
+
+      <div class="foot">Thank you for your kindness 💙</div>
+    </div>
+  </div>
 
   <script>
-    const LS_KEY = "pb_velocityboard_v8_singlefile";
-    const LS_PREF = "pb_velocityboard_prefs_v8";
+    const PAYPAL_ME = "https://paypal.me/MandeepSardarni";
+
+    const LS_KEY  = "pb_velocityboard_v12";
+    const LS_PREF = "pb_velocityboard_prefs_v12";
 
     const defaultState = { athletes: [], activeAthleteId: null };
-    const defaultPrefs = { defaultDistance: "ALL", timeHint: "00:52.300" };
+    const defaultPrefs = { defaultDistance: "ALL", timeHint: "00:52.300", theme: "dark" };
+
+    // ✅ Default distances requested
+    const DEFAULT_DISTANCES = ["100m","200m","300m","400m","500m","800m","1000m","1200m","1500m"];
 
     let state = loadState();
     let prefs = loadPrefs();
-
-    // Compare mode (lightweight)
-    let compareAthleteId = null;
 
     const tabBtns = [...document.querySelectorAll(".tabBtn")];
     const screens = {
       home: document.getElementById("screenHome"),
       analytics: document.getElementById("screenAnalytics"),
-      export: document.getElementById("screenExport"),
       settings: document.getElementById("screenSettings")
     };
 
     const athleteSelect = document.getElementById("athleteSelect");
-    const compareSelect = document.getElementById("compareSelect");
-    const pillCompare = document.getElementById("pillCompare");
-
-    const distanceFilter = document.getElementById("distanceFilter");
-    const locationFilter = document.getElementById("locationFilter");
-    const locationList = document.getElementById("locationList");
+    const distanceFilter    = document.getElementById("distanceFilter");
+    const analyticsDistance = document.getElementById("analyticsDistance");
+    const distanceList = document.getElementById("distanceList");
 
     const pbBanner = document.getElementById("pbBanner");
     const pbBannerText = document.getElementById("pbBannerText");
 
-    const kpiPB = document.getElementById("kpiPB");
-    const kpiPBDistance = document.getElementById("kpiPBDistance");
-    const kpiLatest = document.getElementById("kpiLatest");
-    const kpiLatestMeta = document.getElementById("kpiLatestMeta");
-    const kpiAvg10 = document.getElementById("kpiAvg10");
-    const kpiCons = document.getElementById("kpiCons");
-
     const pillAthlete = document.getElementById("pillAthlete");
     const pillCount = document.getElementById("pillCount");
     const pillPBCount = document.getElementById("pillPBCount");
-    const recentWrap = document.getElementById("recentWrap");
     const pbSummaryWrap = document.getElementById("pbSummaryWrap");
+    const cardsWrap = document.getElementById("cardsWrap");
 
     const pillAnalytics = document.getElementById("pillAnalytics");
-    const anBest90 = document.getElementById("anBest90");
-    const anBest90Meta = document.getElementById("anBest90Meta");
-    const anImp5 = document.getElementById("anImp5");
-    const anPBCount = document.getElementById("anPBCount");
-    const anTotal = document.getElementById("anTotal");
-    const pbTableBody = document.querySelector("#pbTable tbody");
-    const pbHeadRow = document.getElementById("pbHeadRow");
+    const anPB = document.getElementById("anPB");
+    const anPBMeta = document.getElementById("anPBMeta");
+    const anCount = document.getElementById("anCount");
 
+    // ✅ now lives in Settings (Excel panel)
     const pillExport = document.getElementById("pillExport");
-    const importFile = document.getElementById("importFile");
+    const excelFile = document.getElementById("excelFile");
     const importMsg = document.getElementById("importMsg");
 
-    const defaultDistance = document.getElementById("defaultDistance");
     const timeHint = document.getElementById("timeHint");
+    const themeSelect = document.getElementById("themeSelect");
+
+    const avatarBtn = document.getElementById("avatarBtn");
 
     const canvas = document.getElementById("trendCanvas");
     const ctx = canvas.getContext("2d");
-    const chartBox = document.getElementById("chartBox");
-    const chartTooltip = document.getElementById("chartTooltip");
 
-    let lastDrawMeta = null; // for tooltip hit testing
-
-    // Entry edit modal fields
-    const eeDate = document.getElementById("eeDate");
-    const eeLocation = document.getElementById("eeLocation");
-    const eeDistance = document.getElementById("eeDistance");
-    const eeTime = document.getElementById("eeTime");
-    const eeNotes = document.getElementById("eeNotes");
-    const editEntryErr = document.getElementById("editEntryErr");
-    let editingEntryId = null;
-
+    // -----------------------------
+    // Events
+    // -----------------------------
     document.getElementById("btnAddAthlete").addEventListener("click", () => openModal("modalAthlete"));
     document.getElementById("btnEditAthlete").addEventListener("click", openEditAthlete);
+
     document.getElementById("btnAddEntry").addEventListener("click", () => {
       if(!getActiveAthlete()){
         flashBanner("Please add/select an athlete first.", false);
@@ -1185,7 +1287,29 @@
       }
       openEntryModal();
     });
+
     document.getElementById("btnReset").addEventListener("click", () => openModal("modalReset"));
+
+    document.getElementById("btnDonate").addEventListener("click", () => openModal("modalDonate"));
+    document.querySelectorAll("[data-donate]").forEach(b=>{
+      b.addEventListener("click", ()=> donateAmount(b.getAttribute("data-donate")));
+    });
+    document.getElementById("btnDonateCustom").addEventListener("click", ()=>{
+      const v = document.getElementById("donateCustom").value.trim();
+      donateAmount(v);
+    });
+
+    avatarBtn.addEventListener("click", ()=>{
+      if(!getActiveAthlete()){
+        flashBanner("Please add/select an athlete first.", false);
+        openModal("modalAthlete");
+        return;
+      }
+      openAvatarQuick();
+    });
+
+    document.getElementById("btnSaveEntryEdits").addEventListener("click", saveEntryEdits);
+    document.getElementById("btnDeleteEntry").addEventListener("click", deleteEntryFromEditModal);
 
     document.querySelectorAll("[data-close]").forEach(btn => {
       btn.addEventListener("click", () => closeModal(btn.getAttribute("data-close")));
@@ -1199,37 +1323,39 @@
     document.getElementById("saveAthlete").addEventListener("click", saveAthlete);
     document.getElementById("saveAthleteEdits").addEventListener("click", saveAthleteEdits);
     document.getElementById("saveEntry").addEventListener("click", saveEntryMulti);
-    document.getElementById("saveEntryEdits").addEventListener("click", saveEntryEdits);
     document.getElementById("doReset").addEventListener("click", doResetAll);
 
-    document.getElementById("btnExportJSON").addEventListener("click", exportJSON);
-    document.getElementById("btnExportCSV").addEventListener("click", exportCSV);
-    document.getElementById("btnImport").addEventListener("click", importJSON);
+    // ✅ Excel buttons now in Settings (same IDs kept)
+    document.getElementById("btnExportXLSX").addEventListener("click", exportXLSX);
+    document.getElementById("btnDownloadTemplateXLSX").addEventListener("click", downloadTemplateXLSX);
+    document.getElementById("btnImportXLSX").addEventListener("click", importXLSXIntoSelectedAthlete);
 
     tabBtns.forEach(btn => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
 
     athleteSelect.addEventListener("change", () => {
       state.activeAthleteId = athleteSelect.value || null;
       saveState();
-      if(compareAthleteId === state.activeAthleteId) compareAthleteId = null;
-      renderAll();
+      renderAll(true);
     });
 
-    compareSelect.addEventListener("change", () => {
-      compareAthleteId = compareSelect.value || null;
-      renderAll();
-    });
-
-    distanceFilter.addEventListener("change", () => renderAll());
-    locationFilter.addEventListener("input", () => renderAll());
-
-    defaultDistance.addEventListener("change", () => {
-      prefs.defaultDistance = defaultDistance.value;
+    distanceFilter.addEventListener("change", () => {
+      analyticsDistance.value = distanceFilter.value;
+      prefs.defaultDistance = distanceFilter.value;
       savePrefs();
-      distanceFilter.value = prefs.defaultDistance;
-      renderAll();
+      renderAll(true);
+    });
+    analyticsDistance.addEventListener("change", () => {
+      distanceFilter.value = analyticsDistance.value;
+      prefs.defaultDistance = analyticsDistance.value;
+      savePrefs();
+      renderAll(true);
     });
 
+    themeSelect.addEventListener("change", ()=>{
+      prefs.theme = themeSelect.value;
+      savePrefs();
+      applyTheme();
+    });
     timeHint.addEventListener("input", () => {
       prefs.timeHint = timeHint.value.trim() || "00:52.300";
       savePrefs();
@@ -1238,63 +1364,82 @@
     const entryRowsEl = document.getElementById("entryRows");
     document.getElementById("btnAddRow").addEventListener("click", () => addEntryRow());
 
-    // Delegation: delete + edit from recent sessions
-    recentWrap.addEventListener("click", (e) => {
-      const delBtn = e.target.closest("[data-del-entry-id]");
-      if(delBtn){
-        deleteEntry(delBtn.getAttribute("data-del-entry-id"));
-        return;
-      }
-      const editBtn = e.target.closest("[data-edit-entry-id]");
-      if(editBtn){
-        openEditEntryModal(editBtn.getAttribute("data-edit-entry-id"));
-        return;
-      }
+    cardsWrap.addEventListener("click", (e) => {
+      const del = e.target.closest("[data-del-entry-id]");
+      if(del) return deleteEntry(del.getAttribute("data-del-entry-id"));
+
+      const edit = e.target.closest("[data-edit-entry-id]");
+      if(edit) return openEditEntryModal(edit.getAttribute("data-edit-entry-id"));
     });
 
-    // Chart tooltip events
-    canvas.addEventListener("mousemove", onChartMove);
-    canvas.addEventListener("mouseleave", () => {
-      chartTooltip.style.display = "none";
-      if(lastDrawMeta) drawChart(lastDrawMeta.entries, lastDrawMeta.dist, lastDrawMeta.loc);
+    pbSummaryWrap.addEventListener("click", (e)=>{
+      const tr = e.target.closest("tr[data-entry-id]");
+      if(!tr) return;
+      openEditEntryModal(tr.getAttribute("data-entry-id"));
     });
 
+    // -----------------------------
+    // Init
+    // -----------------------------
     init();
 
     function init(){
       if(!state.athletes) state = structuredClone(defaultState);
       if(!prefs) prefs = structuredClone(defaultPrefs);
 
-      defaultDistance.value = prefs.defaultDistance;
-      timeHint.value = prefs.timeHint;
-      distanceFilter.value = prefs.defaultDistance;
+      applyTheme();
 
-      renderAll();
+      timeHint.value = prefs.timeHint || "00:52.300";
+      themeSelect.value = prefs.theme || "dark";
+
+      renderAll(true);
+      syncAppbarHeight();
+      window.addEventListener("resize", syncAppbarHeight);
+    }
+
+    function applyTheme(){
+      const t = prefs.theme || "dark";
+      document.documentElement.setAttribute("data-theme", t);
+      syncAppbarHeight();
+    }
+
+    function syncAppbarHeight(){
+      const appbar = document.querySelector(".appbar");
+      if(!appbar) return;
+      const h = appbar.offsetHeight || 84;
+      document.documentElement.style.setProperty("--appbarH", h + "px");
     }
 
     function switchTab(tab){
       tabBtns.forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
       Object.keys(screens).forEach(k => screens[k].classList.toggle("active", k === tab));
-      renderAll();
+      renderAll(false);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function openModal(id){
       clearErrors();
       document.getElementById(id).classList.add("show");
+      document.body.style.overflow = "hidden";
+      syncAppbarHeight();
     }
     function closeModal(id){
       document.getElementById(id).classList.remove("show");
+      const anyOpen = [...document.querySelectorAll(".modalOverlay")].some(x => x.classList.contains("show"));
+      if(!anyOpen) document.body.style.overflow = "";
+      syncAppbarHeight();
     }
 
     function clearErrors(){
-      ["athleteErr","entryErr","resetErr","importMsg","editAthErr"].forEach(id=>{
+      ["athleteErr","entryErr","resetErr","importMsg","editAthErr","donateErr","editEntryErr"].forEach(id=>{
         const el = document.getElementById(id);
         if(el){ el.classList.remove("show"); el.textContent=""; }
       });
-      if(editEntryErr){ editEntryErr.classList.remove("show"); editEntryErr.textContent=""; }
     }
 
+    // -----------------------------
+    // Storage
+    // -----------------------------
     function loadState(){
       try{
         const raw = localStorage.getItem(LS_KEY);
@@ -1303,9 +1448,8 @@
         return structuredClone(defaultState);
       }
     }
-    function saveState(){
-      localStorage.setItem(LS_KEY, JSON.stringify(state));
-    }
+    function saveState(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+
     function loadPrefs(){
       try{
         const raw = localStorage.getItem(LS_PREF);
@@ -1314,37 +1458,144 @@
         return structuredClone(defaultPrefs);
       }
     }
-    function savePrefs(){
-      localStorage.setItem(LS_PREF, JSON.stringify(prefs));
-    }
+    function savePrefs(){ localStorage.setItem(LS_PREF, JSON.stringify(prefs)); }
 
+    // -----------------------------
+    // Helpers
+    // -----------------------------
     function getActiveAthlete(){
       return state.athletes.find(a => a.id === state.activeAthleteId) || null;
     }
-    function getAthleteById(id){
-      return state.athletes.find(a => a.id === id) || null;
-    }
-    function uid(){
-      return "a_" + Math.random().toString(16).slice(2) + Date.now().toString(16);
+    function uid(){ return "a_" + Math.random().toString(16).slice(2) + Date.now().toString(16); }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
     }
 
-    function normalizeLoc(s){
-      return (s || "").trim().toLowerCase();
-    }
-
-    function parseTimeToMs(t){
-      if(!t) return null;
-      t = (""+t).trim();
-      if(/^\d+(\.\d{1,3})?$/.test(t)){
-        const sec = Number(t);
-        return Math.round(sec * 1000);
+    // ✅ distance normalization + dynamic options
+    function normalizeDistance(d){
+      let s = String(d || "").trim();
+      if(!s) return "";
+      s = s.replace(/\s+/g,"");
+      if(/^\d+$/i.test(s)) return `${s}m`;
+      const m = s.match(/^(\d+)([a-zA-Z]+)$/);
+      if(m){
+        const num = m[1];
+        const unit = m[2].toLowerCase();
+        if(unit === "m") return `${num}m`;
+        return `${num}${unit}`;
       }
-      const m = t.match(/^(\d{1,2}):([0-5]\d)(?:\.(\d{1,3}))?$/);
-      if(!m) return null;
-      const mm = Number(m[1]);
-      const ss = Number(m[2]);
-      const ms = Number((m[3] || "0").padEnd(3,"0"));
-      return (mm*60 + ss)*1000 + ms;
+      return s;
+    }
+
+    function getDistanceOptionsForActive(){
+      const ath = getActiveAthlete();
+      const set = new Set(DEFAULT_DISTANCES);
+
+      if(ath && Array.isArray(ath.entries)){
+        for(const e of ath.entries){
+          const nd = normalizeDistance(e.distance);
+          if(nd) set.add(nd);
+        }
+      }
+
+      const arr = [...set];
+      arr.sort((a,b)=>{
+        const na = a.match(/^(\d+)\s*m$/i);
+        const nb = b.match(/^(\d+)\s*m$/i);
+        if(na && nb) return Number(na[1]) - Number(nb[1]);
+        if(na && !nb) return -1;
+        if(!na && nb) return 1;
+        return a.localeCompare(b, undefined, {numeric:true});
+      });
+      return arr;
+    }
+
+    function refreshDistanceUI(){
+      const list = getDistanceOptionsForActive();
+
+      distanceList.innerHTML = list.map(d => `<option value="${escapeHtml(d)}"></option>`).join("");
+
+      const currentHome = distanceFilter.value || prefs.defaultDistance || "ALL";
+      const currentAn   = analyticsDistance.value || prefs.defaultDistance || "ALL";
+
+      const optHtml = `<option value="ALL">All distances</option>` +
+        list.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d.replace(/m$/i,""))}</option>`).join("");
+
+      distanceFilter.innerHTML = optHtml;
+      analyticsDistance.innerHTML = optHtml;
+
+      distanceFilter.value = (currentHome === "ALL" || list.includes(currentHome)) ? currentHome : "ALL";
+      analyticsDistance.value = (currentAn === "ALL" || list.includes(currentAn)) ? currentAn : "ALL";
+
+      prefs.defaultDistance = distanceFilter.value;
+      savePrefs();
+    }
+
+    // ✅ TIME PARSER FIXED (supports HH:MM:SS like 00:01:00)
+    function parseTimeSmart(t){
+      if(t == null) return { ms:null, normalized:null, note:null };
+
+      // Excel numeric time (fraction of day)
+      if(typeof t === "number" && isFinite(t)){
+        const totalMs = Math.round(t * 24 * 60 * 60 * 1000);
+        if(totalMs >= 0 && totalMs < 24*60*60*1000){
+          return { ms: totalMs, normalized: msToTime(totalMs), note: null };
+        }
+      }
+
+      let raw = String(t).trim();
+      if(!raw) return { ms:null, normalized:null, note:null };
+      raw = raw.replace(/\s+/g,"");
+
+      // HH:MM:SS
+      let m = raw.match(/^(\d{1,2}):([0-5]\d):([0-5]\d)$/);
+      if(m){
+        const hh = Number(m[1]);
+        const mm = Number(m[2]);
+        const ss = Number(m[3]);
+        const total = ((hh*3600) + (mm*60) + ss) * 1000;
+        return { ms: total, normalized: msToTime(total), note: null };
+      }
+
+      // MM:SS(.ms)
+      m = raw.match(/^(\d{1,2}):([0-5]\d)(?:\.(\d+))?$/);
+      if(m){
+        const mm = Number(m[1]);
+        const ss = Number(m[2]);
+        const ms = Number((m[3]||"0").slice(0,3).padEnd(3,"0"));
+        const total = (mm*60 + ss)*1000 + ms;
+        return { ms: total, normalized: msToTime(total), note: null };
+      }
+
+      // m.ss (minutes.seconds)
+      m = raw.match(/^(\d{1,2})\.(\d{1,2})$/);
+      if(m){
+        const mm = Number(m[1]);
+        const ss = Number(m[2]);
+        if(ss < 60){
+          const total = (mm*60 + ss)*1000;
+          return { ms: total, normalized: msToTime(total), note: `Interpreted ${raw} as ${msToTime(total)}` };
+        }
+      }
+
+      // seconds(.ms)
+      m = raw.match(/^(\d{1,4})(?:\.(\d+))?$/);
+      if(m){
+        const sec = Number(m[1]);
+        const ms = Number((m[2]||"0").slice(0,3).padEnd(3,"0"));
+        if(isFinite(sec) && sec >= 0){
+          const total = sec*1000 + ms;
+          return { ms: total, normalized: msToTime(total), note: `Interpreted ${raw}s as ${msToTime(total)}` };
+        }
+      }
+
+      return { ms:null, normalized:null, note:null };
     }
 
     function msToTime(ms){
@@ -1364,28 +1615,31 @@
       }catch(e){ return iso; }
     }
 
-    function sortByDateDesc(entries){
-      return [...entries].sort((a,b)=> new Date(b.date) - new Date(a.date));
+    // ✅ DD-MON-YY (for X-axis)
+    function fmtDateAxis(iso){
+      if(!iso) return "—";
+      const d = new Date(iso);
+      if(isNaN(d)) return "—";
+      const dd = String(d.getDate()).padStart(2,"0");
+      const mons = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      const mon = mons[d.getMonth()] || "—";
+      const yy = String(d.getFullYear()).slice(-2);
+      return `${dd}-${mon}-${yy}`;
     }
 
-    function mean(arr){
-      if(!arr.length) return null;
-      return arr.reduce((s,x)=>s+x,0)/arr.length;
-    }
-    function stddev(arr){
-      if(arr.length < 2) return null;
-      const m = mean(arr);
-      const v = mean(arr.map(x => (x-m)*(x-m)));
-      return Math.sqrt(v);
+    function sortByDateDesc(entries){
+      return [...entries].sort((a,b)=> new Date(b.date) - new Date(a.date));
     }
 
     function computePBMap(entries){
       const pb = {};
       for(const e of entries){
-        const ms = parseTimeToMs(e.time);
-        if(ms == null) continue;
-        if(!pb[e.distance] || ms < pb[e.distance].ms){
-          pb[e.distance] = { ...e, ms };
+        const parsed = parseTimeSmart(e.time);
+        if(parsed.ms == null) continue;
+        const dist = normalizeDistance(e.distance);
+        if(!dist) continue;
+        if(!pb[dist] || parsed.ms < pb[dist].ms){
+          pb[dist] = { ...e, distance: dist, ms: parsed.ms };
         }
       }
       return pb;
@@ -1400,32 +1654,50 @@
     function flashBanner(msg, isPB){
       pbBannerText.textContent = msg;
       pbBanner.style.borderColor = isPB ? "rgba(200,139,0,.22)" : "rgba(47,107,255,.18)";
-      pbBanner.style.background = isPB ? "rgba(200,139,0,.10)" : "rgba(47,107,255,.08)";
+      pbBanner.style.background = "rgba(255,255,255,.72)";
       pbBanner.classList.add("show");
       clearTimeout(flashBanner._t);
       flashBanner._t = setTimeout(()=> pbBanner.classList.remove("show"), 4200);
     }
 
+    // -----------------------------
+    // Avatar (simple emoji only for now)
+    // -----------------------------
+    function renderAvatar(){
+      const ath = getActiveAthlete();
+      avatarBtn.innerHTML = "";
+      const emoji = ath?.avatarEmoji || "❄️";
+      avatarBtn.innerHTML = `<div class="emoji">${escapeHtml(emoji)}</div>`;
+    }
+
+    function openAvatarQuick(){
+      const ath = getActiveAthlete();
+      const emoji = prompt("Set avatar emoji (example: ⛸️ 🏁 ⭐)", ath?.avatarEmoji || "❄️");
+      if(emoji == null) return;
+      ath.avatarEmoji = emoji.trim() || "❄️";
+      saveState();
+      renderAll(false);
+    }
+
+    // -----------------------------
+    // Athlete CRUD
+    // -----------------------------
     function saveAthlete(){
       clearErrors();
       const name = document.getElementById("athName").value.trim();
       const year = document.getElementById("athYear").value.trim();
+      const emoji = document.getElementById("athEmoji").value.trim();
 
-      if(!name){
-        showError("athleteErr","Please enter a name.");
-        return;
-      }
-      if(year && !/^\d{4}$/.test(year)){
-        showError("athleteErr","Birth year should be 4 digits (e.g., 2014).");
-        return;
-      }
+      if(!name){ showError("athleteErr","Please enter a name."); return; }
+      if(year && !/^\d{4}$/.test(year)){ showError("athleteErr","Birth year should be 4 digits (e.g., 2014)."); return; }
 
       const newAth = {
         id: uid(),
         name,
         birthYear: year || "",
         createdAt: new Date().toISOString(),
-        entries: []
+        entries: [],
+        avatarEmoji: emoji || "❄️"
       };
 
       state.athletes.push(newAth);
@@ -1434,18 +1706,16 @@
 
       document.getElementById("athName").value = "";
       document.getElementById("athYear").value = "";
+      document.getElementById("athEmoji").value = "";
       closeModal("modalAthlete");
 
       flashBanner(`Athlete added: ${name}`, false);
-      renderAll();
+      renderAll(true);
     }
 
     function openEditAthlete(){
       const ath = getActiveAthlete();
-      if(!ath){
-        flashBanner("No athlete selected.", false);
-        return;
-      }
+      if(!ath){ flashBanner("No athlete selected.", false); return; }
       document.getElementById("editAthName").value = ath.name || "";
       document.getElementById("editAthYear").value = ath.birthYear || "";
       openModal("modalEditAthlete");
@@ -1454,37 +1724,28 @@
     function saveAthleteEdits(){
       clearErrors();
       const ath = getActiveAthlete();
-      if(!ath){
-        showError("editAthErr","No athlete selected.");
-        return;
-      }
+      if(!ath){ showError("editAthErr","No athlete selected."); return; }
 
       const name = document.getElementById("editAthName").value.trim();
       const year = document.getElementById("editAthYear").value.trim();
 
-      if(!name){
-        showError("editAthErr","Please enter a name.");
-        return;
-      }
-      if(year && !/^\d{4}$/.test(year)){
-        showError("editAthErr","Birth year should be 4 digits (e.g., 2014).");
-        return;
-      }
+      if(!name){ showError("editAthErr","Please enter a name."); return; }
+      if(year && !/^\d{4}$/.test(year)){ showError("editAthErr","Birth year should be 4 digits (e.g., 2014)."); return; }
 
       ath.name = name;
       ath.birthYear = year || "";
       saveState();
       closeModal("modalEditAthlete");
-
       flashBanner("Athlete updated.", false);
-      renderAll();
+      renderAll(true);
     }
 
+    // -----------------------------
+    // Entry modal
+    // -----------------------------
     function openEntryModal(){
       clearErrors();
-      const dateEl = document.getElementById("enDate");
-      dateEl.valueAsDate = new Date();
-
+      document.getElementById("enDate").valueAsDate = new Date();
       document.getElementById("enLocation").value = "";
       document.getElementById("enNotes").value = "";
 
@@ -1498,33 +1759,22 @@
       row.className = "entryRow";
 
       row.innerHTML = `
-        <div class="field" style="min-width:0;">
+        <div class="field">
           <label>Distance</label>
-          <select class="select2 jsDist">
-            <option value="111m">111m</option>
-            <option value="222m">222m</option>
-            <option value="333m">333m</option>
-            <option value="400m">400m</option>
-            <option value="500m">500m</option>
-            <option value="800m">800m</option>
-            <option value="1000m">1000m</option>
-            <option value="1500m">1500m</option>
-          </select>
+          <input class="input jsDist" list="distanceList" placeholder="e.g., 500m" value="${escapeHtml(distance || "")}" />
         </div>
 
-        <div class="field" style="min-width:0;">
-          <label>Time (mm:ss.mmm)</label>
+        <div class="field">
+          <label>Time</label>
           <input class="input jsTime" placeholder="${escapeHtml(prefs.timeHint || "00:52.300")}" value="${escapeHtml(time || "")}" />
         </div>
 
         <div style="display:flex; justify-content:flex-end;">
-          <button class="miniBtn miniBtnDanger jsRemove" ${isFirst ? "disabled style='opacity:.55; cursor:not-allowed;'" : ""}>Remove</button>
+          <button class="miniBtn miniBtnDanger jsRemove" ${isFirst ? "disabled style='opacity:.45; cursor:not-allowed;'" : ""}>Remove</button>
         </div>
       `;
 
       entryRowsEl.appendChild(row);
-
-      row.querySelector(".jsDist").value = distance;
 
       const removeBtn = row.querySelector(".jsRemove");
       removeBtn.addEventListener("click", () => {
@@ -1536,77 +1786,72 @@
     function saveEntryMulti(){
       clearErrors();
       const ath = getActiveAthlete();
-      if(!ath){
-        showError("entryErr","No athlete selected. Add/select an athlete first.");
-        return;
-      }
+      if(!ath){ showError("entryErr","No athlete selected. Add/select an athlete first."); return; }
 
       const date = document.getElementById("enDate").value;
       const location = document.getElementById("enLocation").value.trim();
       const notes = document.getElementById("enNotes").value.trim();
 
-      if(!date){
-        showError("entryErr","Please select a date.");
-        return;
-      }
-      if(!location){
-        showError("entryErr","Please enter a location (e.g., Scarborough).");
-        return;
-      }
+      if(!date){ showError("entryErr","Please select a date."); return; }
+      if(!location){ showError("entryErr","Please enter a location."); return; }
 
       const rows = [...entryRowsEl.querySelectorAll(".entryRow")];
-      if(rows.length === 0){
-        showError("entryErr","Please add at least one distance/time.");
-        return;
-      }
+      if(rows.length === 0){ showError("entryErr","Please add at least one distance/time."); return; }
 
       const beforePBMap = computePBMap(ath.entries || []);
       let savedCount = 0;
       let pbMessages = [];
 
       for(const r of rows){
-        const dist = r.querySelector(".jsDist").value;
+        const dist = normalizeDistance(r.querySelector(".jsDist").value);
         const timeStr = r.querySelector(".jsTime").value.trim();
-        const ms = parseTimeToMs(timeStr);
 
-        if(ms == null){
-          showError("entryErr",`One or more times are invalid. Use mm:ss.mmm (example: ${prefs.timeHint}).`);
+        if(!dist){ showError("entryErr","Please enter a distance (example: 500m)."); return; }
+
+        const parsed = parseTimeSmart(timeStr);
+        if(parsed.ms == null){
+          showError("entryErr",`Time looks invalid. Try mm:ss.mmm or HH:MM:SS (example: ${prefs.timeHint} or 00:01:00).`);
           return;
+        }
+
+        if(parsed.note){
+          const ok = confirm(`Just checking 🙂\n\nWe interpreted "${timeStr}" as "${parsed.normalized}".\n\nSave it?`);
+          if(!ok){
+            showError("entryErr","Please correct the time and try again.");
+            return;
+          }
         }
 
         const beforePB = beforePBMap[dist]?.ms ?? null;
 
-        const entry = {
-          id: "e_" + Math.random().toString(16).slice(2),
-          date,
-          distance: dist,
-          time: timeStr,
-          location,
-          notes
-        };
-
-        ath.entries.push(entry);
+        ath.entries.push({
+          id: "e_" + Math.random().toString(16).slice(2) + Date.now().toString(16),
+          date, distance: dist, time: parsed.normalized, location, notes
+        });
         savedCount++;
 
-        if(beforePB == null || ms < beforePB){
-          const diff = beforePB == null ? null : (beforePB - ms);
-          const msg = diff == null
-            ? `First PB for ${dist}: ${msToTime(ms)}`
-            : `${dist} improved by ${(diff/1000).toFixed(3)}s → ${msToTime(ms)}`;
-          pbMessages.push(msg);
+        if(beforePB == null || parsed.ms < beforePB){
+          const diff = beforePB == null ? null : (beforePB - parsed.ms);
+          pbMessages.push(
+            diff == null
+              ? `First PB for ${dist}: ${parsed.normalized}`
+              : `${dist} improved by ${(diff/1000).toFixed(3)}s → ${parsed.normalized}`
+          );
         }
       }
 
       saveState();
       closeModal("modalEntry");
 
+      refreshDistanceUI();
+
       if(pbMessages.length){
-        flashBanner(`🏅 ${ath.name}: ${pbMessages[0]}${pbMessages.length>1 ? ` (+${pbMessages.length-1} more)` : ""}`, true);
+        flashBanner(`🎉 ${ath.name}: ${pbMessages[0]}${pbMessages.length>1 ? ` (+${pbMessages.length-1} more)` : ""}`, true);
       }else{
-        flashBanner(`${savedCount} entr${savedCount===1?"y":"ies"} saved for ${ath.name}.`, false);
+        flashBanner(`${savedCount} race entr${savedCount===1?"y":"ies"} saved for ${ath.name}.`, false);
       }
 
-      renderAll();
+      renderAll(true);
     }
 
     function openEditEntryModal(entryId){
@@ -1614,114 +1859,116 @@
       const ath = getActiveAthlete();
       if(!ath) return;
 
-      const entry = (ath.entries || []).find(e => e.id === entryId);
-      if(!entry) return;
+      const e = (ath.entries || []).find(x=>x.id===entryId);
+      if(!e) return;
 
-      editingEntryId = entryId;
+      document.getElementById("editEntryId").value = e.id;
+      document.getElementById("editEnDate").value = e.date || "";
+      document.getElementById("editEnLocation").value = e.location || "";
+      document.getElementById("editEnNotes").value = e.notes || "";
+      document.getElementById("editEnDistance").value = normalizeDistance(e.distance) || "";
+      document.getElementById("editEnTime").value = e.time || "";
 
-      eeDate.value = entry.date || "";
-      eeLocation.value = entry.location || "";
-      eeDistance.value = entry.distance || "400m";
-      eeTime.value = entry.time || "";
-      eeTime.placeholder = prefs.timeHint || "00:52.300";
-      eeNotes.value = entry.notes || "";
-
+      refreshDistanceUI();
       openModal("modalEditEntry");
     }
 
     function saveEntryEdits(){
-      editEntryErr.classList.remove("show");
-      editEntryErr.textContent = "";
-
+      clearErrors();
       const ath = getActiveAthlete();
-      if(!ath || !editingEntryId){
-        editEntryErr.textContent = "No entry selected to edit.";
-        editEntryErr.classList.add("show");
+      if(!ath){ showError("editEntryErr","No athlete selected."); return; }
+
+      const id = document.getElementById("editEntryId").value;
+      const e = (ath.entries || []).find(x=>x.id===id);
+      if(!e){ showError("editEntryErr","Entry not found."); return; }
+
+      const date = document.getElementById("editEnDate").value;
+      const location = document.getElementById("editEnLocation").value.trim();
+      const notes = document.getElementById("editEnNotes").value.trim();
+      const distance = normalizeDistance(document.getElementById("editEnDistance").value);
+      const timeStr = document.getElementById("editEnTime").value.trim();
+
+      if(!date){ showError("editEntryErr","Please select a date."); return; }
+      if(!location){ showError("editEntryErr","Please enter a location."); return; }
+      if(!distance){ showError("editEntryErr","Please enter a distance (example: 500m)."); return; }
+
+      const parsed = parseTimeSmart(timeStr);
+      if(parsed.ms == null){
+        showError("editEntryErr",`Time looks invalid. Try mm:ss.mmm or HH:MM:SS.`);
         return;
       }
 
-      const date = eeDate.value;
-      const location = eeLocation.value.trim();
-      const distance = eeDistance.value;
-      const timeStr = eeTime.value.trim();
-      const notes = eeNotes.value.trim();
-
-      if(!date){
-        editEntryErr.textContent = "Please select a date.";
-        editEntryErr.classList.add("show");
-        return;
-      }
-      if(!location){
-        editEntryErr.textContent = "Please enter a location.";
-        editEntryErr.classList.add("show");
-        return;
-      }
-      const ms = parseTimeToMs(timeStr);
-      if(ms == null){
-        editEntryErr.textContent = `Invalid time. Use mm:ss.mmm (example: ${prefs.timeHint}).`;
-        editEntryErr.classList.add("show");
-        return;
-      }
-
-      const entry = (ath.entries || []).find(e => e.id === editingEntryId);
-      if(!entry){
-        editEntryErr.textContent = "Entry not found.";
-        editEntryErr.classList.add("show");
-        return;
-      }
-
-      entry.date = date;
-      entry.location = location;
-      entry.distance = distance;
-      entry.time = timeStr;
-      entry.notes = notes;
+      e.date = date;
+      e.location = location;
+      e.notes = notes;
+      e.distance = distance;
+      e.time = parsed.normalized;
 
       saveState();
-      closeModal("modalEditEntry");
-      editingEntryId = null;
+      refreshDistanceUI();
 
+      closeModal("modalEditEntry");
       flashBanner("Entry updated.", false);
-      renderAll();
+      renderAll(true);
     }
 
-    function deleteEntry(entryId){
+    function deleteEntryFromEditModal(){
+      const id = document.getElementById("editEntryId").value;
+      if(!id) return;
+      if(!confirm("Delete this entry?")) return;
+      deleteEntry(id, true);
+    }
+
+    function deleteEntry(entryId, fromEditModal=false){
       const ath = getActiveAthlete();
       if(!ath) return;
 
       const entry = (ath.entries || []).find(e => e.id === entryId);
       if(!entry) return;
 
-      const msg = `Delete this entry?\n\n${fmtDate(entry.date)} • ${entry.location || "—"} • ${entry.distance} • ${entry.time}`;
-      if(!confirm(msg)) return;
+      if(!fromEditModal){
+        const msg = `Delete this entry?\n\n${fmtDate(entry.date)} • ${entry.location || "—"} • ${entry.distance} • ${entry.time}`;
+        if(!confirm(msg)) return;
+      }
 
       ath.entries = (ath.entries || []).filter(e => e.id !== entryId);
       saveState();
+
+      refreshDistanceUI();
+
+      if(fromEditModal) closeModal("modalEditEntry");
       flashBanner("Entry deleted.", false);
-      renderAll();
+      renderAll(true);
     }
 
+    // -----------------------------
+    // Reset
+    // -----------------------------
     function doResetAll(){
       clearErrors();
       const txt = document.getElementById("resetConfirm").value.trim();
-      if(txt !== "RESET"){
-        showError("resetErr","Please type RESET exactly to confirm.");
-        return;
-      }
+      if(txt !== "RESET"){ showError("resetErr","Please type RESET exactly to confirm."); return; }
       localStorage.removeItem(LS_KEY);
+      localStorage.removeItem(LS_PREF);
       state = structuredClone(defaultState);
-      compareAthleteId = null;
+      prefs = structuredClone(defaultPrefs);
       closeModal("modalReset");
       flashBanner("All data cleared on this device.", false);
-      renderAll();
+      applyTheme();
+      renderAll(true);
     }
 
-    function renderAll(){
+    // -----------------------------
+    // Render
+    // -----------------------------
+    function renderAll(allowChartRedraw){
       renderAthleteSelect();
-      renderCompareSelect();
-      renderLocationDatalist();
+      refreshDistanceUI();
+      renderAvatar();
       renderHome();
-      renderAnalytics();
-      renderExport();
+      renderAnalytics(allowChartRedraw);
+      renderSettingsExcelPill();
+      syncAppbarHeight();
     }
 
     function renderAthleteSelect(){
@@ -1734,6 +1981,9 @@
         athleteSelect.appendChild(opt);
         state.activeAthleteId = null;
         saveState();
+        pillAthlete.textContent = "No athlete selected";
+        pillAnalytics.textContent = "No athlete";
+        if(pillExport) pillExport.textContent = "No athlete";
         return;
       }
 
@@ -1751,131 +2001,70 @@
       athleteSelect.value = state.activeAthleteId;
     }
 
-    function renderCompareSelect(){
-      compareSelect.innerHTML = "";
-      const active = getActiveAthlete();
-
-      const none = document.createElement("option");
-      none.value = "";
-      none.textContent = "None (Compare Off)";
-      compareSelect.appendChild(none);
-
-      for(const a of state.athletes){
-        if(active && a.id === active.id) continue;
-        const opt = document.createElement("option");
-        opt.value = a.id;
-        opt.textContent = a.name + (a.birthYear ? ` (${a.birthYear})` : "");
-        compareSelect.appendChild(opt);
-      }
-
-      if(compareAthleteId && state.athletes.some(a => a.id === compareAthleteId)){
-        compareSelect.value = compareAthleteId;
-      }else{
-        compareSelect.value = "";
-        compareAthleteId = null;
-      }
-
-      pillCompare.textContent = compareAthleteId ? "Compare: On" : "Compare: Off";
-    }
-
-    function renderLocationDatalist(){
-      locationList.innerHTML = "";
+    function renderSettingsExcelPill(){
       const ath = getActiveAthlete();
-      if(!ath) return;
-
-      const set = new Set();
-      for(const e of (ath.entries || [])){
-        const loc = (e.location || "").trim();
-        if(loc) set.add(loc);
-      }
-      [...set].sort((a,b)=>a.localeCompare(b)).forEach(loc=>{
-        const opt = document.createElement("option");
-        opt.value = loc;
-        locationList.appendChild(opt);
-      });
-    }
-
-    function getFilters(){
-      const dist = distanceFilter.value;
-      const loc = locationFilter.value.trim();
-      return { dist, loc };
-    }
-
-    function applyFilters(entries, dist, loc){
-      let out = [...entries];
-      if(dist !== "ALL") out = out.filter(e => e.distance === dist);
-      if(loc) out = out.filter(e => normalizeLoc(e.location) === normalizeLoc(loc));
-      return out;
+      if(!pillExport) return;
+      pillExport.textContent = ath ? `Selected: ${ath.name}` : "No athlete";
     }
 
     function renderHome(){
       const ath = getActiveAthlete();
-      const { dist, loc } = getFilters();
 
       if(!ath){
         pillAthlete.textContent = "No athlete selected";
         pillCount.textContent = "0 races";
         pillPBCount.textContent = "0 PBs";
-
-        kpiPB.textContent = "—";
-        kpiPBDistance.textContent = "Pick a distance";
-        kpiLatest.textContent = "—";
-        kpiLatestMeta.textContent = "—";
-        kpiAvg10.textContent = "—";
-        kpiCons.textContent = "—";
-
         pbSummaryWrap.innerHTML = `
           <div class="empty">
             <strong>No athlete selected</strong>
-            <p>Add an athlete and start entering races to see PBs here.</p>
+            <p>Add an athlete and start entering races.</p>
           </div>
         `;
-        recentWrap.innerHTML = `
-          <div class="empty">
-            <strong>Add your first athlete</strong>
-            <p>Click <b>Add Athlete</b>, then add race entries to track PBs, trends, and progress.</p>
+        cardsWrap.innerHTML = `
+          <div class="empty" style="min-width: min(520px, 86vw);">
+            <strong>No cards yet</strong>
+            <p>Add races to see distance cards here.</p>
           </div>
         `;
-        drawChart([], dist, loc);
         return;
       }
 
       pillAthlete.textContent = ath.name + (ath.birthYear ? ` • ${ath.birthYear}` : "");
-
       const entriesAll = sortByDateDesc(ath.entries || []);
-      const pbMapAll = computePBMap(entriesAll);
+      pillCount.textContent = `${entriesAll.length} races`;
 
-      pillPBCount.textContent = `${Object.keys(pbMapAll).length} PBs`;
+      const pbMap = computePBMap(entriesAll);
+      const pbCount = Object.keys(pbMap).length;
+      pillPBCount.textContent = `${pbCount} PBs`;
 
-      // PB Summary is for ALL entries (not filtered), as a “profile PB”
-      if(Object.keys(pbMapAll).length === 0){
+      if(pbCount === 0){
         pbSummaryWrap.innerHTML = `
           <div class="empty">
             <strong>No PBs yet</strong>
-            <p>Add race entries and PBs will appear here automatically for each distance.</p>
+            <p>Add race entries and PBs will appear automatically for each distance.</p>
           </div>
         `;
       }else{
-        const distances = Object.keys(pbMapAll).sort((a,b)=> a.localeCompare(b, undefined, {numeric:true}));
+        const distances = Object.keys(pbMap).sort((a,b)=> a.localeCompare(b, undefined, {numeric:true}));
         pbSummaryWrap.innerHTML = `
           <table class="table">
             <thead>
               <tr>
                 <th>Distance</th>
-                <th class="num">PB</th>
+                <th>PB</th>
                 <th>Date</th>
                 <th>Location</th>
               </tr>
             </thead>
             <tbody>
               ${distances.map(d=>{
-                const pb = pbMapAll[d];
+                const pb = pbMap[d];
                 return `
-                  <tr>
-                    <td><span class="badge">${d}</span></td>
-                    <td class="num"><b>${msToTime(pb.ms)}</b></td>
+                  <tr data-entry-id="${pb.id}" title="Click to edit this entry">
+                    <td><span class="badge">${escapeHtml(d)}</span></td>
+                    <td><b>${msToTime(pb.ms)}</b></td>
                     <td>${fmtDate(pb.date)}</td>
-                    <td>${escapeHtml(pb.location || "—")}</td>
+                    <td>${escapeHtml((pb.location || "").trim() || "—")}</td>
                   </tr>
                 `;
               }).join("")}
@@ -1884,257 +2073,129 @@
         `;
       }
 
-      // Filtered entries affect KPIs + chart + sessions
-      const filtered = applyFilters(entriesAll, dist, loc);
-      pillCount.textContent = `${filtered.length} races`;
+      const scopedEntries = (distanceFilter.value === "ALL")
+        ? entriesAll
+        : entriesAll.filter(e => normalizeDistance(e.distance) === distanceFilter.value);
 
-      const latest = filtered[0] || null;
-      if(latest){
-        kpiLatest.textContent = latest.time;
-        kpiLatestMeta.textContent = `${latest.distance} • ${latest.location || "—"} • ${fmtDate(latest.date)}`;
-      }else{
-        kpiLatest.textContent = "—";
-        kpiLatestMeta.textContent = dist === "ALL" && !loc ? "No entries yet" : "No entries for current filters";
-      }
-
-      // KPI PB for selected distance (within filter scope if location typed; otherwise global)
-      if(dist !== "ALL"){
-        let pbMs = null;
-        if(loc){
-          const pbMapLoc = computePBMap(filtered);
-          pbMs = pbMapLoc[dist]?.ms ?? null;
-          kpiPBDistance.textContent = pbMs != null ? `${dist} best (this location)` : `No PB for ${dist} here`;
-        }else{
-          pbMs = pbMapAll[dist]?.ms ?? null;
-          kpiPBDistance.textContent = pbMs != null ? `${dist} best` : `No PB for ${dist}`;
-        }
-        kpiPB.textContent = pbMs != null ? msToTime(pbMs) : "—";
-      }else{
-        const allPBs = Object.values(pbMapAll).map(x => x.ms);
-        const best = allPBs.length ? Math.min(...allPBs) : null;
-        kpiPB.textContent = best != null ? msToTime(best) : "—";
-        kpiPBDistance.textContent = best != null ? "Fastest PB (any distance)" : "No PBs yet";
-      }
-
-      const last10 = filtered.slice(0,10).map(e => parseTimeToMs(e.time)).filter(x => x!=null);
-      const avg10 = last10.length ? mean(last10) : null;
-      const sd10 = last10.length ? stddev(last10) : null;
-      kpiAvg10.textContent = avg10 != null ? msToTime(Math.round(avg10)) : "—";
-      kpiCons.textContent = sd10 != null ? (sd10/1000).toFixed(3) + "s" : "—";
-
-      // Group sessions by (date + location)
-      renderSessions(filtered, pbMapAll, dist, loc);
-
-      drawChart(filtered, dist, loc);
-    }
-
-    function renderSessions(entriesFiltered, pbMapAll){
-      if(entriesFiltered.length === 0){
-        recentWrap.innerHTML = `
-          <div class="empty">
-            <strong>No sessions for current filters</strong>
-            <p>Try clearing the location filter or choosing “All distances”.</p>
+      if(scopedEntries.length === 0){
+        cardsWrap.innerHTML = `
+          <div class="empty" style="min-width: min(520px, 86vw);">
+            <strong>No entries</strong>
+            <p>${distanceFilter.value === "ALL" ? "Add races to see cards by distance." : `No entries for ${distanceFilter.value}.`}</p>
           </div>
         `;
         return;
       }
 
-      // Group by date+location (normalized)
-      const groups = new Map();
-      for(const e of entriesFiltered){
-        const key = `${e.date}__${normalizeLoc(e.location)}`;
-        if(!groups.has(key)){
-          groups.set(key, { date: e.date, location: e.location || "", items: [] });
-        }
-        groups.get(key).items.push(e);
+      const groups = {};
+      for(const e of scopedEntries){
+        const key = normalizeDistance(e.distance) || "—";
+        (groups[key] ||= []).push({ ...e, distance: key });
       }
+      const groupKeys = Object.keys(groups).sort((a,b)=> a.localeCompare(b, undefined, {numeric:true}));
 
-      // Sort groups by date desc
-      const groupArr = [...groups.values()].sort((a,b)=> new Date(b.date) - new Date(a.date));
+      cardsWrap.innerHTML = groupKeys.map(dKey => {
+        const list = sortByDateDesc(groups[dKey]);
+        const pbForDist = pbMap[dKey]?.ms ?? null;
+        const pbLabel = pbForDist != null ? `PB ${msToTime(pbForDist)}` : "No PB";
+        const countLabel = `${list.length} entr${list.length===1?"y":"ies"}`;
 
-      // Limit to last 10 sessions for cleanliness
-      const show = groupArr.slice(0,10);
-
-      recentWrap.innerHTML = show.map(g=>{
-        const items = [...g.items].sort((a,b)=> a.distance.localeCompare(b.distance, undefined, {numeric:true}));
-        const rows = items.map(e=>{
-          const ms = parseTimeToMs(e.time);
-          const isPB = pbMapAll[e.distance] && ms != null && ms === pbMapAll[e.distance].ms;
-          const badge = isPB
-            ? `<span class="badge badgePB">🏅 PB</span>`
-            : `<span class="badge badgeOK">Saved</span>`;
+        const itemsHtml = list.map(e=>{
+          const parsed = parseTimeSmart(e.time);
+          const ms = parsed.ms;
+          const isPB = pbMap[e.distance] && ms != null && ms === pbMap[e.distance].ms;
+          const badge = isPB ? `<span class="badge badgePB">🏅 PB</span>` : `<span class="badge badgeOK">Saved</span>`;
 
           return `
-            <tr>
-              <td><span class="badge">${e.distance}</span></td>
-              <td class="num"><b>${escapeHtml(e.time)}</b></td>
-              <td>${badge}</td>
-              <td style="color:rgba(20,24,38,.72)">${e.notes ? escapeHtml(e.notes) : "—"}</td>
-              <td style="width:92px;">
+            <div class="entryItem">
+              <div class="entryMain">
+                <div class="line1">
+                  <span class="time">${escapeHtml(e.time)}</span>
+                  ${badge}
+                </div>
+                <div class="meta">${fmtDate(e.date)} • ${escapeHtml((e.location||"").trim() || "—")}</div>
+                <div class="notes">${e.notes ? escapeHtml(e.notes) : "—"}</div>
+              </div>
+              <div class="entryActions">
                 <button class="iconBtn" title="Edit entry" data-edit-entry-id="${e.id}">✏️</button>
                 <button class="iconBtn iconBtnDanger" title="Delete entry" data-del-entry-id="${e.id}">🗑️</button>
-              </td>
-            </tr>
+              </div>
+            </div>
           `;
         }).join("");
 
         return `
-          <div class="sessionBlock">
-            <div class="sessionHead">
-              <div class="sessionTitle">${fmtDate(g.date)} • ${escapeHtml(g.location || "—")}</div>
-              <div class="sessionMeta">${items.length} entr${items.length===1?"y":"ies"}</div>
+          <div class="distCard">
+            <div class="distTop">
+              <div class="distTitle">
+                <div class="big"><span class="badge">${escapeHtml(dKey)}</span> Entries</div>
+                <div class="small">Latest first (by date)</div>
+              </div>
+              <div class="distStats">
+                <div class="pb">${pbLabel}</div>
+                <div class="count">${countLabel}</div>
+              </div>
             </div>
-
-            <table class="table" style="margin-top:0;">
-              <thead>
-                <tr>
-                  <th>Distance</th>
-                  <th class="num">Time</th>
-                  <th>Status</th>
-                  <th>Notes</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>${rows}</tbody>
-            </table>
+            <div class="distList">${itemsHtml}</div>
           </div>
         `;
       }).join("");
     }
 
-    function renderAnalytics(){
+    function renderAnalytics(allowChartRedraw){
       const ath = getActiveAthlete();
-      const { dist } = getFilters();
 
       if(!ath){
         pillAnalytics.textContent = "No athlete";
-        anBest90.textContent = "—";
-        anBest90Meta.textContent = "—";
-        anImp5.textContent = "—";
-        anPBCount.textContent = "—";
-        anTotal.textContent = "—";
-        pbTableBody.innerHTML = `<tr><td colspan="5">No athlete selected.</td></tr>`;
+        anPB.textContent = "—";
+        anPBMeta.textContent = "Pick a distance for PB + chart";
+        anCount.textContent = "—";
+        if(allowChartRedraw) drawChart([], analyticsDistance.value);
         return;
       }
 
+      pillAnalytics.textContent = ath.name + (ath.birthYear ? ` • ${ath.birthYear}` : "");
+
       const entriesAll = ath.entries || [];
-      pillAnalytics.textContent = ath.name + (dist !== "ALL" ? ` • Focus: ${dist}` : "");
-      anTotal.textContent = String(entriesAll.length);
-
       const pbMap = computePBMap(entriesAll);
-      anPBCount.textContent = String(Object.keys(pbMap).length);
 
-      const now = new Date();
-      const cutoff = new Date(now.getTime() - 90*24*3600*1000);
-      const scoped = entriesAll
-        .filter(e => dist === "ALL" ? true : e.distance === dist)
-        .filter(e => new Date(e.date) >= cutoff);
+      const dist = analyticsDistance.value;
+      const scoped = (dist === "ALL") ? [] : entriesAll.filter(e => normalizeDistance(e.distance) === dist);
 
-      const scopedMs = scoped.map(e => parseTimeToMs(e.time)).filter(x=>x!=null);
-      if(scopedMs.length){
-        const best = Math.min(...scopedMs);
-        anBest90.textContent = msToTime(best);
-        anBest90Meta.textContent = dist === "ALL" ? "Any distance • last 90 days" : `${dist} • last 90 days`;
-      }else{
-        anBest90.textContent = "—";
-        anBest90Meta.textContent = "No entries in last 90 days";
-      }
+      anCount.textContent = dist === "ALL" ? `${entriesAll.length} total races` : `${scoped.length} races for ${dist}`;
 
-      const focusEntries = sortByDateDesc(entriesAll).filter(e => dist==="ALL" ? true : e.distance===dist);
-      const last5 = focusEntries.slice(0,5).map(e=>parseTimeToMs(e.time)).filter(x=>x!=null);
-      if(last5.length >= 2){
-        const imp = last5[last5.length-1] - last5[0];
-        const improved = imp > 0;
-        const val = (Math.abs(imp)/1000).toFixed(3) + "s";
-        anImp5.textContent = improved ? ("↓ " + val) : ("↑ " + val);
-      }else{
-        anImp5.textContent = "—";
-      }
+      const pb = dist !== "ALL" ? (pbMap[dist]?.ms ?? null) : null;
+      anPB.textContent = pb != null ? msToTime(pb) : "—";
+      anPBMeta.textContent = pb != null ? `${dist} best` : (dist === "ALL" ? "Pick a distance for PB + chart" : `No PB for ${dist}`);
 
-      // Compare PB table (side-by-side)
-      const comp = compareAthleteId ? getAthleteById(compareAthleteId) : null;
-      if(comp){
-        const pbMap2 = computePBMap(comp.entries || []);
-        const allD = new Set([...Object.keys(pbMap), ...Object.keys(pbMap2)]);
-        const distances = [...allD].sort((a,b)=> a.localeCompare(b, undefined, {numeric:true}));
-
-        pbHeadRow.innerHTML = `
-          <th>Distance</th>
-          <th class="num">${escapeHtml(ath.name)} PB</th>
-          <th class="num">${escapeHtml(comp.name)} PB</th>
-          <th>${escapeHtml(ath.name)} Date/Loc</th>
-          <th>${escapeHtml(comp.name)} Date/Loc</th>
-        `;
-
-        pbTableBody.innerHTML = distances.length ? distances.map(d=>{
-          const a1 = pbMap[d];
-          const a2 = pbMap2[d];
-          return `
-            <tr>
-              <td><span class="badge">${d}</span></td>
-              <td class="num"><b>${a1 ? msToTime(a1.ms) : "—"}</b></td>
-              <td class="num"><b>${a2 ? msToTime(a2.ms) : "—"}</b></td>
-              <td style="color:rgba(20,24,38,.72)">${a1 ? `${fmtDate(a1.date)} • ${escapeHtml(a1.location||"—")}` : "—"}</td>
-              <td style="color:rgba(20,24,38,.72)">${a2 ? `${fmtDate(a2.date)} • ${escapeHtml(a2.location||"—")}` : "—"}</td>
-            </tr>
-          `;
-        }).join("") : `<tr><td colspan="5">No PBs yet.</td></tr>`;
-      }else{
-        pbHeadRow.innerHTML = `
-          <th>Distance</th>
-          <th class="num">PB Time</th>
-          <th>Date</th>
-          <th>Location</th>
-          <th>Notes</th>
-        `;
-
-        const distances = Object.keys(pbMap).sort((a,b)=> a.localeCompare(b, undefined, {numeric:true}));
-        pbTableBody.innerHTML = distances.length ? distances.map(d=>{
-          const pb = pbMap[d];
-          return `
-            <tr>
-              <td><span class="badge">${d}</span></td>
-              <td class="num"><b>${msToTime(pb.ms)}</b></td>
-              <td>${fmtDate(pb.date)}</td>
-              <td>${escapeHtml(pb.location || "—")}</td>
-              <td style="color:rgba(20,24,38,.72)">${pb.notes ? escapeHtml(pb.notes) : "—"}</td>
-            </tr>
-          `;
-        }).join("") : `<tr><td colspan="5">No PBs yet. Add race entries.</td></tr>`;
+      if(allowChartRedraw){
+        drawChart(sortByDateDesc(scoped).map(e=>({...e, distance: normalizeDistance(e.distance)})), dist);
       }
     }
 
-    function renderExport(){
-      const ath = getActiveAthlete();
-      pillExport.textContent = ath ? `Selected: ${ath.name}` : "No athlete";
-    }
-
-    function drawChart(entries, dist, loc){
+    // -----------------------------
+    // Chart (with X-axis date labels DD-MON-YY)
+    // -----------------------------
+    function drawChart(entries){
       const data = [...entries]
-        .filter(e => parseTimeToMs(e.time)!=null)
+        .filter(e => parseTimeSmart(e.time).ms!=null)
         .sort((a,b)=> new Date(a.date)-new Date(b.date));
 
-      const points = data.map(e => ({
-        x: new Date(e.date).getTime(),
-        y: parseTimeToMs(e.time),
-        meta: e
-      }));
+      const points = data.map(e => ({ x: new Date(e.date).getTime(), y: parseTimeSmart(e.time).ms, iso: e.date }));
 
       ctx.clearRect(0,0,canvas.width,canvas.height);
 
-      lastDrawMeta = { entries, dist, loc, points, data };
+      const labelCol = "rgba(15,21,38,.70)";
+      const gridCol  = "rgba(15,21,38,.10)";
 
       if(points.length < 2){
-        ctx.fillStyle = "rgba(20,24,38,.70)";
-        ctx.font = "800 26px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
-        ctx.fillText("Add race entries to see trend", 50, 210);
-        ctx.fillStyle = "rgba(20,24,38,.55)";
-        ctx.font = "700 16px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
-        ctx.fillText("Tip: pick a distance + location for the cleanest trend line.", 50, 240);
+        ctx.fillStyle = labelCol;
+        ctx.font = "800 22px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
+        ctx.fillText("Select a distance and add entries to see trend", 50, 210);
         return;
       }
 
-      const padL = 70, padR=30, padT=28, padB=56;
+      const padL = 70, padR=30, padT=28, padB=66; // a bit more for x labels
       const W = canvas.width - padL - padR;
       const H = canvas.height - padT - padB;
 
@@ -2148,12 +2209,13 @@
       let maxY = Math.max(...ys);
 
       const padY = Math.max(120, (maxY-minY)*0.12);
-      minY = minY - padY;
-      maxY = maxY + padY;
+      minY -= padY;
+      maxY += padY;
 
-      // grid
-      ctx.strokeStyle = "rgba(20,24,38,.07)";
+      // Y grid
+      ctx.strokeStyle = gridCol;
       ctx.lineWidth = 1;
+
       const gridCount = 5;
       for(let i=0;i<=gridCount;i++){
         const y = padT + (H/gridCount)*i;
@@ -2163,32 +2225,47 @@
         ctx.stroke();
       }
 
-      // y labels
-      ctx.fillStyle = "rgba(20,24,38,.55)";
-      ctx.font = "800 15px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
+      // Y labels
+      ctx.fillStyle = labelCol;
+      ctx.font = "800 14px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
       for(let i=0;i<=gridCount;i++){
         const y = padT + (H/gridCount)*i;
-        const val = maxY - ( (maxY-minY)/gridCount )*i;
+        const val = maxY - ((maxY-minY)/gridCount)*i;
         ctx.fillText(msToTime(Math.round(val)), 14, y+5);
       }
-
-      // x labels (start/end)
-      ctx.fillStyle = "rgba(20,24,38,.55)";
-      ctx.font = "800 15px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
-      ctx.fillText(fmtDate(new Date(minX).toISOString().slice(0,10)), padL, canvas.height-18);
-      const endLabel = fmtDate(new Date(maxX).toISOString().slice(0,10));
-      const endWidth = ctx.measureText(endLabel).width;
-      ctx.fillText(endLabel, padL+W-endWidth, canvas.height-18);
 
       const toX = (x)=> padL + ((x-minX)/(maxX-minX))*W;
       const toY = (y)=> padT + ((maxY-y)/(maxY-minY))*H;
 
-      // line gradient
-      const grad = ctx.createLinearGradient(padL,0,padL+W,0);
-      grad.addColorStop(0, "rgba(47,107,255,.92)");
-      grad.addColorStop(1, "rgba(43,183,255,.92)");
+      // X-axis labels (DD-MON-YY)
+      const tickCount = Math.min(6, Math.max(3, Math.round(points.length/2)));
+      ctx.fillStyle = labelCol;
+      ctx.font = "900 12px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
+      ctx.textAlign = "center";
 
-      // draw line
+      for(let i=0;i<tickCount;i++){
+        const idx = Math.round((points.length-1) * (i/(tickCount-1)));
+        const p = points[idx];
+        const x = toX(p.x);
+        const yBase = padT + H + 22;
+
+        // small tick
+        ctx.strokeStyle = "rgba(15,21,38,.16)";
+        ctx.beginPath();
+        ctx.moveTo(x, padT + H);
+        ctx.lineTo(x, padT + H + 6);
+        ctx.stroke();
+
+        ctx.fillStyle = labelCol;
+        ctx.fillText(fmtDateAxis(p.iso), x, yBase);
+      }
+      ctx.textAlign = "start";
+
+      // Line
+      const grad = ctx.createLinearGradient(padL,0,padL+W,0);
+      grad.addColorStop(0, "rgba(47,107,255,.95)");
+      grad.addColorStop(1, "rgba(43,183,255,.95)");
+
       ctx.strokeStyle = grad;
       ctx.lineWidth = 4;
       ctx.beginPath();
@@ -2200,218 +2277,198 @@
       });
       ctx.stroke();
 
-      // dots
-      points.forEach((p)=>{
+      // Points
+      ctx.fillStyle = "rgba(15,21,38,.85)";
+      points.forEach(p=>{
         const x = toX(p.x);
         const y = toY(p.y);
-        ctx.fillStyle = "rgba(20,24,38,.92)";
         ctx.beginPath();
-        ctx.arc(x,y,4.5,0,Math.PI*2);
-        ctx.fill();
-        ctx.fillStyle = "rgba(255,255,255,.95)";
-        ctx.beginPath();
-        ctx.arc(x,y,2.4,0,Math.PI*2);
+        ctx.arc(x,y,4,0,Math.PI*2);
         ctx.fill();
       });
-
-      // PB marker within current points (min y)
-      let pbIdx = 0;
-      for(let i=1;i<points.length;i++){
-        if(points[i].y < points[pbIdx].y) pbIdx = i;
-      }
-      const pbP = points[pbIdx];
-      const pbX = toX(pbP.x);
-      const pbY = toY(pbP.y);
-
-      ctx.strokeStyle = "rgba(200,139,0,.95)";
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(pbX, pbY, 8.5, 0, Math.PI*2);
-      ctx.stroke();
-
-      ctx.fillStyle = "rgba(200,139,0,.12)";
-      ctx.beginPath();
-      ctx.arc(pbX, pbY, 10.5, 0, Math.PI*2);
-      ctx.fill();
-
-      ctx.fillStyle = "rgba(200,139,0,.95)";
-      ctx.font = "900 14px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
-      ctx.fillText("PB", pbX + 12, pbY + 5);
-
-      // store transform for tooltip
-      lastDrawMeta.t = { padL,padR,padT,padB,W,H,minX,maxX,minY,maxY,toX,toY };
     }
 
-    function onChartMove(ev){
-      if(!lastDrawMeta || !lastDrawMeta.points || lastDrawMeta.points.length < 2) return;
-
-      const rect = canvas.getBoundingClientRect();
-      const mx = ((ev.clientX - rect.left) / rect.width) * canvas.width;
-      const my = ((ev.clientY - rect.top) / rect.height) * canvas.height;
-
-      const t = lastDrawMeta.t;
-      if(!t) return;
-
-      // Only if inside plot area
-      if(mx < t.padL || mx > t.padL + t.W || my < t.padT || my > t.padT + t.H){
-        chartTooltip.style.display = "none";
-        return;
-      }
-
-      // Find nearest point by x distance
-      let best = null;
-      for(const p of lastDrawMeta.points){
-        const px = t.toX(p.x);
-        const py = t.toY(p.y);
-        const dx = px - mx;
-        const dy = py - my;
-        const d2 = dx*dx + dy*dy;
-        if(!best || d2 < best.d2) best = { p, px, py, d2 };
-      }
-      if(!best) return;
-
-      // Redraw and overlay crosshair + highlight
-      drawChart(lastDrawMeta.entries, lastDrawMeta.dist, lastDrawMeta.loc);
-
-      ctx.strokeStyle = "rgba(47,107,255,.25)";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(best.px, t.padT);
-      ctx.lineTo(best.px, t.padT + t.H);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.moveTo(t.padL, best.py);
-      ctx.lineTo(t.padL + t.W, best.py);
-      ctx.stroke();
-
-      ctx.fillStyle = "rgba(47,107,255,.18)";
-      ctx.beginPath();
-      ctx.arc(best.px, best.py, 11, 0, Math.PI*2);
-      ctx.fill();
-
-      ctx.strokeStyle = "rgba(47,107,255,.95)";
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(best.px, best.py, 7.5, 0, Math.PI*2);
-      ctx.stroke();
-
-      // Tooltip content
-      const e = best.p.meta;
-      chartTooltip.innerHTML = `
-        <div class="tTitle">${escapeHtml(e.distance)} • <b>${escapeHtml(e.time)}</b></div>
-        <div class="tRow"><b>Date:</b> ${fmtDate(e.date)}</div>
-        <div class="tRow"><b>Location:</b> ${escapeHtml(e.location || "—")}</div>
-        <div class="tRow"><b>Notes:</b> ${escapeHtml(e.notes || "—")}</div>
-      `;
-
-      // Position tooltip near cursor
-      const tx = ev.clientX - rect.left + 12;
-      const ty = ev.clientY - rect.top + 12;
-
-      chartTooltip.style.left = Math.min(tx, rect.width - 210) + "px";
-      chartTooltip.style.top = Math.min(ty, rect.height - 120) + "px";
-      chartTooltip.style.display = "block";
-    }
-
-    function exportJSON(){
-      const blob = new Blob([JSON.stringify({ state, prefs }, null, 2)], { type:"application/json" });
-      downloadBlob(blob, "PB-VelocityBoard-backup.json");
-      flashBanner("JSON backup downloaded.", false);
-    }
-
-    function exportCSV(){
+    // -----------------------------
+    // Excel export/template
+    // -----------------------------
+    function exportXLSX(){
       const ath = getActiveAthlete();
-      if(!ath){
-        flashBanner("No athlete selected.", false);
-        return;
-      }
+      if(!ath){ flashBanner("No athlete selected.", false); return; }
+
       const rows = [["Athlete","BirthYear","Date","Location","Distance","Time","Notes"]];
       for(const e of sortByDateDesc(ath.entries || [])){
-        rows.push([ath.name, ath.birthYear || "", e.date, e.location || "", e.distance, e.time, (e.notes||"")]);
+        rows.push([ath.name, ath.birthYear || "", e.date, e.location || "", normalizeDistance(e.distance), e.time, (e.notes||"")]);
       }
-      const csv = rows.map(r => r.map(cell => `"${String(cell).replaceAll('"','""')}"`).join(",")).join("\n");
-      const blob = new Blob([csv], { type:"text/csv" });
-      downloadBlob(blob, `PB-${ath.name.replaceAll(" ","_")}.csv`);
-      flashBanner("CSV downloaded.", false);
+
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "PB Data");
+
+      const safeName = (ath.name || "Athlete").replaceAll(/[^\w\- ]/g,"").replaceAll(" ","_");
+      XLSX.writeFile(wb, `PB-${safeName}.xlsx`);
+      flashBanner("Excel downloaded.", false);
     }
 
-    function downloadBlob(blob, filename){
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+    function downloadTemplateXLSX(){
+      const sample = [
+        ["Athlete","BirthYear","Date","Location","Distance","Time","Notes"],
+        ["Samarveer","2014","2025-11-29","Ontario Provincial Circuit - Brampton","400m","00:48.700","Sample row"],
+        ["Samarveer","2014","","","500m","00:59.300","(optional) leave date/location blank to fill-down like Excel"],
+        ["Samarveer","2014","","","400m","00:01:00","HH:MM:SS is allowed (Excel style)"]
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(sample);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Template");
+      XLSX.writeFile(wb, "PB-VelocityBoard-Template.xlsx");
+      flashBanner("Template downloaded.", false);
     }
 
-    function importJSON(){
+    // ✅ CLEAN IMPORT (supports fill-down, supports 28-Jan-24, supports 00:01:00)
+    function importXLSXIntoSelectedAthlete(){
       clearErrors();
-      const file = importFile.files && importFile.files[0];
-      if(!file){
-        showError("importMsg","Please choose a JSON file first.");
-        return;
-      }
+      const ath = getActiveAthlete();
+      if(!ath){ showError("importMsg","Please select an athlete first."); return; }
+
+      const file = excelFile.files && excelFile.files[0];
+      if(!file){ showError("importMsg","Please choose an Excel file first."); return; }
+
       const reader = new FileReader();
       reader.onload = () => {
         try{
-          const parsed = JSON.parse(reader.result);
-          if(!parsed.state || !Array.isArray(parsed.state.athletes)){
-            showError("importMsg","Invalid backup structure (missing state.athletes).");
+          const data = new Uint8Array(reader.result);
+          const wb = XLSX.read(data, { type: "array" });
+          const sheetName = wb.SheetNames[0];
+          const ws = wb.Sheets[sheetName];
+
+          const json = XLSX.utils.sheet_to_json(ws, { defval: "" });
+          if(!json.length){
+            showError("importMsg","Excel looks empty. Please use the template.");
             return;
           }
 
-          const incoming = parsed.state.athletes;
-          for(const inc of incoming){
-            if(!inc.id || !inc.name) continue;
-            const existing = state.athletes.find(a => a.id === inc.id);
-            if(existing){
-              const existingIds = new Set((existing.entries||[]).map(e=>e.id));
-              (inc.entries||[]).forEach(e=>{
-                if(e && e.id && !existingIds.has(e.id)) existing.entries.push(e);
-              });
-              if(!existing.birthYear && inc.birthYear) existing.birthYear = inc.birthYear;
-              if(existing.name !== inc.name) existing.name = inc.name;
-            }else{
-              state.athletes.push(inc);
+          const norm = (s)=> String(s||"").trim().toLowerCase();
+          const get = (row, key)=>{
+            const k = Object.keys(row).find(h => norm(h) === norm(key));
+            return k ? row[k] : "";
+          };
+
+          let added = 0;
+          let skipped = 0;
+          let firstBad = "";
+
+          let lastDate = "";
+          let lastLocation = "";
+
+          for(let i=0;i<json.length;i++){
+            const row = json[i];
+
+            let rawDate = get(row,"Date");
+            let rawLocation = get(row,"Location");
+            let rawDistance = get(row,"Distance");
+            let rawTime = get(row,"Time");
+            let notes = String(get(row,"Notes") || "").trim();
+
+            if(String(rawDate).trim()) lastDate = rawDate;
+            else rawDate = lastDate;
+
+            if(String(rawLocation).trim()) lastLocation = rawLocation;
+            else rawLocation = lastLocation;
+
+            let date = excelDateToISO(rawDate);
+            let location = String(rawLocation || "").trim();
+            let distance = normalizeDistance(rawDistance);
+            let timeRaw = (rawTime == null) ? "" : rawTime;
+
+            if(typeof timeRaw === "string") timeRaw = timeRaw.replace(/\s+/g,"");
+
+            if(!date || !location || !distance || (timeRaw === "" || timeRaw == null)){
+              skipped++;
+              continue;
             }
+
+            const parsed = parseTimeSmart(timeRaw);
+            if(parsed.ms == null){
+              skipped++;
+              if(!firstBad) firstBad = `Row ${i+2}: invalid time "${timeRaw}"`;
+              continue;
+            }
+
+            ath.entries.push({
+              id: "e_" + Math.random().toString(16).slice(2) + Date.now().toString(16),
+              date,
+              location,
+              distance,
+              time: parsed.normalized,
+              notes: notes || ""
+            });
+            added++;
           }
 
-          if(parsed.prefs){
-            prefs = { ...prefs, ...parsed.prefs };
-            savePrefs();
-            defaultDistance.value = prefs.defaultDistance;
-            timeHint.value = prefs.timeHint;
-            distanceFilter.value = prefs.defaultDistance;
-          }
-
-          if(!state.activeAthleteId && state.athletes.length){
-            state.activeAthleteId = state.athletes[0].id;
-          }
           saveState();
+          refreshDistanceUI();
 
-          importMsg.classList.remove("show");
-          flashBanner("Import complete. Data merged.", false);
-          renderAll();
+          if(added === 0){
+            showError("importMsg", `No rows imported. ${firstBad || "Please use columns: Date, Location, Distance, Time."}`);
+            return;
+          }
+
+          flashBanner(`Excel import complete: ${added} row(s) added to ${ath.name}${skipped ? ` • ${skipped} skipped` : ""}.`, false);
+          renderAll(true);
 
         }catch(e){
-          showError("importMsg","Could not read JSON. Please upload a valid backup file.");
+          showError("importMsg","Could not import Excel. Please use the template format.");
         }
       };
-      reader.readAsText(file);
+      reader.readAsArrayBuffer(file);
     }
 
-    function escapeHtml(str){
-      return String(str ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+    function excelDateToISO(v){
+      if(v == null) return "";
+      const s = String(v).trim();
+      if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+
+      if(Object.prototype.toString.call(v) === "[object Date]" && !isNaN(v)){
+        const yyyy = v.getFullYear();
+        const mm = String(v.getMonth()+1).padStart(2,"0");
+        const dd = String(v.getDate()).padStart(2,"0");
+        return `${yyyy}-${mm}-${dd}`;
+      }
+
+      if(typeof v === "number" && isFinite(v)){
+        const d = XLSX.SSF.parse_date_code(v);
+        if(d){
+          return `${d.y}-${String(d.m).padStart(2,"0")}-${String(d.d).padStart(2,"0")}`;
+        }
+      }
+
+      const m = s.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{2,4})$/);
+      if(m){
+        const months = {jan:"01",feb:"02",mar:"03",apr:"04",may:"05",jun:"06",jul:"07",aug:"08",sep:"09",oct:"10",nov:"11",dec:"12"};
+        const yyyy = m[3].length === 2 ? `20${m[3]}` : m[3];
+        const mon = months[m[2].toLowerCase()];
+        if(mon) return `${yyyy}-${mon}-${String(m[1]).padStart(2,"0")}`;
+      }
+
+      return "";
+    }
+
+    // -----------------------------
+    // Donate
+    // -----------------------------
+    function donateAmount(amountStr){
+      clearErrors();
+      const amt = String(amountStr || "").trim();
+      const n = Number(amt);
+      if(!amt || !isFinite(n) || n <= 0){
+        showError("donateErr","Please enter a valid amount (example: 2, 5, 10, 3.50).");
+        return;
+      }
+      const base = PAYPAL_ME.replace(/\/+$/,"");
+      const url = `${base}/${n}`;
+      window.open(url, "_blank", "noopener,noreferrer");
+      closeModal("modalDonate");
+      flashBanner("Opening PayPal donation page… 💙", false);
     }
   </script>
-
 </body>
 </html>
