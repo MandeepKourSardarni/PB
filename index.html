@@ -1279,6 +1279,8 @@
 
     const canvas = document.getElementById("trendCanvas");
     const ctx = canvas.getContext("2d");
+    let chartLast = null;   // ✅ store plotted points for click/hover
+
 
     // -----------------------------
     // Events
@@ -1607,12 +1609,14 @@
 
     function msToTime(ms){
       if(ms == null || isNaN(ms)) return "—";
+      ms = Math.max(0, Math.round(ms)); // ✅ prevents long decimal milliseconds
       const totalSec = Math.floor(ms/1000);
       const mm = Math.floor(totalSec/60);
       const ss = totalSec % 60;
       const msec = ms % 1000;
-      return String(mm).padStart(2,"0")+":"+String(ss).padStart(2,"0")+"."+String(msec).padStart(3,"0");
+      return String(mm).padStart(2,"0")+":"+String(ss).padStart(2,"0")+"."+String(msec).padStart(3,"0")
     }
+
 
     function fmtDate(iso){
       if(!iso) return "—";
@@ -2193,14 +2197,15 @@
     // -----------------------------
     // Chart (with X-axis date labels DD-MON-YY)
     // -----------------------------
-    function drawChart(entries){
-  const tip = document.getElementById("chartTip");
-
+function drawChart(entries){
   const data = [...entries]
     .filter(e => parseTimeSmart(e.time).ms != null && e.date)
     .sort((a,b)=> new Date(a.date) - new Date(b.date));
 
   ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // reset saved points
+  chartLast = null;
 
   if(data.length < 2){
     ctx.fillStyle = "rgba(15,21,38,.75)";
@@ -2209,87 +2214,105 @@
     return;
   }
 
-  const pts = data.map((e,i)=>({
-    idx:i,
-    date:e.date,
-    label: fmtDateAxis(e.date),
-    ms: parseTimeSmart(e.time).ms,
-    time: parseTimeSmart(e.time).normalized
-  }));
+  const pts = data.map((e,i)=>{
+    const parsed = parseTimeSmart(e.time);
+    return {
+      idx: i,
+      date: e.date,
+      label: fmtDateAxis(e.date),
+      ms: parsed.ms,
+      time: parsed.normalized
+    };
+  });
 
-  const pb = pts.reduce((b,p)=> p.ms<b.ms?p:b, pts[0]);
+  const pb = pts.reduce((b,p)=> (p.ms < b.ms ? p : b), pts[0]);
 
-  const padL=80,padR=30,padT=30,padB=70;
-  const W=canvas.width-padL-padR;
-  const H=canvas.height-padT-padB;
+  const padL=80, padR=30, padT=30, padB=70;
+  const W = canvas.width - padL - padR;
+  const H = canvas.height - padT - padB;
 
-  let minY=Math.min(...pts.map(p=>p.ms));
-  let maxY=Math.max(...pts.map(p=>p.ms));
-  const pad=(maxY-minY)*0.08 || 120;
+  let minY = Math.min(...pts.map(p=>p.ms));
+  let maxY = Math.max(...pts.map(p=>p.ms));
+  const pad = (maxY - minY) * 0.2 || 200;
 
-  minY-=pad; maxY+=pad;
+  // ✅ keep axis values clean (integers) to avoid long decimals
+  minY = Math.round(minY - pad);
+  maxY = Math.round(maxY + pad);
 
-  const toX=i=>padL+(i/(pts.length-1))*W;
-  const toY=y=>padT+((maxY-y)/(maxY-minY))*H;
+  const toX = i => padL + (i/(pts.length-1)) * W;
+  const toY = y => padT + ((maxY - y)/(maxY - minY)) * H;
 
-  ctx.strokeStyle="rgba(15,21,38,.10)";
-  ctx.fillStyle="rgba(15,21,38,.65)";
-  ctx.font="900 12px system-ui";
+  // ✅ SAVE pixel positions for clicking points later
+  chartLast = {
+    pts: pts.map(p => ({
+      ...p,
+      px: toX(p.idx),
+      py: toY(p.ms),
+      fullDate: fmtDate(p.date)
+    }))
+  };
+
+  // Grid + Y labels
+  ctx.strokeStyle = "rgba(15,21,38,.10)";
+  ctx.fillStyle = "rgba(15,21,38,.65)";
+  ctx.font = "900 12px system-ui";
+  ctx.textAlign = "right";
 
   for(let i=0;i<=5;i++){
-    const y=padT+(H/5)*i;
+    const y = padT + (H/5)*i;
     ctx.beginPath();
-    ctx.moveTo(padL,y);
-    ctx.lineTo(padL+W,y);
+    ctx.moveTo(padL, y);
+    ctx.lineTo(padL+W, y);
     ctx.stroke();
-    ctx.fillText(msToTime(maxY-((maxY-minY)/5)*i),padL-10,y+4);
+
+    const val = Math.round(maxY - ((maxY-minY)/5)*i);
+    ctx.fillText(msToTime(val), padL-10, y+4);
   }
 
-  // PB reference
+  // PB reference line
   ctx.setLineDash([6,6]);
-  ctx.strokeStyle="rgba(200,139,0,.6)";
+  ctx.strokeStyle = "rgba(200,139,0,.6)";
   ctx.beginPath();
-  ctx.moveTo(padL,toY(pb.ms));
-  ctx.lineTo(padL+W,toY(pb.ms));
+  ctx.moveTo(padL, toY(pb.ms));
+  ctx.lineTo(padL+W, toY(pb.ms));
   ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle="rgba(200,139,0,.95)";
-  ctx.font="900 12px system-ui";
-  ctx.textAlign="left";
-  ctx.fillText(`PB ${msToTime(pb.ms)}`, padL + 8, toY(pb.ms) - 8);
-
 
   // Line
-  const grad=ctx.createLinearGradient(padL,0,padL+W,0);
-  grad.addColorStop(0,"#2f6bff");
-  grad.addColorStop(1,"#2bb7ff");
+  const grad = ctx.createLinearGradient(padL, 0, padL+W, 0);
+  grad.addColorStop(0, "#2f6bff");
+  grad.addColorStop(1, "#2bb7ff");
 
-  ctx.strokeStyle=grad;
-  ctx.lineWidth=4;
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = 4;
   ctx.beginPath();
   pts.forEach((p,i)=>{
-    const x=toX(p.idx),y=toY(p.ms);
-    i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+    const x = toX(p.idx), y = toY(p.ms);
+    i ? ctx.lineTo(x,y) : ctx.moveTo(x,y);
   });
   ctx.stroke();
 
   // Points
   pts.forEach(p=>{
-    const x=toX(p.idx),y=toY(p.ms);
-    ctx.fillStyle=p===pb?"#c88b00":"#fff";
+    const x = toX(p.idx), y = toY(p.ms);
+    ctx.fillStyle = (p === pb) ? "#c88b00" : "#fff";
     ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle="#0f1526";
+    ctx.fillStyle = "#0f1526";
     ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill();
   });
 
-  // X axis labels (clean & readable)
-  ctx.textAlign="center";
+  // X axis labels
+  ctx.fillStyle = "rgba(15,21,38,.65)";
+  ctx.font = "900 12px system-ui";
+  ctx.textAlign = "center";
+
   for(let i=0;i<Math.min(6,pts.length);i++){
-    const idx=Math.round((pts.length-1)*(i/5));
-    const p=pts[idx];
-    ctx.fillText(p.label,toX(p.idx),padT+H+26);
+    const idx = Math.round((pts.length-1)*(i/5));
+    const p = pts[idx];
+    ctx.fillText(p.label, toX(p.idx), padT+H+26);
   }
 }
+
 
     // -----------------------------
     // Excel export/template
