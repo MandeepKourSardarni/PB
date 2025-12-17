@@ -8,7 +8,7 @@ Built with care for **young skaters and busy parents**, it focuses on **clarity,
 
 ## 🔗 Live App Access
 
-##👉 **Open PB TRACKER**  
+👉 **Open PB TRACKER**  
 
 👉 [https://mandeepkoursardarni.github.io/PB_Tracker/](https://mandeepkoursardarni.github.io/PB_Tracker/)
 
